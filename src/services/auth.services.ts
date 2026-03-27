@@ -134,6 +134,77 @@ const AuthService = {
             return { success: false, message: error.message || "Server error" };
         }
     },
+    ForgotPasswordEmailOTP: async ({ email }: { email: string }) => {
+        try {
+            const storeCookies = await cookies();
+            const response = await fetch(`${API_BASE_URL}/auth/forget-password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: storeCookies.toString(),
+                },
+                cache: "no-store",
+                body: JSON.stringify({ email }),
+            });
+            const body = await response.json();
+            const result = body as ApiResponse<any>;
+            if (!response.ok) {
+                const error = body as ApiErrorResponse;
+                return { success: error.success, message: error.message,url:"/login" };
+            }
+            return {
+                success: true,
+                message: result.message || "Password reset OTP sent successfully!",
+                data: result.data,
+            };
+        } catch (error: any) {
+            return { success: false, message: error.message || "Server error" };
+        }
+    },
+    ResetPassword: async ({
+        email,
+        otp,
+        newPassword,
+    }: {
+        email: string;
+        otp: string;
+        newPassword: string;
+    }) => {
+        try {
+            const storeCookies = await cookies();
+            const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: storeCookies.toString(),
+                },
+                cache: "no-store",
+                body: JSON.stringify({
+                    email,
+                    otp,
+                    newPassword,
+                }),
+            });
+            const body = await response.json();
+            const result = body as ApiResponse<any>;
+            if (!response.ok) {
+                const error = body as ApiErrorResponse;
+                return {
+                    success: error.success,
+                    message: error.message,
+                    url: "/login",
+                };
+            }
+            return {
+                success: true,
+                message: result.message || "Password reset successfully!",
+                data: result.data,
+            };
+        } catch (error: any) {
+            return { success: false, message: error.message || "Server error" };
+        }
+    },
+
       
 };
 

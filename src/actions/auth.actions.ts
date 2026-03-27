@@ -23,3 +23,13 @@ export async function resendVerificationCodeAction(data: { email: string }) {
     const result = await AuthService.resendVerificationCode(data);
     return result;
 }
+
+export async function forgotPasswordEmailOtpAction(data: { email: string }) {
+    const result = await AuthService.ForgotPasswordEmailOTP(data);
+    return result;
+}
+
+export async function resetPasswordAction(data: { email: string; otp: string; newPassword: string }) {
+    const result = await AuthService.ResetPassword(data);
+    return result;
+}

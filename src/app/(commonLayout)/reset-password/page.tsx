@@ -1,12 +1,12 @@
 import VerifyOtp from '@/components/auth/VerifyEmailOtp'
 import React from 'react'
 
-const VerificationPage = () => {
+const ResetPasswordPage = () => {
   return (
     <div>
-        <VerifyOtp type="email-verification"/>
+        <VerifyOtp type="forget-password"/>
     </div>
   )
 }
 
-export default VerificationPage
+export default ResetPasswordPage
