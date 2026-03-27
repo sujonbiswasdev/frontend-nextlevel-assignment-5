@@ -204,6 +204,50 @@ const AuthService = {
             return { success: false, message: error.message || "Server error" };
         }
     },
+    getMe: async () => {
+        try {
+            const storeCookies = await cookies();
+            const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: storeCookies.toString(),
+                },
+                cache:"no-store"
+               
+            });
+            const body = await response.json();
+            const result = body as ApiResponse<any>;
+            if (!response.ok) {
+                const error = body as ApiErrorResponse;
+                return {
+                    success: error.success,
+                    message: error.message,
+                };
+            }
+
+            const { accessToken, refreshToken: newRefreshToken, token } = result.data;
+      
+            if (accessToken) {
+              await setTokenInCookies("accessToken", accessToken);
+            }
+        
+            if (newRefreshToken) {
+              await setTokenInCookies("refreshToken", newRefreshToken);
+            }
+        
+            if (token) {
+              await setTokenInCookies("better-auth.session_token", token, 24 * 60 * 60); // 1 day in seconds
+            }
+            return {
+              success: true,
+              message: "User account retrieve successfully!",
+              data: result.data
+            };
+         
+        } catch (error: any) {
+            return { success: false, message: error.message || "Server error" };
+        }
+    },
 
       
 };

@@ -33,3 +33,8 @@ export async function resetPasswordAction(data: { email: string; otp: string; ne
     const result = await AuthService.ResetPassword(data);
     return result;
 }
+
+export async function getMeAction() {
+    const result = await AuthService.getMe();
+    return result;
+}
