@@ -53,7 +53,7 @@ export function SignupForm() {
                 toast.dismiss(toastId)
                 alert(result.message||'user signup successfully')
                 toast.success("user signup successfully ")
-                router.push('/login')
+                router.push(`/verify-email?email=${value.email}`)
             } catch (error:any) {
                 toast.dismiss(toastId)
                 toast.error("Something went wrong . please try again ",error.message);

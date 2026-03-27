@@ -13,3 +13,13 @@ export async function loginUserAction(data: UserLoginInputType) {
     const result = await AuthService.loginUser(data);
     return result;
 }
+
+export async function verifyEmailAction(data: { email: string; otp: string }) {
+    const result = await AuthService.verifyEmail(data);
+    return result;
+}
+
+export async function resendVerificationCodeAction(data: { email: string }) {
+    const result = await AuthService.resendVerificationCode(data);
+    return result;
+}
