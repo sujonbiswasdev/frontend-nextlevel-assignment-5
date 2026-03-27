@@ -1,11 +1,11 @@
 import { setTokenInCookies } from "@/lib/tokenutils";
-import { UserCreateInput, UserCreateInputWithTokens } from "@/types/auth.types";
+import { UserCreateInput, UserCreateInputWithTokens, UserLoginInputType } from "@/types/auth.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
+import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 console.log(API_BASE_URL,'API_BASE_URL')
 const AuthService = {
     register: async (value: UserCreateInput) => {
-        console.log(value, 'validu');
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json'},
@@ -35,7 +35,50 @@ const AuthService = {
             message: `${result.message ? result.message + " - " : ""}${verifyEmailMessage}`,
             data: result.data
         };
-    }
+    },
+    loginUser:async(logindata: UserLoginInputType)=>{
+        try {
+          const storeCookies = await cookies();
+          const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: storeCookies.toString(),
+            },
+            cache: "no-store",
+            body: JSON.stringify(logindata),
+          });
+          const body = await response.json();
+          const result = body as ApiResponse<UserCreateInputWithTokens>
+          
+          if (!response.ok) {
+            const error = body as ApiErrorResponse;
+            return { success:error.success, message: error.message };
+          }
+      
+          const { accessToken, refreshToken: newRefreshToken, token } = result.data;
+      
+          if (accessToken) {
+            await setTokenInCookies("accessToken", accessToken);
+          }
+      
+          if (newRefreshToken) {
+            await setTokenInCookies("refreshToken", newRefreshToken);
+          }
+      
+          if (token) {
+            await setTokenInCookies("better-auth.session_token", token, 24 * 60 * 60); // 1 day in seconds
+          }
+          return {
+            success: true,
+            message: `${result.message ||"Login successful. Welcome back!"}`,
+            data: result.data
+          };
+        } catch (error:any) {
+          return { success:false, message:error.message|| "server error" };
+        }
+      }
+      
 };
 
 export default AuthService;

@@ -8,7 +8,9 @@ export const allowedDomains = [
 export const createUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters").regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
+    "Password must be at least 8 characters long, contain uppercase, lowercase, number and special character"),
   phone: z.string().optional(),
   image: z
   .string()
@@ -28,3 +30,13 @@ export const createUserSchema = z.object({
   )
   .optional(),
 }).strict();
+
+export const loginZodSchema = z.object({
+  email : z.email("Invalid email address"),
+  password : z.string()
+      .min(1, "Password is required")
+      .min(8, "Password must be at least 8 characters long")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/,
+        "Password must be at least 8 characters long, contain uppercase, lowercase, number and special character")
+})

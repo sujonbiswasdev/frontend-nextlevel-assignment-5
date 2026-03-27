@@ -53,7 +53,6 @@ export function SignupForm() {
                 toast.dismiss(toastId)
                 alert(result.message||'user signup successfully')
                 toast.success("user signup successfully ")
-                 localStorage.removeItem("foodhub-cart")
                 router.push('/login')
             } catch (error:any) {
                 toast.dismiss(toastId)

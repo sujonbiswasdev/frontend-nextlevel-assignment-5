@@ -9,3 +9,8 @@ export type UserCreateInputWithTokens = UserCreateInput & {
     refreshToken?: string;
     token:string;
   };
+
+  export type UserLoginInputType = {
+    email: string;
+    password: string;
+  };
