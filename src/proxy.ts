@@ -1,0 +1,11 @@
+import { NextRequest } from "next/server"
+
+export const proxy=(req:NextRequest)=>{
+
+}
+
+export const config = {
+    matcher : [
+       '/profile'
+    ]
+}
