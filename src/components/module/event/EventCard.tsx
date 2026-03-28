@@ -43,6 +43,7 @@ type EventCardProps = Pick<
 > & {
   eventType?: EventType;
   eventStatus?: EventStatus;
+  priceType?: "FREE" | "PAID";
 };
 
 function getEventType(visibility: string, fee: number): EventType {
@@ -80,6 +81,7 @@ export default function EventCard({
   venue,
   image,
   fee,
+  priceType,
   avgRating,
   totalReviews,
   categories,
@@ -156,17 +158,18 @@ export default function EventCard({
               Public
             </span>
           )}
-          {visibility === "PUBLIC_PAID" && (
-            <span className="inline-block bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-200 px-2 py-0.5 rounded-full text-xs font-semibold">
-              Public (Paid)
-            </span>
-          )}
-          {visibility === "PRIVATE_PAID" && (
-            <span className="inline-block bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-200 px-2 py-0.5 rounded-full text-xs font-semibold">
-              Private (Paid)
-            </span>
-          )}
+
         </div>
+        {/* Pricing Badge */}
+        {priceType === "FREE" ? (
+          <span className="inline-block bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-200 px-2 py-0.5 rounded-full text-xs font-semibold mr-2">
+            Free
+          </span>
+        ) : (
+          <span className="inline-block bg-fuchsia-100 dark:bg-fuchsia-900/40 text-fuchsia-700 dark:text-fuchsia-200 px-2 py-0.5 rounded-full text-xs font-semibold mr-2">
+            Paid
+          </span>
+        )}
 
         </div>
      

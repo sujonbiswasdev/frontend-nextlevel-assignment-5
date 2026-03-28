@@ -1,5 +1,7 @@
-// Base Event type
+import { EventCategoryEnum } from "@/validations/event.validation";
+import z from "zod";
 
+// Pagination type
 export type TPagination = {
   total: number;
   page: number;
@@ -7,7 +9,33 @@ export type TPagination = {
   totalpage: number;
 };
 
+export type EventStatus =
+  | "DRAFT"
+  | "UPCOMING"
+  | "ONGOING"
+  | "COMPLETED"
+  | "CANCELLED";
 
+export type EventType = "PUBLIC" | "PRIVATE";
+
+export type PricingType = "FREE" | "PAID";
+export type EventCategory = z.infer<typeof EventCategoryEnum>;
+export const eventcategoryArr=EventCategoryEnum.options
+
+export type TCreateEvent = {
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  venue: string;
+  image: string;
+  visibility: EventType;
+  priceType: PricingType;
+  categories: EventCategory;
+  fee?: number;
+};
+
+export type TUpdateEvent = Partial<TCreateEvent>;
 
 export type IBaseEvent = {
     id: string;
@@ -17,8 +45,9 @@ export type IBaseEvent = {
     time: string;
     venue: string;
     image: string;
-    visibility?: "PUBLIC" | "PRIVATE" | "PUBLIC_PAID" | "PRIVATE_PAID" ;
-    status: "DRAFT" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED" | string;
+    visibility?: EventType;
+    priceType?: PricingType;
+    status: EventStatus;
     is_featured: boolean;
     categories: string;
     fee: number;

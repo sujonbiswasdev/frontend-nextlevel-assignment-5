@@ -3,7 +3,7 @@ export interface IBaseUser {
     name: string;
     email: string;
     role: 'USER' | 'ADMIN';
-    status: 'ACTIVE' | 'INACTIVE';
+    status: 'ACTIVE' | 'BLOCKED' | 'DELETED';
     image: string | null;
     emailVerified: boolean;
     createdAt: string;

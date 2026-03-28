@@ -1,3 +1,4 @@
+import { deleteCookie } from "@/lib/cookieUtils";
 import { setTokenInCookies } from "@/lib/tokenutils";
 import { UserCreateInput, UserCreateInputWithTokens, UserLoginInputType } from "@/types/auth.types";
 import { IBaseEvent } from "@/types/event.types";
@@ -255,6 +256,12 @@ const AuthService = {
                     message: error.message,
                 };
             }
+            // Remove all relevant auth cookies using deleteTokenFromCookies from lib
+            await Promise.all([
+                deleteCookie("accessToken"),
+                deleteCookie("refreshToken"),
+                deleteCookie("better-auth.session_token"),
+            ]);
             return {
                 success: true,
                 message: result.message || "Logged out successfully!",

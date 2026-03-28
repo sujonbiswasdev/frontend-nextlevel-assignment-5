@@ -1,4 +1,4 @@
-import { TEventsGroupedResponse, TResponseEvent } from "@/types/event.types";
+import { TCreateEvent, TEventsGroupedResponse, TResponseEvent } from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -48,6 +48,7 @@ const EventService = {
       return { message: "something went wrong please try again" };
     }
   },
+ 
 };
 
 export default EventService;
