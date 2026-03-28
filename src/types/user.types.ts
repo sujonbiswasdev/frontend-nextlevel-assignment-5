@@ -1,5 +1,3 @@
-import { IEvent } from "./event.types";
-
 export interface IBaseUser {
     id: string;
     name: string;

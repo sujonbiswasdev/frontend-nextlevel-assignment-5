@@ -6,16 +6,16 @@ import {
     SidebarGroup,
     SidebarHeader,
   } from "@/components/ui/sidebar"
-import { getDefaultDashboardRoute } from "@/lib/authUtils"
+import { getDefaultDashboardRoute, UserRole } from "@/lib/authUtils"
 import { getNavItemsByRole } from "@/routes/sidebar.navitems"
 import { NavSection } from "@/types/dashboard.types"
 import DashboardSidebarContent from "./dashbaord/DashboardSidebarContent"
   
   export async function AppSidebar() {
     const userInfo = await getSessionAction()
-  const navItems : NavSection[] = getNavItemsByRole(userInfo.data.role)
+  const navItems : NavSection[] = getNavItemsByRole(userInfo.data?.role as UserRole)
 
-  const dashboardHome = getDefaultDashboardRoute(userInfo.data.role)
+  const dashboardHome = getDefaultDashboardRoute(userInfo.data?.role as UserRole)
     return (
       <Sidebar>
         <SidebarHeader />

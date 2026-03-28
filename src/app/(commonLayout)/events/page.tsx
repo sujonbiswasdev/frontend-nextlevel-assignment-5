@@ -1,9 +1,21 @@
-import React from 'react'
+import { fetchEvents } from '@/actions/event.actions';
 
-const EventsPage =async () => {
+import EventsContent from '@/components/module/event/EventsContent';
+import { TResponseEvent } from '@/types/event.types';
+
+const EventsPage =async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+
+  const search=await searchParams
+  const eventsResponse = await fetchEvents(search, { revalidate: 60 });
    
   return (
-    <div>EventsPage</div>
+   <>
+   <EventsContent events={eventsResponse.data?.UPCOMING  as TResponseEvent<{reviews:any[]}>[]} pagination={eventsResponse.pagination}/>
+   </>
   )
 }
 

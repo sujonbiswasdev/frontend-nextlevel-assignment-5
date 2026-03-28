@@ -70,6 +70,7 @@ export function SigninForm() {
           toast.error(res.message || "Login failed", { theme: "dark" });
           return;
         }
+        router.refresh()
         toast.dismiss(toastId);
         toast.success(res.message || "User logged in successfully!", {
           theme: "dark",

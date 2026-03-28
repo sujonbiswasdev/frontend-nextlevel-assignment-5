@@ -1,10 +1,11 @@
 import { setTokenInCookies } from "@/lib/tokenutils";
 import { UserCreateInput, UserCreateInputWithTokens, UserLoginInputType } from "@/types/auth.types";
-import { IEvent } from "@/types/event.types";
+import { IBaseEvent } from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { TResponseUserData } from "@/types/user.types";
 import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+console.log(API_BASE_URL,'pirs')
 const AuthService = {
     register: async (value: UserCreateInput) => {
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -51,7 +52,6 @@ const AuthService = {
           });
           const body = await response.json();
           const result = body as ApiResponse<UserCreateInputWithTokens>
-          
           if (!response.ok) {
             const error = body as ApiErrorResponse;
             return { success:error.success, message: error.message };
@@ -217,7 +217,7 @@ const AuthService = {
                
             });
             const body = await response.json();
-            const result = body as ApiResponse<TResponseUserData<{events:IEvent[]}>>;
+            const result = body as ApiResponse<TResponseUserData<{events:IBaseEvent[]}>>;
             if (!response.ok) {
                 const error = body as ApiErrorResponse;
                 return {
