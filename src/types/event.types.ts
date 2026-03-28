@@ -17,7 +17,7 @@ export type IBaseEvent = {
     time: string;
     venue: string;
     image: string;
-    visibility?: "PUBLIC" | "PRIVATE" | "PUBLIC_PAID" | "PRIVATE_PAID";
+    visibility?: "PUBLIC" | "PRIVATE" | "PUBLIC_PAID" | "PRIVATE_PAID" ;
     status: "DRAFT" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED" | string;
     is_featured: boolean;
     categories: string;

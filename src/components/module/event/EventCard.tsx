@@ -5,6 +5,7 @@ import { Calendar, MapPin, Star, Tag, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { IBaseEvent } from "@/types/event.types";
+import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status";
 
 enum EventType {
   PUBLIC = "PUBLIC",
@@ -87,7 +88,7 @@ export default function EventCard({
   status,
 }: EventCardProps) {
   const formattedDate = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
-  const eventType = getEventType(visibility, fee);
+  const eventType = getEventType(visibility ?? "PUBLIC", fee);
   const statusBadge = getStatusBadge(status);
 
   return (
@@ -115,14 +116,21 @@ export default function EventCard({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 via-transparent to-transparent rounded-t-3xl" />
 
+        {/* Venue Badge */}
+        {venue && (
+          <div className="absolute bottom-2 left-2 bg-white/90 dark:bg-gray-800/90 text-blue-900 dark:text-blue-100 border border-blue-200 dark:border-gray-800 px-3 py-1 rounded-full text-xs font-semibold shadow flex items-center gap-2 backdrop-blur-sm transition-all duration-200">
+            <svg className="w-4 h-4 text-indigo-500 dark:text-indigo-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.418 0-8-4.03-8-9a8 8 0 1 1 16 0c0 4.97-3.582 9-8 9Zm0 0v-8m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+            </svg>
+            <span className="truncate max-w-[7rem]">{venue}</span>
+          </div>
+        )}
+
         {/* Date Badge */}
         <div className="absolute top-2 left-2 px-4 py-1.5 rounded-full text-xs font-bold bg-white/90 dark:bg-gray-800/90 text-indigo-700 dark:text-blue-100 border border-indigo-200 dark:border-gray-700 shadow backdrop-blur-sm tracking-widest">
           {formattedDate}
         </div>
-        {/* Status Badge */}
-        <div className={`absolute top-2 right-2 px-4 py-1.5 rounded-full text-xs font-bold shadow backdrop-blur-sm tracking-widest ${statusBadge.color}`}>
-          {statusBadge.label}
-        </div>
+      
         {/* Featured Badge */}
         {is_featured && (
           <div className="absolute bottom-2 right-2 bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-bold shadow flex items-center gap-1">
@@ -133,21 +141,35 @@ export default function EventCard({
       </div>
 
       <CardContent className="space-y-1 py-1 px-6">
-        {/* Event Type */}
-        <div className="flex items-center gap-3">
-          <span className={`h-2 w-2 rounded-full shadow
-            ${eventType === EventType.PUBLIC || eventType === EventType.PUBLIC_PAID ? "bg-gradient-to-b from-indigo-400 to-blue-400" : "bg-gradient-to-b from-fuchsia-400 to-purple-500"}
-          `} />
-          <span className={`uppercase text-xs font-extrabold tracking-wider
-            ${eventType === EventType.PUBLIC || eventType === EventType.PUBLIC_PAID ? "text-indigo-700 dark:text-blue-100" : "text-pink-700 dark:text-pink-200"}
-          `}>
-            {eventType.replace("_", " ")}
-          </span>
-          {/* Private/Shield icon if PRIVATE */}
-          {eventType === EventType.PRIVATE || eventType === EventType.PRIVATE_PAID ? (
-            <Shield className="w-4 h-4 text-pink-700 dark:text-pink-200" />
-          ) : null}
+
+        <div className="flex justify-between">
+         
+           {/* Event Type */}
+           <div className="flex items-center gap-3">
+          {visibility === "PRIVATE" && (
+            <span className="inline-block bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200 px-2 py-0.5 rounded-full text-xs font-semibold">
+              Private
+            </span>
+          )}
+          {visibility === "PUBLIC" && (
+            <span className="inline-block bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 px-2 py-0.5 rounded-full text-xs font-semibold">
+              Public
+            </span>
+          )}
+          {visibility === "PUBLIC_PAID" && (
+            <span className="inline-block bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-200 px-2 py-0.5 rounded-full text-xs font-semibold">
+              Public (Paid)
+            </span>
+          )}
+          {visibility === "PRIVATE_PAID" && (
+            <span className="inline-block bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-200 px-2 py-0.5 rounded-full text-xs font-semibold">
+              Private (Paid)
+            </span>
+          )}
         </div>
+
+        </div>
+     
 
         {/* Title & Description */}
         <CardTitle className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white line-clamp-2">
