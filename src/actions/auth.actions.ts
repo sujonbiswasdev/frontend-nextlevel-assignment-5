@@ -38,3 +38,8 @@ export async function getSessionAction() {
     const result = await AuthService.getSession();
     return result;
 }
+
+export async function logoutAction() {
+    const result = await AuthService.logout();
+    return result;
+}

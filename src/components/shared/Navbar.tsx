@@ -7,13 +7,36 @@ import { Menu, X } from 'lucide-react';
 import { IBaseUser } from '@/types/user.types';
 import { navItems } from '@/routes/navitems';
 import { getIconComponent } from '@/lib/iconMapper';
+import { logoutAction } from "@/actions/auth.actions";
+import { toast } from "react-toastify";
+import { useRouter } from 'next/navigation';
 
 interface NavbarProps { user: IBaseUser | null }
 
 export default function Navbar({ user }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname()
+
+  // Add at top level of Navbar component:
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const toastId = toast.loading("Logging out...");
+    try {
+      const result = await logoutAction();
+      if (result?.success) {
+        window.location.reload()
+        toast.update(toastId, { render: result.message || "Logged out!", type: "success", isLoading: false, autoClose: 1500 });
+        router.push("/login");
+        return
+      } else {
+        toast.update(toastId, { render: result?.message || "Logout failed", type: "error", isLoading: false, autoClose: 1500 });
+      }
+    } catch (err: any) {
+      toast.update(toastId, { render: err?.message || "Logout error", type: "error", isLoading: false, autoClose: 1500 });
+    }
+  };
 
   useEffect(() => setIsClient(true), []);
 
@@ -46,6 +69,8 @@ export default function Navbar({ user }: NavbarProps) {
                     ? 'bg-primary/20 text-primary font-semibold'
                     : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                 }`}
+                aria-disabled={!user && (item.to === "/logout")}
+                tabIndex={!user && (item.to === "/logout") ? -1 : 0}
               >
                 {Icon && <Icon className="w-4 h-4" />}
                 {item.label}
@@ -56,7 +81,7 @@ export default function Navbar({ user }: NavbarProps) {
 
         {/* Auth Buttons */}
         <div className="hidden md:flex items-center gap-2">
-          {user ? <Button variant="outline" size="sm">Log out</Button> :
+          {user ? <Button variant="outline" size="sm" onClick={handleLogout}>Log out</Button> :
             <>
               <Link href="/login"><Button variant="ghost" size="sm">Log in</Button></Link>
               <Link href="/signup"><Button size="sm">Sign up</Button></Link>

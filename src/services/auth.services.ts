@@ -235,6 +235,36 @@ const AuthService = {
             return { success: false, message: error.message || "Server error" };
         }
     },
+    logout: async () => {
+        try {
+            const storeCookies = await cookies();
+            const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: storeCookies.toString(),
+                },
+                cache: "no-store",
+            });
+            const body = await response.json();
+            const result = body as ApiResponse<any>;
+            if (!response.ok) {
+                const error = body as ApiErrorResponse;
+                return {
+                    success: error.success,
+                    message: error.message,
+                };
+            }
+            return {
+                success: true,
+                message: result.message || "Logged out successfully!",
+                data: result.data,
+            };
+        } catch (error: any) {
+            return { success: false, message: error.message || "Server error" };
+        }
+    },
+
 
       
 };
