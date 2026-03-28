@@ -34,7 +34,7 @@ export async function resetPasswordAction(data: { email: string; otp: string; ne
     return result;
 }
 
-export async function getMeAction() {
-    const result = await AuthService.getMe();
+export async function getSessionAction() {
+    const result = await AuthService.getSession();
     return result;
 }

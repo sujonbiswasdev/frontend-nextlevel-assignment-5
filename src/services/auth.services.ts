@@ -204,7 +204,7 @@ const AuthService = {
             return { success: false, message: error.message || "Server error" };
         }
     },
-    getMe: async () => {
+    getSession: async () => {
         try {
             const storeCookies = await cookies();
             const response = await fetch(`${API_BASE_URL}/auth/me`, {
@@ -216,6 +216,7 @@ const AuthService = {
                
             });
             const body = await response.json();
+            console.log(body)
             const result = body as ApiResponse<any>;
             if (!response.ok) {
                 const error = body as ApiErrorResponse;

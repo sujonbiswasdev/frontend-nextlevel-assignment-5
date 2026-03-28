@@ -26,9 +26,9 @@ export default function RootLayout({
     <html
       suppressHydrationWarning
       lang="en"
-      className={`${inter.variable} ${mono.variable} font-sans h-full antialiased`}
+      className={`${inter.variable} ${mono.variable} font-sans h-full antialiased `}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full w-full flex-col">
 
         <ToastContainer autoClose={1000} theme="dark" />
         {children}
