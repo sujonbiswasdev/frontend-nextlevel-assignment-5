@@ -40,11 +40,9 @@ export function SignupForm() {
             onSubmit: createUserSchema as any,
         },
         onSubmit: async ({ value}) => {
-            console.log(value,'value')
             const toastId=toast.loading("user creating.........")
             try {
                 const result = await registerUserAction(value as UserCreateInput);
-                console.log(result,'res')
                 if (!result.success) {
                     toast.dismiss(toastId)
                     toast.error(result.message || 'user registration failed')

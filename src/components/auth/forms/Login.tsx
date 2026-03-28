@@ -81,7 +81,6 @@ export function SigninForm() {
       }
     },
   });
-  console.log(form.state.values.email, "email");
 
   const signInWithGoogle = async () => {
     await authClient.signIn.social({ provider: "google" });

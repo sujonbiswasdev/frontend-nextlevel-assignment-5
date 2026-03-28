@@ -4,7 +4,8 @@ import React from 'react'
 const LoginPage = () => {
   return (
     <div>
-      <SigninForm/>
+      {/* <SigninForm/> */}
+      login page
     </div>
   )
 }

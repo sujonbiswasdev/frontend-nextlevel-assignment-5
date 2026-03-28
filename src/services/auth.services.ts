@@ -3,7 +3,6 @@ import { UserCreateInput, UserCreateInputWithTokens, UserLoginInputType } from "
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-console.log(API_BASE_URL,'API_BASE_URL')
 const AuthService = {
     register: async (value: UserCreateInput) => {
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -216,7 +215,6 @@ const AuthService = {
                
             });
             const body = await response.json();
-            console.log(body)
             const result = body as ApiResponse<any>;
             if (!response.ok) {
                 const error = body as ApiErrorResponse;
