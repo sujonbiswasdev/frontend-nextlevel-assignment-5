@@ -165,7 +165,6 @@ export default function EventContent({
                   </div>
                 </div>
               </div>
-
               {/* Bottom Section (Optional actions) */}
               <div className="flex justify-end mt-7">
                 <button

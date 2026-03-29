@@ -53,7 +53,7 @@ export default function Navbar({ user }: NavbarProps) {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="fixed md:mb-10 top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-border">
+    <nav className="fixed max-w-[1480px] mx-auto top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-border">
       <div className="w-full mx-auto px-6 h-16 flex items-center justify-between">
 
         {/* Logo */}

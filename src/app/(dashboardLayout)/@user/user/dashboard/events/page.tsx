@@ -1,8 +1,14 @@
-import React from 'react'
+import { fetchEvents } from "@/actions/event.actions"
 
-const EventsPage = () => {
+const EventsPage =async () => {
+  const events=await fetchEvents()
+  console.log(events,'events')
+
+
   return (
-    <div>EventsPage</div>
+    <div>
+      {/* <AdvancedTable columns={columns as any} actions={actions}  data={categoryData}/> */}
+    </div>
   )
 }
 

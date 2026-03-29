@@ -10,9 +10,9 @@ export default async function CommonLayout({
 }) {
   const userinfo=await getSessionAction()
   return (
-    <div className="">
+    <div className="max-w-[1480px] mx-auto">
       <Navbar user={userinfo.data as TResponseUserData<TResponseUserData<{events:IBaseEvent[]}>>}/>
-     <main className="mt-20">
+     <main className="mt-2">
      {children}
      </main>
     </div>

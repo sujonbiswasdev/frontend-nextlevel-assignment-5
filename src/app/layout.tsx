@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${mono.variable}  font-sans h-full antialiased `}
     >
-      <body className="w-full min-h-screen font-sans antialiased bg-background">
+      <body className="w-full overflow-x-hidden min-h-screen font-sans antialiased bg-background">
         <ToastContainer autoClose={1000} theme="dark" />
         {children}
       </body>

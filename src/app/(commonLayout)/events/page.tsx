@@ -1,11 +1,14 @@
 import { fetchEvents } from "@/actions/event.actions";
 import EventContent from "@/components/module/event/EventsContent";
+import { cn } from "@/lib/utils";
 import { TResponseEvent } from "@/types/event.types";
+import React from "react";
 
 const EventsPage = async ({
   searchParams,
+  className
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;className?:React.ButtonHTMLAttributes<HTMLButtonElement>
 }) => {
   let eventsResponse;
   try {
@@ -17,10 +20,12 @@ const EventsPage = async ({
   }
 
   return (
-    <EventContent
+   <div className={"mt-10"}>
+     <EventContent
       events={eventsResponse.data?.UPCOMING as TResponseEvent<{ reviews: any[] }>[]} 
       pagination={eventsResponse.pagination}
     />
+   </div>
   );
 };
 

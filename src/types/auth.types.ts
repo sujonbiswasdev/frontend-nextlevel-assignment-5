@@ -10,7 +10,7 @@ export type UserCreateInputWithTokens = UserCreateInput & {
     token:string;
   };
 
-export type TUserRole = "USER" | "ADMIN";
+
   export type UserLoginInputType = {
     email: string;
     password: string;
