@@ -1,5 +1,5 @@
 
-import { CreateEventSchema, EventCategoryEnum, EventStatusEnum, PricingTypeEnum, UpdateEventSchema } from "@/validations/event.validation";
+import { CreateEventSchema, EventCategoryEnum, EventStatusEnum, EventTypeEnum, PricingTypeEnum, UpdateEventSchema } from "@/validations/event.validation";
 import z from "zod";
 
 // type 
@@ -8,6 +8,7 @@ export type IUpdateEvent = z.infer<typeof UpdateEventSchema>;
 export type IEventCategory=z.infer<typeof EventCategoryEnum>
 export type IEventPricing=z.infer<typeof PricingTypeEnum>
 export type IEventStatusEnum=z.infer<typeof EventStatusEnum>
+export type IEventTypeEnum=z.infer<typeof EventTypeEnum>
 
 // array
  const EVENT_CATEGORY_ARR =EventCategoryEnum.options ;

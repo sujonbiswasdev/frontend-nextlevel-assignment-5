@@ -2,8 +2,10 @@
 
 import ImageSkeleton from "@/components/ImageSkeleton";
 import { Calendar, MapPin, Star } from "lucide-react";
+import Link from "next/link";
 
 export default function EventCard({
+  id,
   title,
   description,
   date,
@@ -132,7 +134,10 @@ export default function EventCard({
           <span className="text-xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">
             {fee === 0 ? "Free" : fee != null ? `$${fee}` : "-"}
           </span>
-          <button className="text-base font-semibold bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none transition shadow-sm">
+          <Link href={`/events/${id}`}>
+          view
+          </Link>
+          <button  className="text-base font-semibold bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none transition shadow-sm">
             View
           </button>
         </div>

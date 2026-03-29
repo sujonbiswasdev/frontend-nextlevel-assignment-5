@@ -15,3 +15,8 @@ export const fetchPaidAndFreeEvents = async () => {
   const response = await EventService.getPaidAndFreeEvent();
   return response;
 };
+
+export const fetchSingleEventById = async (eventId: string) => {
+  const response = await EventService.getSingleEventByType(eventId);
+  return response;
+};

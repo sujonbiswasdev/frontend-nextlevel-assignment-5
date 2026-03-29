@@ -103,6 +103,35 @@ const EventService = {
       return { success: false, message: "Something went wrong. Please try again." };
     }
   },
+  getSingleEventByType: async (eventId: string) => {
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/event/${eventId}`,
+        {
+          credentials: "include",
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const data = await res.json();
+      const result =data as ApiResponse<TResponseEvent<{reviews:any[]}>>
+      console.log(data,'data')
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: false,
+          message: error.message || "Failed to fetch event details",
+        };
+      }
+      return {
+        success: result.success,
+        message: result.message || "Fetched event successfully",
+        data: result.data,
+      };
+    } catch (error) {
+      return { success: false, message: "Something went wrong. Please try again." };
+    }
+  },
 };
 
 export default EventService;
