@@ -15,6 +15,8 @@ import {
 
 import { IBaseEvent, IEventPricing, IEventStatusEnum, IEventTypeEnum } from "@/types/event.types"
 import { getEventAction } from "@/utils/event.actions"
+import { createParticipant } from "@/actions/participant.actions"
+import { toast } from "react-toastify"
 
 const EventDetailsPage = ({ eventData }: { eventData: IBaseEvent }) => {
 
@@ -23,6 +25,28 @@ const EventDetailsPage = ({ eventData }: { eventData: IBaseEvent }) => {
     month: "long",
     day: "numeric",
   })
+  
+  const handleAddParticipant = async (id:string) => {
+    try {
+        try {
+            const toastId = toast.loading("Registering attendance...");
+          const res = await createParticipant(id);
+          if (!res.success) {
+            toast.dismiss(toastId)
+            toast.error(res.message || "Failed to add participant.");
+            return;
+          }
+          toast.dismiss(toastId);
+          toast.success(res.message||"You have been added as a participant!");
+        } catch (error) {
+          toast.error("Failed to add participant.");
+          throw error;
+        }
+    } catch (err) {
+      // Handle error
+      console.error("Failed to add participant:", err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -181,7 +205,7 @@ const EventDetailsPage = ({ eventData }: { eventData: IBaseEvent }) => {
 
                 {/* ACTION BUTTON */}
 
-                <button className="w-full py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition">
+                <button onClick={()=>handleAddParticipant(eventData.id)} className="w-full py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition">
 
                   {getEventAction(
                     eventData.priceType as IEventPricing,
