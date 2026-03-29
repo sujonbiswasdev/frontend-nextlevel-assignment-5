@@ -27,9 +27,9 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
       lang="en"
-      className={`${inter.variable} ${mono.variable} font-sans h-full antialiased `}
+      className={`${inter.variable} ${mono.variable}  font-sans h-full antialiased `}
     >
-      <body className="max-w-[1480px] mx-auto w-full px-3 md:px-6 py-6 gap-6">
+      <body className="w-full min-h-screen font-sans antialiased bg-background">
         <ToastContainer autoClose={1000} theme="dark" />
         {children}
       </body>

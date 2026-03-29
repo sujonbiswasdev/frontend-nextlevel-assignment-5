@@ -1,5 +1,27 @@
-import { EventCategoryEnum } from "@/validations/event.validation";
+
+import { CreateEventSchema, EventCategoryEnum, EventStatusEnum, PricingTypeEnum, UpdateEventSchema } from "@/validations/event.validation";
 import z from "zod";
+
+// type 
+export type ICreateEvent = z.infer<typeof CreateEventSchema>;
+export type IUpdateEvent = z.infer<typeof UpdateEventSchema>;
+export type IEventCategory=z.infer<typeof EventCategoryEnum>
+export type IEventPricing=z.infer<typeof PricingTypeEnum>
+export type IEventStatusEnum=z.infer<typeof EventStatusEnum>
+
+// array
+ const EVENT_CATEGORY_ARR =EventCategoryEnum.options ;
+ const EVENT_Pricing_ARR =PricingTypeEnum.options ;
+ const EVENT_Status_ARR =EventStatusEnum.options ;
+
+export const EventArr={
+  EVENT_CATEGORY_ARR,
+  EVENT_Pricing_ARR,
+  EVENT_Status_ARR
+}
+
+
+
 
 // Pagination type
 export type TPagination = {
@@ -9,33 +31,6 @@ export type TPagination = {
   totalpage: number;
 };
 
-export type EventStatus =
-  | "DRAFT"
-  | "UPCOMING"
-  | "ONGOING"
-  | "COMPLETED"
-  | "CANCELLED";
-
-export type EventType = "PUBLIC" | "PRIVATE";
-
-export type PricingType = "FREE" | "PAID";
-export type EventCategory = z.infer<typeof EventCategoryEnum>;
-export const eventcategoryArr=EventCategoryEnum.options
-
-export type TCreateEvent = {
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  venue: string;
-  image: string;
-  visibility: EventType;
-  priceType: PricingType;
-  categories: EventCategory;
-  fee?: number;
-};
-
-export type TUpdateEvent = Partial<TCreateEvent>;
 
 export type IBaseEvent = {
     id: string;
@@ -45,9 +40,9 @@ export type IBaseEvent = {
     time: string;
     venue: string;
     image: string;
-    visibility?: EventType;
-    priceType?: PricingType;
-    status: EventStatus;
+    visibility?: ICreateEvent;
+    priceType?: IEventPricing;
+    status: IEventStatusEnum;
     is_featured: boolean;
     categories: string;
     fee: number;
@@ -58,7 +53,6 @@ export type IBaseEvent = {
     totalReviews: number;
   };
   
-  // Generic Event response type (can extend with extra fields)
   export type TResponseEvent<T = unknown> = IBaseEvent & T;
 
   export type TEventsGroupedResponse<T = unknown> = {

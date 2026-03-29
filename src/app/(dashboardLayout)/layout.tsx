@@ -21,8 +21,8 @@ const RootDashboardLayout = ({
       }
     >
       <AppSidebar />
-      <SidebarInset className="min-h-svh">
-        <header className="flex h-12 shrink-0 items-center border-b">
+      <SidebarInset className="min-h-8">
+        <header className="flex h-14 shrink-0 items-center border-b">
           <div className="flex w-full max-w-[1440px] items-center gap-2 px-4 sm:px-6">
             <SidebarTrigger />
           </div>

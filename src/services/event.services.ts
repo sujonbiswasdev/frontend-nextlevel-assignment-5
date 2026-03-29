@@ -1,5 +1,7 @@
-import { TCreateEvent, TEventsGroupedResponse, TResponseEvent } from "@/types/event.types";
+import {  ICreateEvent, TEventsGroupedResponse, TResponseEvent } from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
+import { revalidateTag } from "next/cache";
+import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface ServiceOptionds {
@@ -30,7 +32,7 @@ const EventService = {
       const res = await fetch(url.toString(), config);
       const data = await res.json();
 
-      const result = data as TEventsGroupedResponse<{reviews:any[]}>;
+      const result = data as TEventsGroupedResponse<{reviews:any[],organizer:{image:string,name:string,email:string}}>;
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {
@@ -48,7 +50,35 @@ const EventService = {
       return { message: "something went wrong please try again" };
     }
   },
- 
+  createEvent: async (value: ICreateEvent) => {
+    const storeCookies = await cookies();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/event`, {
+        credentials:"include",
+        method: "POST",
+        headers: { "Content-Type": "application/json" ,Cookie: storeCookies.toString()},
+        body: JSON.stringify(value),
+      });
+      revalidateTag("events",'max')
+      const body = await response.json();
+      const result = body as ApiResponse<TResponseEvent>;
+      if (!response.ok) {
+        const error = body as ApiErrorResponse;
+        return {
+          success: false,
+          message: error.message,
+        };
+      }
+      return {
+        success: true,
+        message: result.message || "Event created successfully",
+        data: result.data,
+      };
+    } catch (error) {
+      return { success: false, message: "Something went wrong. Please try again." };
+    }
+  },
 };
 
 export default EventService;

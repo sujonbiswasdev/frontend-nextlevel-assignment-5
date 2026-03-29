@@ -1,8 +1,12 @@
+
+import { CreateEvent } from '@/components/module/event/CreateEvent'
 import React from 'react'
 
 const CreateEventPage = () => {
   return (
-    <div>CreateEventPage</div>
+    <div>
+      <CreateEvent/>
+    </div>
   )
 }
 

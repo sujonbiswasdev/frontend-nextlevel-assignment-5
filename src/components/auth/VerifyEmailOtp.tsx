@@ -88,7 +88,6 @@ function VerifyOtp({
       const toastID = toast.loading("Verifying...", { theme: "dark" });
       const res = await verifyEmailAction({ email, otp });
       if (res.success) {
-        alert("The OTP is valid for only 4 minutes. Please check your email.");
         toast.dismiss(toastID)
         setResending(false);
         toast.success(res.message || "Email verified successfully!", { theme: "dark" });
@@ -107,7 +106,6 @@ function VerifyOtp({
         newPassword: form.state.values.password,
       });
       if (res.success) {
-        alert("The OTP is valid for only 4 minutes. Please check your email.");
         toast.dismiss(toastID)
         setSuccess(true);
         setResending(false);

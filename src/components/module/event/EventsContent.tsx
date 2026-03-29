@@ -1,205 +1,201 @@
 "use client";
 
-import { useState, useTransition, useMemo } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { toast } from "sonner";
-import { Filter, X } from "lucide-react";
-
+import { startTransition, useRef, useState } from "react";
 import EventCard from "./EventCard";
+import EventCardSkeleton from "./evenCardSkeleton";
+import { EventArr, TPagination, TResponseEvent } from "@/types/event.types";
 import PaginationPage from "./Pagination";
-import { TPagination, TResponseEvent } from "@/types/event.types";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useFilter } from "@/components/ReusableFilter";
+import EventFilterUI from "./EventFilterInput";
+import { Search } from "lucide-react";
 
-const statuses = ["DRAFT", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as const;
+interface EventContentProps {
+  events: TResponseEvent<{ reviews: any[] }>[];
+  pagination: TPagination;
+}
 
 export default function EventContent({
   events,
   pagination,
-}: {
-  events: TResponseEvent<{ reviews: any[] }>[];
-  pagination: TPagination;
-}) {
-
-  const router = useRouter();
+}: EventContentProps) {
+  const [loading] = useState(false);
   const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const [search, setsearch] = useState("");
+  const router=useRouter()
+  
 
-  const [isPending, startTransition] = useTransition();
-  const [isOpen, setIsOpen] = useState(false);
+  const { updateFilters, reset, isPending } = useFilter();
 
-  // ✅ URL state sync
-  const [selectedStatus, setSelectedStatus] = useState<typeof statuses[number]>(
-    (searchParams.get("status") as typeof statuses[number]) || "UPCOMING"
-  );
+  const [form, setForm] = useState({
+    search: "",
+    fee: 0,
+    visibility: "",
+    status: "",
+  });
+  const handleChange = (key: string, value: string) => {
+    const updated = { ...form, [key]: value };
+    setForm(updated);
 
-  const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
-
-  // ✅ Update URL safely
-  const updateFilters = (filters: Record<string, string | null>) => {
-    try {
-      const params = new URLSearchParams(searchParams.toString());
-
-      Object.entries(filters).forEach(([key, value]) => {
-        if (!value) params.delete(key);
-        else params.set(key, value);
-      });
-
-      startTransition(() => {
-        router.push(`${pathname}?${params.toString()}`);
-      });
-    } catch (error) {
-      toast.error("Filter update failed");
-    }
+    updateFilters(updated);
   };
 
-  // ✅ SAFE FILTER (NO CRASH)
-  const filteredEvents = useMemo(() => {
-    try {
-      return events.filter((event) => {
-
-        const searchLower = search.toLowerCase();
-
-        const matchStatus = event?.status === selectedStatus;
-
-        const matchSearch =
-          event?.title?.toLowerCase()?.includes(searchLower) ||
-          event?.description?.toLowerCase()?.includes(searchLower) ||
-          event?.categories?.toLowerCase()?.includes(searchLower) ||
-          event?.venue?.toLowerCase()?.includes(searchLower);
-
-        const fee = Number(event?.fee ?? 0);
-
-        const matchPrice =
-          fee >= priceRange[0] && fee <= priceRange[1];
-
-        return matchStatus && matchSearch && matchPrice;
-
-      });
-    } catch (error) {
-      toast.error("Filtering error");
-      return [];
-    }
-  }, [events, search, selectedStatus, priceRange]);
+  const filteredEvents = events.filter((event: any) => {
+    const s = search.toLowerCase();
+    return (
+      event.title?.toLowerCase().includes(s) ||
+      event.description?.toLowerCase().includes(s)
+    );
+  });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4 md:px-8 lg:px-16">
-
-      <div className="max-w-[1480px] mx-auto">
-
-        {/* HEADER */}
-        <div className="mb-10 text-center">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-blue-700 mb-2">
-            Discover Exceptional Events Tailored for You
+    <section className="w-full flex justify-center px-4 md:px-8 lg:px-12 py-10 max-w-[1480px] mx-auto">
+      <div className="w-full">
+        <div className="text-center mb-10 space-y-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            Discover Amazing Events
           </h1>
-          <p className="text-lg md:text-xl text-gray-700 dark:text-gray-200 max-w-2xl mx-auto">
-            Unlock exclusive experiences, connect with inspiring communities, and elevate your moments—explore our handpicked events curated just for you. Start your next extraordinary journey today!
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Explore curated events, connect with communities, and create
+            unforgettable experiences.
           </p>
         </div>
 
-        <div className="flex gap-6">
+        <div className="w-full flex justify-center px-0 md:px-4 lg:px-10 mb-12">
+          <div className="w-full max-w-[1400px] relative">
+            {/* Decorative top bar */}
+            <div className="absolute -top-7 left-10 right-10 h-2 bg-gradient-to-r from-blue-200/40 via-violet-100/50 to-emerald-200/40 rounded-full blur-[2px] z-0" />
 
-          {/* 🔥 SIDEBAR FILTER */}
-          <aside
-            className={`
-              fixed top-0 left-0 w-80 h-full bg-white dark:bg-gray-900 z-50 p-6 shadow-xl
-              transform transition-transform duration-300
-              lg:relative lg:translate-x-0 lg:block
-              ${isOpen ? "translate-x-0" : "-translate-x-full"}
-            `}
-          >
-            {/* Close */}
-            <div className="flex justify-between mb-6">
-              <h2 className="text-xl font-bold">Filters</h2>
-              <button onClick={() => setIsOpen(false)} className="lg:hidden">
-                <X />
-              </button>
-            </div>
+            {/* Filter Panel */}
+            <div className="relative z-10 bg-gradient-to-br from-white/95 via-blue-50/80 to-neutral-100/90 dark:from-gray-950/90 dark:via-gray-900/80 dark:to-gray-900/90 border border-blue-100 dark:border-blue-900/40 rounded-3xl shadow-xl shadow-blue-100/35 dark:shadow-blue-900/15 p-7 md:p-10">
+              {/* Top Section */}
+              <div className="flex flex-col lg:flex-row gap-8 lg:items-center transition-all duration-300">
+                {/* Search */}
+                <div className="relative flex-1 flex items-center bg-gradient-to-l from-blue-100/60 via-transparent to-blue-50/20 dark:from-blue-900/25 rounded-2xl overflow-hidden border border-blue-200 dark:border-blue-900 shadow-inner transition-all duration-300 group">
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-blue-400 dark:text-blue-300 w-6 h-6 z-10" />
+                  <input
+                    type="text"
+                    value={search}
+                    placeholder="Type to search for events or explore categories..."
+                    onChange={(e) => {
+                      setsearch(e.target.value);
+                    }}
+                    className="w-full pl-16 pr-6 py-4 rounded-2xl bg-transparent text-base text-blue-900 dark:text-blue-100 placeholder:text-blue-400 placeholder:font-medium font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400/50 dark:focus:ring-blue-700/50 transition-all"
+                  />
+                </div>
 
-            {/* Search */}
-            <input
-              type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                updateFilters({ search: e.target.value });
-              }}
-              className="w-full mb-4 px-3 py-2 border rounded-lg"
-            />
+                {/* Filter Grid */}
+                <div className="grid grid-cols-12 gap-x-4 gap-y-4 flex-1">
+                  {/* Visibility */}
+                  <div className="col-span-12 sm:col-span-6 lg:col-span-3 flex flex-col">
+                    <label className="text-xs font-bold text-blue-800 dark:text-blue-200 tracking-wide uppercase mb-1 ml-1">
+                      Visibility
+                    </label>
+                    <select
+                      onChange={(e) => handleChange("visibility", e.target.value)}
+                      value={searchParams?.get("visibility") || ""}
+                      className="py-2 px-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-gradient-to-l from-blue-100/40 via-transparent to-white/30 dark:from-blue-950/20 text-sm text-blue-900 dark:text-blue-200 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800 outline-none font-medium transition-all"
+                    >
+                      <option value="">All</option>
+                      <option value="PUBLIC">Public</option>
+                      <option value="PRIVATE">Private</option>
+                    </select>
+                  </div>
 
-            {/* Price Range */}
-            <div className="mb-6">
-              <input
-                type="range"
-                min="0"
-                max="10000"
-                value={priceRange[1]}
-                onChange={(e) =>
-                  setPriceRange([0, Number(e.target.value)])
-                }
-                className="w-full"
-              />
-              <p className="text-sm text-blue-600 mt-1">
-                Up to ${priceRange[1]}
-              </p>
-            </div>
+                  {/* Price Type */}
+                  <div className="col-span-12 sm:col-span-6 lg:col-span-3 flex flex-col">
+                    <label className="text-xs font-bold text-blue-800 dark:text-blue-200 tracking-wide uppercase mb-1 ml-1">
+                      Price Type
+                    </label>
+                    <select
+                      onChange={(e) => handleChange("priceType", e.target.value)}
+                      value={searchParams?.get("priceType") || ""}
+                      className="py-2 px-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-gradient-to-l from-blue-100/40 via-transparent to-white/30 dark:from-blue-950/20 text-sm text-blue-900 dark:text-blue-200 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800 outline-none font-medium transition-all"
+                    >
+                      <option value="">All</option>
+                      {EventArr?.EVENT_Pricing_ARR.map(
+                        (item: string, i: number) => (
+                          <option key={i} value={item}>
+                            {item}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </div>
 
-            {/* Status */}
-            <div className="space-y-2">
-              {statuses.map((status) => (
-                <button
-                  key={status}
-                  onClick={() => {
-                    setSelectedStatus(status);
-                    updateFilters({ status });
-                  }}
-                  className={`w-full text-left px-3 py-2 rounded-lg ${
-                    selectedStatus === status
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 hover:bg-blue-100"
-                  }`}
-                >
-                  {status}
-                </button>
-              ))}
-            </div>
+                  {/* Price Slider */}
+                  <div className="col-span-12 sm:col-span-6 lg:col-span-3 flex flex-col">
+                    <label className="text-xs font-bold text-blue-800 dark:text-blue-200 tracking-wide uppercase mb-1 ml-1">
+                      Price (USD)
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min={1}
+                        max={2000}
+                        onChange={(e) => handleChange('fee', e.target.value)}
+                        value={Number(searchParams?.get("fee")) || 1}
+                        className="w-full accent-blue-500 dark:accent-indigo-600 cursor-pointer"
+                      />
+                      <span className="ml-2 text-xs font-semibold text-blue-700 dark:text-blue-200 bg-blue-100/70 dark:bg-blue-900/20 px-2 py-0.5 rounded shadow">
+                        ${searchParams?.get("fee") || 1}
+                      </span>
+                    </div>
+                  </div>
 
-            {/* Reset */}
-            <button
-              onClick={() => {
-                setSearch("");
-                setPriceRange([0, 10000]);
-                setSelectedStatus("UPCOMING");
-                router.push(pathname);
-              }}
-              className="mt-6 w-full bg-red-500 text-white py-2 rounded-lg"
-            >
-              Reset Filters
-            </button>
-          </aside>
-
-          {/* EVENTS */}
-          <div className="flex-1">
-
-            {filteredEvents.length === 0 ? (
-              <p className="text-gray-500">No events found</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredEvents.map((event) => (
-                  <EventCard key={event.id} {...event} />
-                ))}
+                  {/* Status */}
+                  <div className="col-span-12 sm:col-span-6 lg:col-span-3 flex flex-col">
+                    <label className="text-xs font-bold text-blue-800 dark:text-blue-200 tracking-wide uppercase mb-1 ml-1">
+                      Status
+                    </label>
+                    <select
+                      onChange={(e) => handleChange("status", e.target.value)}
+                      value={searchParams?.get("status") || ""}
+                      className="py-2 px-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-gradient-to-l from-blue-100/40 via-transparent to-white/30 dark:from-blue-950/20 text-sm text-blue-900 dark:text-blue-200 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800 outline-none font-medium transition-all"
+                    >
+                      <option value="">All</option>
+                      {EventArr?.EVENT_Status_ARR.map(
+                        (item: string, i: number) => (
+                          <option key={i} value={item}>
+                            {item}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </div>
+                </div>
               </div>
-            )}
 
+              {/* Bottom Section (Optional actions) */}
+              <div className="flex justify-end mt-7">
+                <button
+                  onClick={() =>{ handleChange("reset", "") ,router.push('/events')}}
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-pink-600 dark:text-pink-400 hover:underline hover:text-red-500 transition-all px-4 py-2 rounded-xl bg-pink-50/50 dark:bg-pink-800/10 shadow hover:shadow-pink-200 dark:hover:bg-pink-900/25"
+                >
+                  <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4 stroke-pink-500 mr-1">
+                    <path d="M6.75 14.25A6 6 0 1 1 15 9m0 0V3.75M15 9h-5.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Reset Filters
+                </button>
+              </div>
+            </div>
           </div>
-
         </div>
-      </div>
 
-      {/* PAGINATION */}
-      <div className="mt-10 max-w-[1480px] mx-auto">
+        {/* EVENTS GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 mt-6">
+          {loading
+            ? Array.from({ length: events.length || 8 }).map((_, i) => (
+                <EventCardSkeleton key={i} />
+              ))
+            : filteredEvents.map((event) => (
+                <EventCard key={event.id} {...event} />
+              ))}
+        </div>
+
+        {/* PAGINATION */}
         <PaginationPage pagination={pagination} />
       </div>
-    </div>
+    </section>
   );
 }

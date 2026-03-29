@@ -54,9 +54,7 @@ export default function Navbar({ user }: NavbarProps) {
 
   return (
     <nav className="fixed md:mb-10 top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-border">
-      
-      {/* 🔥 Centered Container (1480px) */}
-      <div className="max-w-[1480px] mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="w-full mx-auto px-6 h-16 flex items-center justify-between">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
@@ -111,7 +109,7 @@ export default function Navbar({ user }: NavbarProps) {
                   Log in
                 </Button>
               </Link>
-              <Link href="/signup">
+              <Link href="/register">
                 <Button size="sm" className="rounded-lg">
                   Sign up
                 </Button>
@@ -167,7 +165,7 @@ export default function Navbar({ user }: NavbarProps) {
                 <Link href="/login">
                   <Button variant="outline" className="w-full">Log in</Button>
                 </Link>
-                <Link href="/signup">
+                <Link href="/register">
                   <Button className="w-full">Sign up</Button>
                 </Link>
               </>
