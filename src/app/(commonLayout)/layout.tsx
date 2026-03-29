@@ -1,4 +1,5 @@
 import { getSessionAction } from "@/actions/auth.actions";
+import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
 import { IBaseEvent } from "@/types/event.types";
 import { TResponseUserData } from "@/types/user.types";
@@ -15,6 +16,7 @@ export default async function CommonLayout({
      <main className="mt-2">
      {children}
      </main>
+     <Footer/>
     </div>
   );
 }

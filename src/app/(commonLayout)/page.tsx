@@ -14,6 +14,7 @@ export default async function Home() {
       <UpcommingEvent />
       <CallToAction />
       <EventsList events={paidAndFreeEvents.data} />
+      
     </div>
   );
 }

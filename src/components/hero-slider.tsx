@@ -46,7 +46,7 @@ export default function HeroSlider() {
   }, []);
 
   return (
-    <section className="relative w-full h-[90vh] min-h-[600px] overflow-hidden">
+    <section className="relative w-full h-[90vh] max-h-[600px] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -67,7 +67,7 @@ export default function HeroSlider() {
           <div className="absolute inset-0 bg-black/60"></div>
 
           {/* Content */}
-          <div className="relative container mx-auto px-4 py-20">
+          <div className="relative container mx-auto px-2 py-20">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full px-4 py-1.5 mb-6 animate-fade-in">
             <Sparkles className="w-4 h-4 text-accent" />
