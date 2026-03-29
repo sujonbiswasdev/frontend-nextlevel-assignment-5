@@ -3,7 +3,7 @@ import React from 'react'
 
 const LoginPage = () => {
   return (
-    <div>
+    <div className='mt-10'>
       <SigninForm/>
     </div>
   )

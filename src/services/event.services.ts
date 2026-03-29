@@ -4,7 +4,7 @@ import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-interface ServiceOptionds {
+export interface ServiceOptionds {
     cache?: RequestCache;
     revalidate?: number;
   }

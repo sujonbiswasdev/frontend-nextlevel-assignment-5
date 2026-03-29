@@ -6,9 +6,8 @@ import React from "react";
 
 const EventsPage = async ({
   searchParams,
-  className
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;className?:React.ButtonHTMLAttributes<HTMLButtonElement>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   let eventsResponse;
   try {

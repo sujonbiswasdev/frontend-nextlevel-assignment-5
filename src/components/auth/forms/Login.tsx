@@ -24,6 +24,7 @@ import { loginZodSchema } from "@/validations/auth.validation";
 import { loginUserAction } from "@/actions/auth.actions";
 import { forgotPasswordEmailOtpAction } from "@/actions/auth.actions";
 import { useState } from "react";
+import { FormInput } from "@/components/ui/frominput";
 export function SigninForm() {
   const router = useRouter();
   const [email, setemail] = useState("");
@@ -143,23 +144,11 @@ export function SigninForm() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="password"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      placeholder="Enter your password"
-                      autoComplete="off"
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
+                    <FormInput
+                  field={field}
+                  label="Password"
+                  isPassword
+                />
                 );
               }}
             />
