@@ -11,3 +11,7 @@ export const createEvent = async (eventData: ICreateEvent) => {
   const response = await EventService.createEvent(eventData);
   return response;
 };
+export const fetchPaidAndFreeEvents = async () => {
+  const response = await EventService.getPaidAndFreeEvent();
+  return response;
+};

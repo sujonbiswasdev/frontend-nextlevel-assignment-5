@@ -25,10 +25,10 @@ export const EventArr={
 
 // Pagination type
 export type TPagination = {
-  total: number;
+  total?: number;
   page: number;
   limit: number;
-  totalpage: number;
+  totalpage?: number;
 };
 
 

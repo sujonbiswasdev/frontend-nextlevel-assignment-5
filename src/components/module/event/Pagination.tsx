@@ -6,7 +6,7 @@ import { TPagination } from '@/types/event.types';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const PaginationPage = ({ pagination }: { pagination: TPagination }) => {
-  const { total, page = 1, totalpage = 1 } = pagination;
+  const { total, page = 1, totalpage = 1,limit } = pagination;
 
   const searchParams = useSearchParams();
   const router = useRouter();

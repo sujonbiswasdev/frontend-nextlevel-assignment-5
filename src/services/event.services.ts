@@ -31,7 +31,6 @@ const EventService = {
 
       const res = await fetch(url.toString(), config);
       const data = await res.json();
-      console.log(data,'data')
 
       const result = data as TEventsGroupedResponse<{reviews:any[],organizer:{image:string,name:string,email:string}}>;
       if (!res.ok) {
@@ -75,6 +74,30 @@ const EventService = {
         success: true,
         message: result.message || "Event created successfully",
         data: result.data,
+      };
+    } catch (error) {
+      return { success: false, message: "Something went wrong. Please try again." };
+    }
+  },
+  getPaidAndFreeEvent: async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/events/paidandfree`, {
+        credentials: "include",
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: false,
+          message: error.message || "Failed to fetch Paid & Free Events",
+        };
+      }
+      return {
+        success: data.success,
+        message: data.message || "Fetched Paid & Free Events successfully",
+        data: data.data,
       };
     } catch (error) {
       return { success: false, message: "Something went wrong. Please try again." };
