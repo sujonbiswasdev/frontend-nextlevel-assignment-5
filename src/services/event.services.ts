@@ -132,6 +132,7 @@ const EventService = {
       return { success: false, message: "Something went wrong. Please try again." };
     }
   },
+ 
 };
 
 export default EventService;

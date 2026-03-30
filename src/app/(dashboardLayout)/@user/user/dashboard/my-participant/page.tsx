@@ -1,3 +1,4 @@
+import { getSessionAction } from '@/actions/auth.actions';
 import { getParticipants } from '@/actions/participant.actions';
 import ParticipantContent from '@/components/module/participant/ParticipantContent';
 import { IBaseEvent } from '@/types/event.types';
@@ -12,6 +13,8 @@ const ParticipantPage = async({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
 
+  const userinfo = await getSessionAction();
+  const role=userinfo.data?.role
   const search=await searchParams
  
   const participants= await getParticipants(search,{
@@ -19,7 +22,7 @@ const ParticipantPage = async({
   });
   return (
     <div>
-      <ParticipantContent participants={participants.data as TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[]}/>
+      <ParticipantContent participants={participants.data as TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[]} role={role}/>
 
     </div>
   )

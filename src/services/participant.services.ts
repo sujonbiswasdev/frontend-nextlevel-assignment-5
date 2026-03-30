@@ -1,10 +1,11 @@
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { ServiceOptionds } from "./event.services";
-import { ApiResponse } from "@/types/response.type";
+import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { TResponseParticipant } from "@/types/participant.types";
 import { IBaseUser } from "@/types/user.types";
 import { IBaseEvent } from "@/types/event.types";
+import { UpdateParticipantInput } from "@/validations/participant.validation";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
   throw new Error(
@@ -89,6 +90,39 @@ const ParticipantService = {
       return {
         success: false,
         message: "Something went wrong. Please try again.",
+      };
+    }
+  },
+  participantUpdate: async (id: string, payload: UpdateParticipantInput) => {
+    try {
+      const cookieStore = await cookies(); // if using Next.js server cookies
+      const res = await fetch(`${API_BASE_URL}/participant/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore?.toString() || "",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || "Update failed",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Updated successfully",
+        data: data?.data,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err?.message || "Something went wrong",
       };
     }
   },
