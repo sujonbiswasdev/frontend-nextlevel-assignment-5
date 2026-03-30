@@ -1,8 +1,11 @@
+import EventReviews from '@/components/module/event/EventReviews'
 import React from 'react'
 
-const ReviewsPage = () => {
+const ReviewsPage = ({}) => {
+
   return (
-    <div>ReviewsPage</div>
+    <div>
+    </div>
   )
 }
 

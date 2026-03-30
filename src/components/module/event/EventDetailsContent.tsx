@@ -17,6 +17,7 @@ import { IBaseEvent, IEventPricing, IEventStatusEnum, IEventTypeEnum } from "@/t
 import { getEventAction } from "@/utils/event.actions"
 import { createParticipant } from "@/actions/participant.actions"
 import { toast } from "react-toastify"
+import ReviewForm from "../reviews/CreateReview"
 
 const EventDetailsPage = ({ eventData }: { eventData: IBaseEvent }) => {
 
@@ -168,8 +169,10 @@ const EventDetailsPage = ({ eventData }: { eventData: IBaseEvent }) => {
                 </div>
 
               </div>
+              <ReviewForm eventId={eventData.id} />
 
             </div>
+     
 
           </div>
 
@@ -216,12 +219,13 @@ const EventDetailsPage = ({ eventData }: { eventData: IBaseEvent }) => {
 
                 </button>
 
+
               </div>
 
             </div>
 
           </div>
-
+          
         </div>
 
       </main>
@@ -233,6 +237,8 @@ const EventDetailsPage = ({ eventData }: { eventData: IBaseEvent }) => {
         Event Created: {new Date(eventData.createdAt).toLocaleDateString()}
 
       </footer>
+
+
 
     </div>
   )
