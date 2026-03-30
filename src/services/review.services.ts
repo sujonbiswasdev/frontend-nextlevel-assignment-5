@@ -12,11 +12,11 @@ if (!API_BASE_URL) {
 }
 
 export const reviewService = {
-  createReview: async (mealid: string, data: ICreatereviewData) => {
+  createReview: async (eventid: string, data: ICreatereviewData) => {
     try {
       const cookieStore = await cookies();
 
-      const res = await fetch(`${API_BASE_URL}/event/${mealid}/review`, {
+      const res = await fetch(`${API_BASE_URL}/event/${eventid}/review`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -24,7 +24,9 @@ export const reviewService = {
           Cookie: cookieStore.toString(),
         },
         body: JSON.stringify(data),
-        cache: "no-store",
+        next:{
+            tags:['review']
+        }
       });
       const body = await res.json();
       const result = body as ApiResponse<TResponseReviewData>;
@@ -37,6 +39,39 @@ export const reviewService = {
       }
 
       return result;
+    } catch (e: any) {
+      return { success: false, message: e.message, error: "Server error" };
+    }
+  },
+  getMyReview: async () => {
+    try {
+      const cookieStore = await cookies();
+      const res = await fetch(`${API_BASE_URL}/my-reviews`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        }
+      });
+
+      const body = await res.json();
+      const result = body as ApiResponse<TResponseReviewData[]>;
+      console.log(result,'result')
+      if (!res.ok) {
+        const error = body as ApiErrorResponse;
+        return {
+          success: error.success,
+          message: error.message || "Failed to get your review",
+        };
+      }
+
+      // Return success message and data
+      return {
+        success: result,
+        message: result.message,
+        data: result.data
+      };
     } catch (e: any) {
       return { success: false, message: e.message, error: "Server error" };
     }

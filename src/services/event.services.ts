@@ -114,7 +114,6 @@ const EventService = {
       );
       const data = await res.json();
       const result =data as ApiResponse<TResponseEvent<{reviews:any[]}>>
-      console.log(data,'data')
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {

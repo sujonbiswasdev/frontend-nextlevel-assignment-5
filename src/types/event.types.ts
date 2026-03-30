@@ -75,6 +75,7 @@ export type IBaseEvent = {
   export type TResponseEvent<T = unknown> = IBaseEvent & T;
 
 
+
   export type TGroupedEvents<T = unknown> = {
     DRAFT: TResponseEvent<T>[];
     UPCOMING: TResponseEvent<T>[];
