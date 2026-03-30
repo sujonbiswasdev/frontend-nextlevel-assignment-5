@@ -172,10 +172,7 @@ const EventDetailsPage = ({ eventData }: { eventData: IBaseEvent }) => {
               <ReviewForm eventId={eventData.id} />
 
             </div>
-     
-
           </div>
-
           {/* SIDEBAR */}
           <div className="lg:col-span-4">
 
