@@ -23,7 +23,6 @@ const ParticipantPage = async({
   return (
     <div>
       <ParticipantContent participants={participants.data as TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[]} role={role}/>
-
     </div>
   )
 }

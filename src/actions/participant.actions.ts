@@ -19,3 +19,7 @@ export const updateParticipant = async (
 ) => {
   return await ParticipantService.participantUpdate(id, payload);
 };
+
+export const deleteParticipantAction = async (id: string) => {
+  return await ParticipantService.participantDelete(id);
+};

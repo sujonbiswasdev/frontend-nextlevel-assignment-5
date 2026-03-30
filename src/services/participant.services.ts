@@ -74,17 +74,19 @@ const ParticipantService = {
         
 
        });
-      const data = await res.json() as ApiResponse<TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[]>;
+      const data = await res.json() ;
+      const result =data as ApiResponse<TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[]>
       if (!res.ok) {
+        const error = data as ApiErrorResponse;
         return {
-          success: false,
-          message: data?.message || "Failed to retrieve participants",
+          success: error.success,
+          message: error.message || "retrieve all events failed",
         };
       }
       return {
         success: true,
-        message: data?.message || "Participants retrieved successfully",
-        data: data?.data,
+        message: result?.message || "Participants retrieved successfully",
+        data: result?.data,
       };
     } catch (error) {
       return {
@@ -106,23 +108,60 @@ const ParticipantService = {
       });
 
       const data = await res.json();
+      const result = data as ApiResponse<TResponseParticipant<{user: IBaseUser[], event: IBaseEvent[]}>[]>;
+      revalidateTag("participant", "max");
 
       if (!res.ok) {
+        const error = data as ApiErrorResponse;
         return {
-          success: false,
-          message: data?.message || "Update failed",
+          success: error.success,
+          message: error.message || "Update failed",
         };
       }
 
       return {
-        success: true,
-        message: "Updated successfully",
-        data: data?.data,
+        success: result?.success,
+        message: result?.message || "Updated successfully",
+        data: result?.data,
       };
     } catch (err: any) {
       return {
         success: false,
         message: err?.message || "Something went wrong",
+      };
+    }
+  },
+  participantDelete: async (id: string) => {
+    try {
+      const cookieStore = await cookies();
+
+      const res = await fetch(`${API_BASE_URL}/participant/${id}`, {
+        method: "DELETE",
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+      });
+
+      revalidateTag("participant",'max');
+
+      const data = await res.json();
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: error.success,
+          message: error.message || "Delete failed",
+        };
+      }
+
+      return {
+        success: data.success,
+        message: data.message || "Deleted successfully",
+      };
+
+    } catch {
+      return {
+        success: false,
+        message: "Something went wrong",
       };
     }
   },

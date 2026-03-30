@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { deleteParticipantAction } from "@/actions/participant.actions";
 
 export default function ParticipantContent({ participants, role }: any) {
   const router = useRouter();
@@ -42,20 +43,7 @@ export default function ParticipantContent({ participants, role }: any) {
         setSelectedParticipantId(item.id);
         setOpen(true);
       },
-    },
-    {
-      icon: Trash2,
-      label: "Delete",
-      onClick: (item: any) => {
-        if (confirm("Delete?")) {
-          setTableData((prev: any) =>
-            prev.filter((p: any) => p.id !== item.id),
-          );
-          toast.success("Deleted");
-        }
-      },
-      className: "text-red-500",
-    },
+    }
   ];
 
   return (
