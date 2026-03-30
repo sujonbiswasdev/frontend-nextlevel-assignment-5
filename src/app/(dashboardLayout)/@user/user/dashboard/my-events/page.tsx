@@ -14,7 +14,7 @@ const EventsPage =async ({
   const myEvents = await getMyEvents(params,{ revalidate: 60 });
   return (
     <div>
-      <MyEventsTable 
+      <MyEventsTable
         Events={myEvents.data as TGroupedEvents}
         pagination={myEvents.pagination as TPagination}
         role={role as string}

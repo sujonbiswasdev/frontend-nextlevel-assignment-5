@@ -225,6 +225,50 @@ const EventService = {
       };
     }
   },
+  deleteEvent: async (
+    id: string,
+    options?: ServiceOptionds
+  ) => {
+    try {
+      const cookieStore = await cookies();
+      const config: RequestInit = {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+      };
+      // Add cache option if provided
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["event", "events"] };
+
+      const res = await fetch(`${API_BASE_URL}/event/${id}`, config);
+      const data = await res.json();
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: error.success,
+          message: error.message || "Failed to delete event",
+        };
+      }
+
+      return {
+        success: data.success,
+        message: data.message || "Event deleted successfully",
+        data: data.data, // expected to be the deleted event object
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || "Something went wrong. Please try again.",
+      };
+    }
+  },
  
 };
 

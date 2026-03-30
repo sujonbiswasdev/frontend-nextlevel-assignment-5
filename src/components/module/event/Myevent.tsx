@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
@@ -15,9 +15,9 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import UpdateEvent from "./UpdateEvent";
+import { deleteEvent } from "@/actions/event.actions";
 
 interface MyEventsTableProps {
   Events: TGroupedEvents;
@@ -48,24 +48,26 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
     createdAt: "",
   });
 
-  const { updateFilters, reset, isPending } = useFilter();
+  const { updateFilters, reset } = useFilter();
 
   // Handle filter changes
-  const handleChange = (key: keyof typeof form, value: string | number) => {
-    // Special handling for boolean type (is_featured)
-    if (key === "is_featured") {
-      const boolValue = value === "true";
-      const updated = { ...form, [key]: boolValue };
-      setForm(updated);
-      updateFilters(updated);
-    } else {
-      const updated = { ...form, [key]: value };
-      setForm(updated);
-      updateFilters(updated);
-    }
-  };
+  const handleChange = useCallback(
+    (key: keyof typeof form, value: string | number) => {
+      if (key === "is_featured") {
+        const boolValue = value === "true";
+        const updated = { ...form, [key]: boolValue };
+        setForm(updated);
+        updateFilters(updated);
+      } else {
+        const updated = { ...form, [key]: value };
+        setForm(updated);
+        updateFilters(updated);
+      }
+    },
+    [form, updateFilters]
+  );
 
-  // Update tableEvents whenever selectedStatus changes
+  // Update tableEvents whenever selectedStatus or Events changes
   useEffect(() => {
     setTableEvents(Events[selectedStatus] ?? []);
   }, [selectedStatus, Events]);
@@ -81,7 +83,31 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
     { key: "status", label: "Status" },
   ];
 
-  // Actions for USER role, with update support (ParticipantContent style)
+  // Delete event logic (fixed - moved confirmation logic inside)
+  const handleDeleteEvent = useCallback(async (eventId: string) => {
+    try {
+      if (!window.confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+        return;
+      }
+      const toastId = toast.loading("Deleting event. Please wait...");
+      const resp = await deleteEvent(eventId);
+      toast.dismiss(toastId);
+      if (resp.success) {
+        setTableEvents((prev: IBaseEvent[]) => prev.filter((event) => event.id !== eventId));
+        toast.success(resp.message || "Event deleted successfully");
+      } else {
+        toast.error(resp.message || "Failed to delete event");
+      }
+    } catch (error: any) {
+      toast.dismiss();
+      toast.error(
+        "Something went wrong while deleting the event." +
+          (error?.message ? ` (${error.message})` : "")
+      );
+    }
+  }, []);
+
+  // Actions for USER role
   const actions = [
     {
       icon: Eye,
@@ -102,8 +128,7 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
       icon: Trash2,
       label: "Delete",
       onClick: (event: IBaseEvent) => {
-        // Placeholder for delete logic
-        console.log("Delete event:", event.id);
+        handleDeleteEvent(event.id);
       },
       className: "text-red-500",
     },
@@ -208,7 +233,7 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
                   visibility: "",
                   fee: 1,
                   search: "",
-                  createdAt: ""
+                  createdAt: "",
                 });
                 reset();
                 if (role === "USER") {
@@ -260,8 +285,7 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
             overflowY: "auto",
           }}
         >
-          <DialogHeader>
-          </DialogHeader>
+          <DialogHeader />
           {selectedEventId && (
             <UpdateEvent
               id={selectedEventId}
@@ -281,7 +305,7 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
         </DialogContent>
       </Dialog>
 
-      <PaginationPage pagination={pagination as any}/>
+      <PaginationPage pagination={pagination as any} />
     </div>
   );
 }

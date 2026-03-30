@@ -23,12 +23,19 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { PanelLeftIcon } from "lucide-react"
+import { Link, PanelLeftIcon } from "lucide-react"
+import { getSessionAction } from "@/actions/auth.actions"
+import { NavSection } from "@/types/dashboard.types"
+import { getNavItemsByRole } from "@/routes/sidebar.navitems"
+import { getDefaultDashboardRoute, UserRole } from "@/lib/authUtils"
+import { getIconComponent } from "@/lib/iconMapper"
+import { IBaseUser } from "@/types/user.types"
+import { useRouter, usePathname } from "next/navigation" // <-- Added usePathname
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
+const SIDEBAR_WIDTH_MOBILE = "16rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
@@ -49,7 +56,6 @@ function useSidebar() {
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider.")
   }
-
   return context
 }
 
@@ -68,11 +74,8 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
-
-  // This is the internal state of the sidebar.
-  // We use openProp and setOpenProp for control from outside the component.
   const [_open, _setOpen] = React.useState(defaultOpen)
-  const open = openProp ?? _open
+  const open = openProp !== undefined ? openProp : _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value
@@ -81,19 +84,23 @@ function SidebarProvider({
       } else {
         _setOpen(openState)
       }
-
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      try {
+        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      } catch (err) {
+        // ignore
+      }
     },
     [setOpenProp, open]
   )
 
-  // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
-    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
+    if (isMobile) {
+      setOpenMobile((v) => !v)
+    } else {
+      setOpen((v) => !v)
+    }
   }, [isMobile, setOpen, setOpenMobile])
 
-  // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
@@ -104,15 +111,11 @@ function SidebarProvider({
         toggleSidebar()
       }
     }
-
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [toggleSidebar])
 
-  // We add a state so that we can do data-state="expanded" or "collapsed".
-  // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed"
-
   const contextValue = React.useMemo<SidebarContextProps>(
     () => ({
       state,
@@ -156,30 +159,38 @@ function Sidebar({
   className,
   children,
   dir,
+  userinfo,
   ...props
 }: React.ComponentProps<"div"> & {
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
-  collapsible?: "offcanvas" | "icon" | "none"
+  collapsible?: "offcanvas" | "icon" | "none",
+  userinfo: IBaseUser
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const router = useRouter()
+  const pathname = usePathname() // <-- Get active path
+  const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
   if (collapsible === "none") {
     return (
       <div
         data-slot="sidebar"
         className={cn(
-          "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground",
+          "flex h-full w-[var(--sidebar-width)] flex-col bg-sidebar text-sidebar-foreground",
           className
         )}
         {...props}
       >
         {children}
       </div>
-    )
+    );
   }
 
   if (isMobile) {
+    const userRole = userinfo?.role as UserRole;
+    const navItems: NavSection[] = getNavItemsByRole(userRole);
+    const dashboardHome = getDefaultDashboardRoute(userRole);
+
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
         <SheetContent
@@ -187,7 +198,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+          className="w-[var(--sidebar-width)] bg-card p-0 text-sidebar-foreground shadow-xl border-r"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -199,10 +210,82 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div className="flex h-full flex-col">
+            {/* Logo / Brand */}
+            <div className="h-16 flex items-center border-b px-6 flex-shrink-0">
+              <button onClick={() => router.push(dashboardHome || "/")} className="">
+                <span className="text-xl font-bold text-primary">Planora</span>
+              </button>
+            </div>
+            {/* Navigation Area */}
+            <div className="flex-1 overflow-y-auto px-2 py-4">
+              <nav className="space-y-6">
+                {navItems.map((section, sectionId) => (
+                  <div key={sectionId} className="mb-2">
+                    {section.title && (
+                      <h4 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        {section.title}
+                      </h4>
+                    )}
+                    <div className="space-y-1">
+                      {section.items.map((item, id) => {
+                        // Use active path from usePathname() instead of window
+                        const isActive = item.href ? pathname === item.href : false;
+                        const Icon = getIconComponent(item.icon);
+                        return (
+                          <button
+                            key={id}
+                            onClick={() => router.push(item.href)}
+                            className={cn(
+                              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all",
+                              isActive
+                                ? "bg-primary text-primary-foreground"
+                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                            )}
+                          >
+                            {Icon && <Icon className="w-4 h-4" />}
+                            <span>{item.title}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {sectionId < navItems.length - 1 && (
+                      <Separator className="my-4" />
+                    )}
+                  </div>
+                ))}
+              </nav>
+            </div>
+            {/* User Info At Bottom */}
+            <div className="w-full border-t p-4 flex items-center gap-3 bg-background min-h-[72px]">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                {userinfo?.image ? (
+                  <img
+                    src={userinfo.image}
+                    alt={userinfo.name || "User"}
+                    className="object-cover rounded-full w-10 h-10 border border-primary"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <span
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-semibold text-base"
+                    aria-label={userinfo?.name}
+                  >
+                    {(userinfo?.name?.charAt(0) || "").toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold truncate">{userinfo?.name || "User"}</p>
+                <p className="text-xs text-muted-foreground capitalize truncate">
+                  {(userinfo?.role || "").toLocaleLowerCase().replace("_", " ")}
+                </p>
+              </div>
+            </div>
+          </div>
         </SheetContent>
       </Sheet>
-    )
+    );
   }
 
   return (
@@ -214,27 +297,26 @@ function Sidebar({
       data-side={side}
       data-slot="sidebar"
     >
-      {/* This is what handles the sidebar gap on desktop */}
+      {/* Desktop gap */}
       <div
         data-slot="sidebar-gap"
         className={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "relative w-[var(--sidebar-width)] bg-transparent transition-[width] duration-200 ease-linear",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
             ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+            : "group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)]"
         )}
       />
       <div
         data-slot="sidebar-container"
         data-side={side}
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex",
-          // Adjust the padding for floating and inset variants.
+          "fixed inset-y-0 z-10 hidden h-svh w-[var(--sidebar-width)] transition-[left,right,width] duration-200 ease-linear data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex",
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            : "group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)] group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className
         )}
         {...props}
@@ -250,6 +332,8 @@ function Sidebar({
     </div>
   )
 }
+
+// All other helper and content rendering functions below remain unchanged
 
 function SidebarTrigger({
   className,

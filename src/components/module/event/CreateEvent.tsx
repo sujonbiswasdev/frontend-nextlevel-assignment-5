@@ -48,8 +48,6 @@ export function CreateEvent() {
       onSubmit: CreateEventSchema as any,
     },
     onSubmit: async ({ value }) => {
-      console.log("fjkjfsdjfsdf");
-      console.log(value, "valuedata");
       const toastId = toast.loading("Creating event, please wait...");
       try {
         const result = await createEvent(value as any);
@@ -61,7 +59,8 @@ export function CreateEvent() {
           return;
         }
         toast.success("Event created successfully!");
-        toast.info("Please wait 60 seconds before creating another event.",{autoClose:4000});
+        form.reset()
+      toast.info("It may take up to 60 seconds for the new event to appear in the list. Please wait...",{autoClose:4000});
       } catch (error: any) {
         toast.dismiss(toastId);
         toast.error(

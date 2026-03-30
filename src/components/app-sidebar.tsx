@@ -10,6 +10,7 @@ import { getDefaultDashboardRoute, UserRole } from "@/lib/authUtils"
 import { getNavItemsByRole } from "@/routes/sidebar.navitems"
 import { NavSection } from "@/types/dashboard.types"
 import DashboardSidebarContent from "./dashbaord/DashboardSidebarContent"
+import { IBaseUser } from "@/types/user.types"
   
   export async function AppSidebar() {
     const userInfo = await getSessionAction()
@@ -17,7 +18,7 @@ import DashboardSidebarContent from "./dashbaord/DashboardSidebarContent"
 
   const dashboardHome = getDefaultDashboardRoute(userInfo.data?.role as UserRole)
     return (
-      <Sidebar>
+      <Sidebar userinfo={userInfo.data as IBaseUser}>
         <SidebarHeader />
         <SidebarContent>
          <SidebarGroup>

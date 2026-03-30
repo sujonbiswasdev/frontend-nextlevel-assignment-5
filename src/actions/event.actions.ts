@@ -32,3 +32,10 @@ export const updateEvent = async (
   const response = await EventService.updateEvent(id, payload, options);
   return response;
 };
+export const deleteEvent = async (
+  id: string,
+  options?: { cache?: RequestCache; revalidate?: number }
+) => {
+  const response = await EventService.deleteEvent(id, options);
+  return response;
+};
