@@ -3,12 +3,21 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Pencil, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
+
 import { ReusableTable } from "../table/Table";
 import { FilterPanel } from "@/components/Filter";
 import { EventArr, IBaseEvent, TGroupedEvents, TPagination } from "@/types/event.types";
 import { TFilterField } from "@/types/filter.types";
 import { useFilter } from "@/components/ReusableFilter";
 import PaginationPage from "./Pagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import UpdateEvent from "./UpdateEvent";
 
 interface MyEventsTableProps {
   Events: TGroupedEvents;
@@ -21,6 +30,10 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
   const [selectedStatus, setSelectedStatus] = useState<keyof TGroupedEvents>("UPCOMING");
   const [tableEvents, setTableEvents] = useState<IBaseEvent[]>([]);
   const [loading] = useState(false);
+
+  // Dialog states for event update
+  const [open, setOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   // Filters form state
   const [form, setForm] = useState({
@@ -68,7 +81,7 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
     { key: "status", label: "Status" },
   ];
 
-  // Actions for USER role
+  // Actions for USER role, with update support (ParticipantContent style)
   const actions = [
     {
       icon: Eye,
@@ -79,13 +92,19 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
     {
       icon: Pencil,
       label: "Edit",
-      onClick: (event: IBaseEvent) => router.push(`/dashboard/events/edit/${event.id}`),
+      onClick: (event: IBaseEvent) => {
+        setSelectedEventId(event.id);
+        setOpen(true);
+      },
       className: "text-blue-500",
     },
     {
       icon: Trash2,
       label: "Delete",
-      onClick: (event: IBaseEvent) => console.log("Delete event:", event.id),
+      onClick: (event: IBaseEvent) => {
+        // Placeholder for delete logic
+        console.log("Delete event:", event.id);
+      },
       className: "text-red-500",
     },
   ];
@@ -203,17 +222,64 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
         </div>
       </section>
 
-      {/* Table */}
-      {loading ? (
-        <p className="text-center">Loading...</p>
-      ) : (
-        <ReusableTable
-          columns={columns as any}
-          data={tableEvents}
-          actions={role === "USER" ? actions : undefined}
-          emptyMessage="No events found"
-        />
-      )}
+      {/* Table container with max height and scroll */}
+      <div
+        className="w-full"
+        style={{
+          maxHeight: "60vh",
+          overflowY: "auto",
+          overflowX: "auto",
+          borderRadius: "1rem",
+          background: "white",
+        }}
+      >
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : (
+          <ReusableTable
+            columns={columns as any}
+            data={tableEvents}
+            actions={role === "USER" ? actions : undefined}
+            emptyMessage="No events found"
+          />
+        )}
+      </div>
+
+      {/* Edit Event Dialog */}
+      <Dialog
+        open={open}
+        onOpenChange={(val) => {
+          setOpen(val);
+          if (!val) setSelectedEventId(null);
+        }}
+      >
+        <DialogContent
+          className="max-w-md max-h-[90vh] overflow-y-auto"
+          style={{
+            maxHeight: "90vh",
+            overflowY: "auto",
+          }}
+        >
+          <DialogHeader>
+          </DialogHeader>
+          {selectedEventId && (
+            <UpdateEvent
+              id={selectedEventId}
+              role={role}
+              onSuccess={(updated) => {
+                setTableEvents((prev: IBaseEvent[]) =>
+                  prev.map((item) =>
+                    item.id === updated.id ? updated : item
+                  )
+                );
+                setOpen(false);
+                setSelectedEventId(null);
+                toast.success("Event updated successfully!");
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <PaginationPage pagination={pagination as any}/>
     </div>

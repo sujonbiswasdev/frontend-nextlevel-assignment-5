@@ -14,11 +14,12 @@ export type IEventTypeEnum=z.infer<typeof EventTypeEnum>
  const EVENT_CATEGORY_ARR =EventCategoryEnum.options ;
  const EVENT_Pricing_ARR =PricingTypeEnum.options ;
  const EVENT_Status_ARR =EventStatusEnum.options ;
-
+ const eventVisibility = ["PUBLIC", "PRIVATE"] as const;
 export const EventArr={
   EVENT_CATEGORY_ARR,
   EVENT_Pricing_ARR,
-  EVENT_Status_ARR
+  EVENT_Status_ARR,
+  eventVisibility
 }
 
 
@@ -53,6 +54,23 @@ export type IBaseEvent = {
     avgRating: number;
     totalReviews: number;
   };
+
+  export interface IUpdateEventInput {
+    is_featured?: boolean;
+    title?: string;
+    description?: string;
+    date?: string;
+    time?: string;
+    venue?: string;
+    image?: string;
+    categories?: IEventCategory;
+    priceType?: "FREE" | "PAID";
+    status?: IEventStatusEnum;
+    visibility?: "PUBLIC" | "PRIVATE";
+    fee?: number;
+    search?:string;
+    createdAt?: string;
+  }
   
   export type TResponseEvent<T = unknown> = IBaseEvent & T;
 

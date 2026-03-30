@@ -1,4 +1,4 @@
-import {  ICreateEvent, TGroupedEventsResponse, TResponseEvent } from "@/types/event.types";
+import {  ICreateEvent, IUpdateEventInput, TGroupedEventsResponse, TResponseEvent } from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
@@ -176,6 +176,52 @@ const EventService = {
     } catch (error: any) {
       return {
         message: "something went wrong please try again"
+      };
+    }
+  },
+  updateEvent: async (
+    id: string, 
+    payload: Partial<IUpdateEventInput>,
+    options?: ServiceOptionds
+  ) => {
+    try {
+      const cookieStore = await cookies();
+      const config: RequestInit = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+        body: JSON.stringify(payload),
+      };
+      // Add cache option if provided
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["event", "events"] };
+
+      const res = await fetch(`${API_BASE_URL}/event/${id}`, config);
+      const data = await res.json();
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: error.success,
+          message: error.message || "Failed to update event",
+        };
+      }
+
+      return {
+        success: data.success,
+        message: data.message || "Event updated successfully",
+        data: data.data, // expected to be the updated event object
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || "Something went wrong. Please try again.",
       };
     }
   },

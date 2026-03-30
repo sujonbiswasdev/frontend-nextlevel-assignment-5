@@ -24,3 +24,11 @@ export const fetchSingleEventById = async (eventId: string) => {
 export const getMyEvents = async (params?: any, options?: any) => {
   return await EventService.getMyEvents(params, options);
 };
+export const updateEvent = async (
+  id: string,
+  payload: Partial<{ [key: string]: any }>,
+  options?: { cache?: RequestCache; revalidate?: number }
+) => {
+  const response = await EventService.updateEvent(id, payload, options);
+  return response;
+};
