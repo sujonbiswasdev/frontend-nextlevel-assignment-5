@@ -56,16 +56,25 @@ export type IBaseEvent = {
   
   export type TResponseEvent<T = unknown> = IBaseEvent & T;
 
-  export type TEventsGroupedResponse<T = unknown> = {
+
+  export type TGroupedEvents<T = unknown> = {
+    DRAFT: TResponseEvent<T>[];
+    UPCOMING: TResponseEvent<T>[];
+    ONGOING: TResponseEvent<T>[];
+    COMPLETED: TResponseEvent<T>[];
+    CANCELLED: TResponseEvent<T>[];
+  };
+
+  export type TGroupedEventsResponse<T = unknown> = {
     success: boolean;
     message: string;
     data: {
-     data:{
-        DRAFT: TResponseEvent<T>[];
-        UPCOMING: TResponseEvent<T>[];
-        ONGOING: TResponseEvent<T>[];
-        COMPLETED: TResponseEvent<T>[];
-        CANCELLED: TResponseEvent<T>[];
-     }
+      data: TGroupedEvents<T>;
+      pagination?: {
+        total: number;
+        page: number;
+        limit: number;
+        totalpage: number;
+      };
     };
   };

@@ -32,8 +32,8 @@ export const UserNavItems : NavSection[] = [
         title: "Event Management",
         items: [
             {
-                title: "Events",
-                href: "/user/dashboard/events",
+                title: "My-Events",
+                href: "/user/dashboard/my-events",
                 icon: "Calendar"
             },
             {

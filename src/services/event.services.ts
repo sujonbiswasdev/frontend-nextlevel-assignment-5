@@ -1,4 +1,4 @@
-import {  ICreateEvent, TEventsGroupedResponse, TResponseEvent } from "@/types/event.types";
+import {  ICreateEvent, TGroupedEventsResponse, TResponseEvent } from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
@@ -31,8 +31,7 @@ const EventService = {
 
       const res = await fetch(url.toString(), config);
       const data = await res.json();
-
-      const result = data as TEventsGroupedResponse<{reviews:any[],organizer:{image:string,name:string,email:string}}>;
+      const result = data as TGroupedEventsResponse<{reviews:any[],organizer:{image:string,name:string,email:string}}>;
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {
@@ -44,7 +43,7 @@ const EventService = {
         success: result.success,
         message: result.message || "retrieve all events successfully",
         data: result.data.data,
-        pagination:data.data.pagination
+        pagination:result.data.pagination
       };
     } catch (error) {
       return { message: "something went wrong please try again" };
@@ -130,6 +129,54 @@ const EventService = {
       };
     } catch (error) {
       return { success: false, message: "Something went wrong. Please try again." };
+    }
+  },
+
+  getMyEvents: async (params?: any, options?: ServiceOptionds) => {
+    try {
+      const cookieStore = await cookies();
+      const url = new URL(`${API_BASE_URL}/my-events`);
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.append(key, String(value));
+          }
+        });
+      }
+      const config: RequestInit = {};
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["my-events"] };
+
+      config.headers = {
+        Cookie: cookieStore.toString(),
+      };
+
+      const res = await fetch(url.toString(), config);
+      const data = await res.json();
+      const result = data as TGroupedEventsResponse<{reviews:any[],organizer:{image:string,name:string,email:string}}>;
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: error.success,
+          message: error.message || "Failed to retrieve my events",
+        };
+      }
+
+      return {
+        success: result.success,
+        message: result.message,
+        data: result.data.data,
+        pagination: result.data.pagination
+      };
+    } catch (error: any) {
+      return {
+        message: "something went wrong please try again"
+      };
     }
   },
  

@@ -23,3 +23,6 @@ export const updateParticipant = async (
 export const deleteParticipantAction = async (id: string) => {
   return await ParticipantService.participantDelete(id);
 };
+
+
+

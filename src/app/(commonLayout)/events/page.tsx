@@ -1,7 +1,7 @@
 import { fetchEvents } from "@/actions/event.actions";
 import EventContent from "@/components/module/event/EventsContent";
 import { cn } from "@/lib/utils";
-import { TResponseEvent } from "@/types/event.types";
+import { TPagination, TResponseEvent } from "@/types/event.types";
 import React from "react";
 
 const EventsPage = async ({
@@ -22,7 +22,7 @@ const EventsPage = async ({
    <div className={"mt-10"}>
      <EventContent
       events={eventsResponse.data?.UPCOMING as TResponseEvent<{ reviews: any[] }>[]} 
-      pagination={eventsResponse.pagination}
+      pagination={eventsResponse.pagination as TPagination}
     />
    </div>
   );

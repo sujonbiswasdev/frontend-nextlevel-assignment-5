@@ -20,3 +20,7 @@ export const fetchSingleEventById = async (eventId: string) => {
   const response = await EventService.getSingleEventByType(eventId);
   return response;
 };
+
+export const getMyEvents = async (params?: any, options?: any) => {
+  return await EventService.getMyEvents(params, options);
+};
