@@ -8,6 +8,8 @@ import React, { useState } from 'react'
 import { ReusableTable } from '../table/Table';
 import { InvitationArr, TResponseInvitation } from '@/types/invitation.types';
 import { createInvitationColumns } from './column/invitation.column';
+import { deleteInvitationAction } from '@/actions/invitation.actions';
+import { toast } from 'react-toastify';
 
 // Sorry, the design is not perfect. Please review the design visually and adjust according to your needs for better alignment, spacing, color, and responsive layout.
 
@@ -41,6 +43,42 @@ const GetOwnInvitations = ({ invitations }: { invitations: TResponseInvitation[]
 
     const ivitationColuems=createInvitationColumns()
 
+
+    const handleDelete=async(id:string)=>{
+        // Ask for confirmation before deleting the invitation
+        if (!window.confirm("Are you sure you want to delete this invitation? This action cannot be undone.")) {
+            return;
+        }
+        const toastId = toast.loading("Deleting invitation...");
+        try {
+            const res = await deleteInvitationAction(id);
+            toast.dismiss(toastId)
+            if (res?.success) {
+                toast.update(toastId, {
+                    render: res.message || "Invitation deleted successfully.",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 3000,
+                });
+                return
+            } else {
+                toast.update(toastId, {
+                    render: res?.message || "Failed to delete invitation.",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 3000,
+                });
+            }
+        } catch (err: any) {
+            toast.update(toastId, {
+                render: err?.message || "Server error",
+                type: "error",
+                isLoading: false,
+                autoClose: 3000,
+            });
+        }
+    }
+
     const actions = [
         {
             icon: Eye,
@@ -60,8 +98,8 @@ const GetOwnInvitations = ({ invitations }: { invitations: TResponseInvitation[]
         {
             icon: Trash2,
             label: "Delete",
-            onClick: (_event: TResponseInvitation) => {
-                // Implement delete functionality as needed
+            onClick: (event: TResponseInvitation) => {
+                return  handleDelete(event.id)
             },
             className: "text-red-500",
         },

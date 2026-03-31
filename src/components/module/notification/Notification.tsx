@@ -14,6 +14,8 @@ import { IBaseUser } from "@/types/user.types";
 import { IBaseEvent } from "@/types/event.types";
 import { TInvitation } from "@/types/invitation.types";
 import { UserCircle } from "lucide-react";
+import { updateInvitationStatusAction } from "@/actions/invitation.actions";
+import { toast } from "react-toastify";
 export function NavbarNotifications() {
   const [notifications, setNotifications] = useState<
     TNotification<{ user: IBaseUser; event: IBaseEvent; invitation: TInvitation }>[]
@@ -31,26 +33,30 @@ export function NavbarNotifications() {
     fetchNotifications();
   }, []);
 
-  const handleAction = async (
-    invitationId: string,
-    notificationId: string,
-    action: "ACCEPT" | "DECLINE"
-  ) => {
-    setResponding(notificationId + "-" + action);
+  const handleNotificationAction = async ({id,status}: {
+    id: string;
+    status: "ACCEPTED" | "DECLINED";
+  }) => {
+    setResponding(id);
+    const loadingToastId = toast.loading("Updating invitation status...");
     try {
-      const resp = await fetch("/api/invitations/respond", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invitationId, notificationId, action }),
-      });
-      if (resp.ok) {
-        setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+      const res = await updateInvitationStatusAction({ id, status });
+      if (res?.success) {
+        toast.dismiss(loadingToastId)
+        setNotifications(res.data)
+        toast.success(res?.message || "Invitation status updated successfully.",{autoClose:4000});
+        return
+      } else {
+        toast.dismiss(loadingToastId)
+        toast.error(res?.message || "Failed to update invitation status.",{autoClose:4000});
       }
-    } finally {
-      setResponding(null);
+      await fetchNotifications();
+    } catch (error: any) {
+      toast.error(error?.message || "An unexpected error occurred.");
     }
   };
 
+ 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="relative outline-none  rounded-full  transition-all">
@@ -165,14 +171,14 @@ export function NavbarNotifications() {
                       {invitation?.status === "PENDING" && (
                         <div className="flex gap-2 mt-2">
                           <Button
-                            onClick={() => handleAction(invitation!.id, n.id, "ACCEPT")}
+                              onClick={() => handleNotificationAction({id:invitation.id,status:"ACCEPTED"})}
                             disabled={responding === n.id + "-ACCEPT"}
                             className="flex-1 rounded-full h-6 px-0 text-xs font-semibold shadow-sm bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 transition text-white outline-none focus:ring-2 focus:ring-emerald-400 min-w-0"
                           >
                             {responding === n.id + "-ACCEPT" ? "Accepting..." : "Accept"}
                           </Button>
                           <Button
-                            onClick={() => handleAction(invitation!.id, n.id, "DECLINE")}
+                            onClick={() => handleNotificationAction({id:invitation.id,status:"DECLINED"})}
                             disabled={responding === n.id + "-DECLINE"}
                             className="flex-1 rounded-full h-6 px-0 text-xs font-semibold shadow-sm bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 transition text-white outline-none focus:ring-2 focus:ring-pink-400 min-w-0"
                           >

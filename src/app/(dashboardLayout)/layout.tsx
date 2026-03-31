@@ -118,25 +118,23 @@ const RootDashboardLayout = async ({
     <SidebarProvider
       style={
         {
-          '--sidebar-width': '15rem',
+          '--sidebar-width': '13rem',
           '--sidebar-width-mobile': '10rem',
         } as React.CSSProperties
       }
     >
       <AppSidebar />
-      <SidebarInset className="min-h-8">
+      <SidebarInset className="min-h-6 max-w-[1380px]">
         <header className="w-full border-b bg-white shadow-sm dark:bg-gray-950 sticky top-0 z-40">
-          <div className="flex items-center justify-between gap-4 px-2 sm:px-6 py-2 w-full max-w-full mx-auto min-h-[56px]">
+          <div className="flex flex-wrap items-center justify-between gap-4 px-2 sm:px-6 py-2 w-full max-w-full mx-auto min-h-[56px]">
             {/* Sidebar Button + Optional Logo */}
             <div className="flex items-center gap-3 min-w-[2.5rem]">
               <SidebarTrigger />
             </div>
 
-
-
             {/* Unique Professional Input Field - Glass Morphism, Modern Glow, and Animated Icon */}
-            <div className="flex-1 flex justify-center w-full">
-              <div className="relative w-full max-w-lg select-none">
+            <div className="flex-1 flex justify-center w-full min-w-[120px]">
+              <div className="relative w-full max-w-md select-none">
                 <input
                   type="search"
                   id="unique-pro-search"
@@ -144,16 +142,16 @@ const RootDashboardLayout = async ({
                   autoComplete="off"
                   aria-label="System search"
                   placeholder="Type to search across all dashboards…"
-                  className="peer w-full px-12 py-3 rounded-2xl border border-transparent bg-white/70 dark:bg-gray-900/70 backdrop-blur-md focus:bg-white dark:focus:bg-gray-950 focus:border-blue-500 ring-2 ring-transparent focus:ring-blue-400/60 focus:outline-none shadow-lg placeholder-gray-400 dark:placeholder-gray-600 text-lg transition-all duration-300 ease-out hover:shadow-xl"
+                  className="peer w-full px-5 sm:px-8 md:px-12 py-2 md:py-3 rounded-2xl border border-transparent bg-white/70 dark:bg-gray-900/70 backdrop-blur-md focus:bg-white dark:focus:bg-gray-950 focus:border-blue-500 ring-2 ring-transparent focus:ring-blue-400/60 focus:outline-none shadow-lg placeholder-gray-400 dark:placeholder-gray-600 text-base md:text-lg transition-all duration-300 ease-out hover:shadow-xl"
                   style={{
                     boxShadow: '0 2px 32px 0 rgba(74,122,255,0.07)'
                   }}
                 />
                 {/* Unique animated search icon and colorful accent bar */}
-                <span className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300 peer-focus:-rotate-6 peer-focus:scale-110">
+                <span className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300 peer-focus:-rotate-6 peer-focus:scale-110">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-7 h-7 text-blue-400 drop-shadow-[0_1px_4px_rgba(74,122,255,0.25)] motion-safe:animate-pulse peer-focus:text-blue-500"
+                    className="w-6 h-6 sm:w-7 sm:h-7 text-blue-400 drop-shadow-[0_1px_4px_rgba(74,122,255,0.25)] motion-safe:animate-pulse peer-focus:text-blue-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -166,21 +164,21 @@ const RootDashboardLayout = async ({
                     />
                   </svg>
                 </span>
-                <span className="absolute bottom-0 left-10 right-8 h-1 rounded-xl bg-gradient-to-r from-blue-400 via-fuchsia-500 to-emerald-400 opacity-60 pointer-events-none transition-all scale-x-0 peer-focus:scale-x-100 peer-focus:opacity-100 duration-300 origin-left" />
+                <span className="absolute bottom-0 left-8 sm:left-10 right-5 sm:right-8 h-1 rounded-xl bg-gradient-to-r from-blue-400 via-fuchsia-500 to-emerald-400 opacity-60 pointer-events-none transition-all scale-x-0 peer-focus:scale-x-100 peer-focus:opacity-100 duration-300 origin-left" />
               </div>
             </div>
 
-            {/* Profile Avatar / User Actions -- ProfileCard now opens on click rather than always being open */}
-            <div className="flex items-center gap-3 min-w-[2.5rem] justify-end">
-            <div className='mt-2'>
-                 <NavbarNotifications  />
-                 </div>
+            {/* Profile Avatar / User Actions -- Responsive handling */}
+            <div className="flex items-center gap-2 sm:gap-3 min-w-[2.5rem] justify-end">
+              <div className='mt-1 sm:mt-2'>
+                <NavbarNotifications  />
+              </div>
               <ProfileCard profile={userinfo.data as IBaseUser} />
             </div>
           </div>
         </header>
         <div className="flex min-h-0 flex-1 flex-col overflow-auto">
-          <div className="flex w-full max-w-[1440px] min-w-0 flex-1 flex-col px-4 sm:px-6">
+          <div className="flex w-full max-w-[1440px] min-w-0 flex-1 flex-col px-2 sm:px-4 md:px-6">
             <ErrorBoundary fallback={<ErrorFallback title="Dashboard Load Failed" message="Something went wrong while loading the dashboard." />}>
               {userinfo.data?.role==='ADMIN'?admin:user}
             </ErrorBoundary>

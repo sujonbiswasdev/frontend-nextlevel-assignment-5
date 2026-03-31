@@ -18,3 +18,16 @@ export const inviteToEventAction = async ({
 export const getOwnUserInvitationsAction = async (params?: any, options?: any) => {
   return await InvitationService.GetuserownInvitations(params, options);
 };
+
+export const updateInvitationStatusAction = async ({
+  id,
+  status,
+}: {
+  id: string;
+  status: "ACCEPTED" | "DECLINED";
+}) => {
+  return await InvitationService.updateInvitationStatus({ id, status });
+};
+export const deleteInvitationAction = async (id: string) => {
+  return await InvitationService.deleteInvitation(id);
+};

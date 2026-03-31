@@ -91,6 +91,59 @@ const InvitationService = {
       return { success: false, message: error.message || "Server error" };
     }
   },
+  updateInvitationStatus: async ({id,status}: {id:string;status: "ACCEPTED" | "DECLINED"}) => {
+    try {
+      const cookieStore = await cookies();
+      const response = await fetch(`${API_BASE_URL}/invitation/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+        body: JSON.stringify({ status }),
+      });
+      const body = await response.json();
+      if (!response.ok) {
+        return {
+          success: false,
+          message: body?.message || `Failed to mark invitation as ${status}`,
+        };
+      }
+      return {
+        success: true,
+        message: body?.message || `Invitation ${status === "ACCEPTED" ? "accepted" : "declined"} successfully.`,
+        data: body?.data,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Server error" };
+    }
+  },
+  deleteInvitation: async (id: string) => {
+    try {
+      const cookieStore = await cookies();
+      const response = await fetch(`${API_BASE_URL}/invitation/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+      });
+      const body = await response.json();
+      if (!response.ok) {
+        return {
+          success: false,
+          message: body?.message || "Failed to delete invitation",
+        };
+      }
+      return {
+        success: true,
+        message: body?.message || "Invitation deleted successfully.",
+        data: body?.data,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Server error" };
+    }
+  },
   
 };
 

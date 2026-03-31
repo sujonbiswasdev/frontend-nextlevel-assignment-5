@@ -74,7 +74,6 @@ export const reviewService = {
 
       const res = await fetch(url.toString(), config);
       const data = await res.json();
-      console.log(data,'gdsdf')
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {
@@ -192,5 +191,4 @@ export const reviewService = {
       };
     }
   },
-
 }
