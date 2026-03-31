@@ -8,3 +8,8 @@ export async function updateUserProfileAction( updateData: Partial<UserCreateInp
     const result = await userService.updateUser(updateData);
     return result;
 }
+
+export async function deleteuserown() {
+    const result = await userService.deleteUserOwn();
+    return result;
+}

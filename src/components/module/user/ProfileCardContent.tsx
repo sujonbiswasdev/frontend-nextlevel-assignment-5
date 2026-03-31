@@ -2,15 +2,16 @@
 
 import { IBaseUser, TUpdateUserInput } from "@/types/user.types";
 import { updateUserSchema } from "@/validations/user.validation";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import InfoRow from "./InfoRow";
-import { Status, StatusIndicator, StatusLabel } from "../ui/status";
-import { updateUserProfileAction } from "@/actions/user.actions";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
+import InfoRow from "../../shared/InfoRow";
+import { Status, StatusIndicator, StatusLabel } from "../../ui/status";
+import { deleteuserown, updateUserProfileAction } from "@/actions/user.actions";
+import ShareProfileButton from "./profileshare";
 
 function ProfileModal({ user }: { user: IBaseUser }) {
   const router = useRouter();
@@ -78,7 +79,19 @@ function ProfileModal({ user }: { user: IBaseUser }) {
       toast.error(`someting went wrong please try again`);
     }
   };
-
+  const handleDelete = async () => {
+    const toastid = toast.loading("user deleting....");
+    const res = await deleteuserown();
+    if (res.error) {
+      toast.dismiss(toastid);
+      toast.error( res.message||"user account delete fail");
+      return;
+    }
+    toast.dismiss(toastid);
+    toast.success(res.result?.message||"user account delete successfully");
+    router.refresh();
+    window.location.reload();
+  };
   return (
     <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl mx-auto">
       {/* Header */}
@@ -353,12 +366,17 @@ function ProfileModal({ user }: { user: IBaseUser }) {
         /> 
         <div className="flex items-center justify-between px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-600">Profile</h2>
-         
+          <ShareProfileButton userId={user.id} userName={user.name} />
         </div>
         <div className="flex items-center justify-between px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-600">account</h2>
 
-         
+          <button
+            onClick={handleDelete}
+            className="px-4 flex items-center gap-1 py-2 bg-red-600 text-white rounded-md shadow-sm"
+          >
+            <Trash2 /> remove
+          </button>
         </div>
       </div>
     </div>

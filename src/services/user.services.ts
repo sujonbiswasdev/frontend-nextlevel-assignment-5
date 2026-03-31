@@ -33,7 +33,30 @@ export const userService={
     console.error(error);
     return { success: false, error: error.message || "An error occurred while updating" };
   }
+    },
+deleteUserOwn: async () => {
+  try {
+    const cookieStore = await cookies();
+    const res = await fetch(`${API_BASE_URL}/profile/own/delete`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieStore.toString(),
+      },
+    });
+    revalidateTag("user", "max");
+    const data = await res.json();
+    if (!res.ok) {
+      const error = data as ApiErrorResponse;
+      return { error: true, message: error.message || "An error occurred while deleting user" };
     }
+    return { success: true, result: data, message: data?.message || "User deleted successfully" };
+  } catch (error: any) {
+    console.error(error);
+    return { error: true, message: error.message || "An error occurred while deleting user" };
+  }
+},
 
 
 }

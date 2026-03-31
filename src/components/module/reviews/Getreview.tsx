@@ -231,7 +231,6 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       onChange: (val) => handleChange("status", val),
       options: [
         { label: "Approved", value: "APPROVED" },
-        { label: "Pending", value: "PENDING" },
         { label: "Rejected", value: "REJECTED" },
       ],
     },

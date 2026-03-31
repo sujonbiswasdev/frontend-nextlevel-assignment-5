@@ -1,6 +1,6 @@
 import { getSessionAction } from '@/actions/auth.actions'
 import { AppSidebar } from '@/components/app-sidebar'
-import ProfileCard from '@/components/shared/ProfileCard'
+import ProfileCard from '@/components/module/user/ProfileCard'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { IBaseUser } from '@/types/user.types'
 import React, { Suspense } from 'react'

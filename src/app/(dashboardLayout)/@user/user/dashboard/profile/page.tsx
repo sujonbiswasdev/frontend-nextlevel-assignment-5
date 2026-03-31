@@ -1,5 +1,5 @@
 import { getSessionAction } from '@/actions/auth.actions'
-import ProfileUserInfo from '@/components/shared/ProfileCardContent'
+import ProfileUserInfo from '@/components/module/user/ProfileCardContent'
 import { IBaseUser } from '@/types/user.types'
 import React from 'react'
 
