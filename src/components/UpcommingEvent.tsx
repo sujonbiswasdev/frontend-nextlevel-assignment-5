@@ -17,7 +17,7 @@ const UpcommingEvent = () => {
     let mounted = true;
     const fetchData = async () => {
       try {
-        const eventsRes = await fetchEvents({}, { revalidate: 60 });
+        const eventsRes = await fetchEvents({}, { revalidate: 2 });
         if (mounted) {
           setUpcomingEvent(eventsRes.data?.UPCOMING || []);
           setLoading(false);

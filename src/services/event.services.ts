@@ -27,7 +27,7 @@ const EventService = {
       if (options?.revalidate) {
         config.next = { revalidate: options.revalidate };
       }
-      config.next = { ...config.next, tags: ["events"] };
+      config.next = { ...config.next, tags: ["events","event"] };
 
       const res = await fetch(url.toString(), config);
       const data = await res.json();
@@ -59,7 +59,7 @@ const EventService = {
         headers: { "Content-Type": "application/json" ,Cookie: storeCookies.toString()},
         body: JSON.stringify(value),
       });
-      revalidateTag("events",'max')
+      revalidateTag("event",'max')
       const body = await response.json();
       const result = body as ApiResponse<TResponseEvent>;
       if (!response.ok) {
@@ -149,7 +149,7 @@ const EventService = {
       if (options?.revalidate) {
         config.next = { revalidate: options.revalidate };
       }
-      config.next = { ...config.next, tags: ["my-events"] };
+      config.next = { ...config.next, tags: ["events","event"] };
 
       config.headers = {
         Cookie: cookieStore.toString(),

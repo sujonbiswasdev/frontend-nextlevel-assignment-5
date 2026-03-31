@@ -4,11 +4,11 @@ import { startTransition, useRef, useState } from "react";
 import EventCard from "./EventCard";
 import EventCardSkeleton from "./evenCardSkeleton";
 import { EventArr, TPagination, TResponseEvent } from "@/types/event.types";
-import PaginationPage from "./Pagination";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFilter } from "@/components/ReusableFilter";
 import EventFilterUI from "./EventFilterInput";
 import { Search } from "lucide-react";
+import PaginationPage from "./Pagination";
 
 interface EventContentProps {
   events: TResponseEvent<{ reviews: any[] }>[];

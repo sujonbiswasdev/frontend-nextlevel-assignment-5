@@ -11,7 +11,7 @@ const EventsPage =async ({
   const params = await searchParams;
   const userinfo = await getSessionAction();
   const role = userinfo.data?.role;
-  const myEvents = await getMyEvents(params,{ revalidate: 60 });
+  const myEvents = await getMyEvents(params);
   return (
     <div>
       <MyEventsTable

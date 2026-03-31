@@ -18,7 +18,7 @@ const ParticipantPage = async({
   const search=await searchParams
  
   const participants= await getParticipants(search,{
-    revalidate: 60
+    revalidate: 2
   });
   return (
     <div>

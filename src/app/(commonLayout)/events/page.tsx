@@ -12,7 +12,7 @@ const EventsPage = async ({
   let eventsResponse;
   try {
     const search = await searchParams;
-    eventsResponse = await fetchEvents(search, { revalidate: 60 });
+    eventsResponse = await fetchEvents(search, { revalidate: 2 });
   } catch (err) {
     console.error("Events fetch error:", err);
     eventsResponse = { data: { UPCOMING: [] }, pagination: { total: 0, page: 1, limit: 10, totalpage: 1 } };

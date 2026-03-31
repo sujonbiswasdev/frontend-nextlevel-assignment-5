@@ -6,7 +6,11 @@ import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { TResponseUserData } from "@/types/user.types";
 import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-console.log(API_BASE_URL,'pirs')
+if (!API_BASE_URL) {
+    throw new Error("API_BASE_URL is not defined. Please set NEXT_PUBLIC_API_BASE_URL in your environment variables.");
+}
+
+
 const AuthService = {
     register: async (value: UserCreateInput) => {
         const response = await fetch(`${API_BASE_URL}/auth/register`, {

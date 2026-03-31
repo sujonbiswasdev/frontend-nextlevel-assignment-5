@@ -1,7 +1,9 @@
 
+import { TPagination } from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { ICreatereviewData, TResponseReviewData } from "@/types/review.types";
 import { cookies } from "next/headers";
+import { ServiceOptionds } from "./event.services";
 
 export interface IModerateData {
   status:string;
@@ -43,37 +45,51 @@ export const reviewService = {
       return { success: false, message: e.message, error: "Server error" };
     }
   },
-  getMyReview: async () => {
+  getMyReview: async (params?: any, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
-      const res = await fetch(`${API_BASE_URL}/my-reviews`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: cookieStore.toString(),
-        }
-      });
+      const url = new URL(`${API_BASE_URL}/my-reviews`);
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.append(key, String(value));
+          }
+        });
+      }
 
-      const body = await res.json();
-      const result = body as ApiResponse<TResponseReviewData[]>;
-      console.log(result,'result')
+      const config: RequestInit = {};
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["review","reviews"] };
+
+      config.headers = {
+        "Content-Type": "application/json",
+        Cookie: cookieStore.toString(),
+      };
+      config.credentials = "include";
+
+      const res = await fetch(url.toString(), config);
+      const data = await res.json();
+      console.log(data,'gdsdf')
       if (!res.ok) {
-        const error = body as ApiErrorResponse;
+        const error = data as ApiErrorResponse;
         return {
           success: error.success,
           message: error.message || "Failed to get your review",
         };
       }
-
-      // Return success message and data
       return {
-        success: result,
-        message: result.message,
-        data: result.data
+        success: data.success,
+        message: data.message || "Retrieved all your reviews successfully",
+        data: data.data.data as TResponseReviewData[],
+        pagination: data.data.pagination as TPagination,
       };
     } catch (e: any) {
-      return { success: false, message: e.message, error: "Server error" };
+      return { message: "something went wrong please try again" };
     }
   },
 }

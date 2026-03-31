@@ -60,7 +60,6 @@ export function CreateEvent() {
         }
         toast.success("Event created successfully!");
         form.reset()
-      toast.info("It may take up to 60 seconds for the new event to appear in the list. Please wait...",{autoClose:4000});
       } catch (error: any) {
         toast.dismiss(toastId);
         toast.error(

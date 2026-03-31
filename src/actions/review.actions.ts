@@ -5,6 +5,6 @@ import { ICreatereviewData, TResponseReviewData } from "@/types/review.types";
 export const createReview = async (eventid: string, data: ICreatereviewData) => {
   return await reviewService.createReview(eventid, data);
 };
-export const getMyReviews = async () => {
-  return await reviewService.getMyReview();
+export const getMyReviews = async (params?: any, options?: any) => {
+  return await reviewService.getMyReview(params, options);
 };
