@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import UpdateEvent from "./UpdateEvent";
 import { deleteEvent } from "@/actions/event.actions";
+import { CopyableId } from "@/components/shared/CopyId";
 
 interface MyEventsTableProps {
   Events: TGroupedEvents;
@@ -74,7 +75,11 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
 
   // Table columns
   const columns = [
-    { key: "id", label: "ID", render: (e: IBaseEvent) => e.id.slice(0, 6) },
+    {
+      key: "id",
+      label: "ID",
+      render: (e: IBaseEvent) => <CopyableId id={e.id} />
+    },
     { key: "title", label: "Title" },
     { key: "description", label: "Description", render: (e: IBaseEvent) => e.description.slice(0, 40) + "..." },
     { key: "date", label: "Date", render: (e: IBaseEvent) => new Date(e.date).toLocaleDateString() },
@@ -82,6 +87,7 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
     { key: "visibility", label: "Visibility" },
     { key: "status", label: "Status" },
   ];
+  
 
   // Delete event logic (fixed - moved confirmation logic inside)
   const handleDeleteEvent = useCallback(async (eventId: string) => {

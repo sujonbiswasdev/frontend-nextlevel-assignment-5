@@ -29,25 +29,18 @@ export const proxy = async (request: NextRequest) => {
         { status: 401 }
       );
     }
-
-
     const userSession = await getSessionAction();
     if (!userSession?.success || !userSession?.data) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-
     const user = userSession.data;
-
-
     if (user.status === "BLOCKED") {
       return NextResponse.json(
         { error: "Your account is blocked. Contact support." },
         { status: 403 }
       );
     }
-
     const role = user.role as TUserRole;
-
     if (pathname.startsWith("/admin")) {
       if (role !== "ADMIN") {
         return NextResponse.json(
