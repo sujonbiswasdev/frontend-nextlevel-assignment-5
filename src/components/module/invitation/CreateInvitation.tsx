@@ -15,10 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { inviteToEventAction } from "@/actions/invitation.actions";
 
-interface CreateInvitationFormProps {
-  eventId: string;
-}
-
 // TagInput Component
 function TagInput({
   tags,
@@ -80,14 +76,18 @@ function TagInput({
     </div>
   );
 }
-
-// Main Component
-export default function CreateInvitationForm({ eventId }: CreateInvitationFormProps) {
+export default function CreateInvitationForm() {
   const router = useRouter();
+  const [eventId, setEventId] = useState("");
   const [inviteeIds, setInviteeIds] = useState<string[]>([]);
   const [message, setMessage] = useState("");
 
   const handleSubmit = async () => {
+    console.log(eventId,'eventid')
+    if (!eventId.trim()) {
+      toast.error("Please enter an Event ID");
+      return;
+    }
     if (inviteeIds.length === 0) {
       toast.error("Please add at least one invitee ID");
       return;
@@ -97,8 +97,8 @@ export default function CreateInvitationForm({ eventId }: CreateInvitationFormPr
     try {
       const res = await inviteToEventAction({
         eventId,
-        inviteeId: inviteeIds, 
-        message,            
+        inviteeId: inviteeIds,
+        message,
       });
 
       toast.dismiss(toastId);
@@ -107,6 +107,7 @@ export default function CreateInvitationForm({ eventId }: CreateInvitationFormPr
         toast.success(res.message || "Invitation sent!", { theme: "dark" });
         setInviteeIds([]);
         setMessage("");
+        setEventId("");
         router.refresh();
       } else {
         toast.error(res.message || "Failed to send invitation", { theme: "dark" });
@@ -120,6 +121,7 @@ export default function CreateInvitationForm({ eventId }: CreateInvitationFormPr
   const handleReset = () => {
     setInviteeIds([]);
     setMessage("");
+    setEventId("");
   };
 
   return (
@@ -132,6 +134,19 @@ export default function CreateInvitationForm({ eventId }: CreateInvitationFormPr
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          <div>
+            <label className="block mb-2 font-medium" htmlFor="event-id-input">
+              Event ID
+            </label>
+            <Input
+              id="event-id-input"
+              type="text"
+              value={eventId}
+              onChange={e => setEventId(e.target.value)}
+              placeholder="Enter the event ID"
+              className="mb-2"
+            />
+          </div>
           <div>
             <label className="block mb-2 font-medium">Invitee IDs</label>
             <TagInput tags={inviteeIds} setTags={setInviteeIds} />

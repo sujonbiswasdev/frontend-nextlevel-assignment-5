@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import UpdateEvent from "./UpdateEvent";
 import { deleteEvent } from "@/actions/event.actions";
-import { CopyableId } from "@/components/shared/CopyId";
+import CopyableId from "@/components/shared/CopyId";
 
 interface MyEventsTableProps {
   Events: TGroupedEvents;
@@ -75,10 +75,13 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
 
   // Table columns
   const columns = [
+
     {
       key: "id",
       label: "ID",
-      render: (e: IBaseEvent) => <CopyableId id={e.id} />
+      render: (e: IBaseEvent) => {
+       return <CopyableId id={e.id} href={`/events/${e.id}`} />
+      }
     },
     { key: "title", label: "Title" },
     { key: "description", label: "Description", render: (e: IBaseEvent) => e.description.slice(0, 40) + "..." },

@@ -4,9 +4,6 @@ import React from "react";
 import { Search } from "lucide-react";
 import { TFilterField } from "@/types/filter.types";
 
-// "aro sundor daw": Make it prettier, more refined visually and semantically, slightly more animated/responsive/modern
-// Responsive width & beautiful visual
-
 export const FilterPanel = ({
   fields,
   onReset,
@@ -15,22 +12,23 @@ export const FilterPanel = ({
   onReset?: () => void;
 }) => {
   return (
-    <section
-      className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8 rounded-3xl border border-blue-200 dark:border-blue-900/50 shadow-[0_4px_32px_rgba(34,54,174,.13)] bg-gradient-to-br from-white via-blue-50 to-blue-200 dark:from-gray-920 dark:via-blue-950/50 dark:to-blue-980/80 transition-all duration-300 animate-fade-in"
-    >
+    <section className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8 rounded-[28px] border border-white/20 dark:border-white/10 backdrop-blur-2xl bg-white/60 dark:bg-gray-900/60 shadow-[0_10px_40px_rgba(0,0,0,0.15)] transition-all duration-300">
+      
+      {/* Glow Background */}
+      <div className="absolute inset-0 -z-10 blur-3xl opacity-30 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"></div>
+
       <form
         className="
-          w-full
-          grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
-          gap-4 md:gap-6 xl:gap-8
-          md:px-2
-          mx-auto
+          grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+          gap-4 md:gap-6
         "
-        style={{ maxWidth: "100%" }}
         autoComplete="off"
       >
         {fields.map((field) => {
-          // 🔹 TEXT TYPES
+          const base =
+            "w-full rounded-xl px-3 py-2 text-sm outline-none transition-all duration-200 bg-white/70 dark:bg-gray-800/70 backdrop-blur border border-white/30 dark:border-gray-700 focus:ring-2 focus:ring-blue-400 focus:scale-[1.02]";
+
+          // 🔹 TEXT
           if (
             field.type === "text" ||
             field.type === "email" ||
@@ -42,27 +40,20 @@ export const FilterPanel = ({
             return (
               <div
                 key={field.name}
-                className="relative flex flex-col group bg-gradient-to-tr from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950/90 rounded-2xl border border-gray-200 dark:border-gray-800 px-3 py-2 sm:px-4 sm:py-3 transition-all focus-within:ring-2 focus-within:ring-blue-400 shadow-sm hover:border-blue-300 w-full min-w-0"
+                className="group relative flex flex-col gap-1 p-3 rounded-2xl bg-white/40 dark:bg-gray-900/40 backdrop-blur border border-white/20 hover:shadow-lg hover:-translate-y-[2px] transition-all"
               >
-                {field.name ? (
-                  <label className="mb-1 text-xs font-semibold text-blue-900 dark:text-blue-200 tracking-wide select-none transition-all">
-                    {field.name}
-                  </label>
-                ) : null}
-                <div>
-                  <Search className="absolute left-4 top-[38px] md:left-5 md:top-[42px] -translate-y-1/2 w-4 h-4 text-blue-400 opacity-70 pointer-events-none transition-transform group-focus-within:scale-125" />
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                  {field.name}
+                </label>
+
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400 group-focus-within:scale-110 transition" />
                   <input
                     type={field.type}
                     value={field.value}
-                    placeholder={
-                      typeof field.placeholder === "string"
-                        ? field.placeholder
-                        : "Search..."
-                    }
-                    onChange={(
-                      e: React.ChangeEvent<HTMLInputElement>
-                    ) => field.onChange(e.target.value)}
-                    className="w-full pl-8 md:pl-9 pr-3 py-2 rounded-xl bg-transparent outline-none border-0 text-sm text-blue-900 dark:text-white placeholder:text-gray-400 placeholder:font-light focus:ring-0 transition-all"
+                    placeholder={field.placeholder || "Search..."}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    className={`${base} pl-9`}
                   />
                 </div>
               </div>
@@ -74,26 +65,24 @@ export const FilterPanel = ({
             return (
               <div
                 key={field.name}
-                className="flex flex-col bg-gradient-to-tr from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950/90 rounded-2xl border border-gray-200 dark:border-gray-800 px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:border-blue-300 transition-all w-full min-w-0"
+                className="flex flex-col gap-1 p-3 rounded-2xl bg-white/40 dark:bg-gray-900/40 backdrop-blur border border-white/20 hover:shadow-lg transition-all"
               >
-                {field.label && (
-                  <label className="mb-1 text-xs font-semibold text-blue-900 dark:text-blue-200 tracking-wide select-none transition-all">
-                    {field.label}
-                  </label>
-                )}
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                  {field.label}
+                </label>
                 <input
                   type="number"
                   value={field.value}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>
-                  ) => field.onChange(Number(e.target.value))}
-                  className="w-full py-2 pl-3 pr-2 rounded-xl outline-none bg-transparent border-0 text-sm text-blue-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 transition-all"
+                  onChange={(e) =>
+                    field.onChange(Number(e.target.value))
+                  }
+                  className={base}
                 />
               </div>
             );
           }
 
-          // 🔹 DATE TYPES
+          // 🔹 DATE
           if (
             field.type === "date" ||
             field.type === "time" ||
@@ -104,20 +93,16 @@ export const FilterPanel = ({
             return (
               <div
                 key={field.name}
-                className="flex flex-col bg-gradient-to-tr from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950/90 rounded-2xl border border-gray-200 dark:border-gray-800 px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:border-blue-300 transition-all w-full min-w-0"
+                className="flex flex-col gap-1 p-3 rounded-2xl bg-white/40 dark:bg-gray-900/40 backdrop-blur border border-white/20 hover:shadow-lg transition-all"
               >
-                {field.label &&
-                  <label className="mb-1 text-xs font-semibold text-blue-900 dark:text-blue-200 tracking-wide select-none transition-all">
-                    {field.label}
-                  </label>
-                }
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                  {field.label}
+                </label>
                 <input
                   type={field.type}
                   value={field.value}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>
-                  ) => field.onChange(e.target.value)}
-                  className="w-full py-2 pl-3 pr-2 rounded-xl outline-none bg-transparent border-0 text-sm text-blue-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 transition-all"
+                  onChange={(e) => field.onChange(e.target.value)}
+                  className={base}
                 />
               </div>
             );
@@ -128,21 +113,19 @@ export const FilterPanel = ({
             return (
               <div
                 key={field.name}
-                className="flex flex-row items-center bg-gradient-to-tr from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950/90 rounded-2xl border border-gray-200 dark:border-gray-800 px-3 py-2 sm:px-4 sm:py-3 gap-2 shadow-sm hover:border-blue-300 transition-all w-full min-w-0"
+                className="flex items-center gap-3 p-3 rounded-2xl bg-white/40 dark:bg-gray-900/40 backdrop-blur border border-white/20 hover:shadow-lg transition-all"
               >
                 <input
                   type="checkbox"
                   checked={field.value}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>
-                  ) => field.onChange(e.target.checked)}
-                  className="form-checkbox h-5 w-5 text-blue-500 border-gray-300 dark:border-gray-700 rounded transition-all accent-blue-500 checked:scale-125"
+                  onChange={(e) =>
+                    field.onChange(e.target.checked)
+                  }
+                  className="w-5 h-5 accent-blue-500 transition-all checked:scale-110"
                 />
-                {field.label && (
-                  <label className="text-xs font-semibold text-blue-900 dark:text-blue-200 tracking-wide select-none transition-all">
-                    {field.label}
-                  </label>
-                )}
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  {field.label}
+                </label>
               </div>
             );
           }
@@ -152,17 +135,17 @@ export const FilterPanel = ({
             return (
               <div
                 key={field.name}
-                className="flex flex-col bg-gradient-to-tr from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950/90 rounded-2xl border border-gray-200 dark:border-gray-800 px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:border-blue-300 transition-all w-full min-w-0"
+                className="flex flex-col gap-1 p-3 rounded-2xl bg-white/40 dark:bg-gray-900/40 backdrop-blur border border-white/20 hover:shadow-lg transition-all"
               >
-                <label className="mb-1 text-xs font-semibold text-blue-900 dark:text-blue-200 tracking-wide select-none transition-all">
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
                   {field.label}
                 </label>
                 <select
                   value={field.value}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLSelectElement>
-                  ) => field.onChange(e.target.value)}
-                  className="w-full py-2 pl-3 pr-8 rounded-xl outline-none bg-transparent border-0 text-sm text-blue-900 dark:text-white cursor-pointer focus:ring-2 focus:ring-blue-400 transition-all"
+                  onChange={(e) =>
+                    field.onChange(e.target.value)
+                  }
+                  className={`${base} cursor-pointer`}
                 >
                   <option value="">All</option>
                   {field.options.map((opt) => (
@@ -180,27 +163,29 @@ export const FilterPanel = ({
             return (
               <div
                 key={field.name}
-                className="flex flex-col bg-gradient-to-tr from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950/90 rounded-2xl border border-gray-200 dark:border-gray-800 px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:border-blue-300 transition-all w-full min-w-0"
+                className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-gray-900/40 backdrop-blur border border-white/20 hover:shadow-lg transition-all"
               >
-                <label className="mb-1 text-xs font-semibold text-blue-900 dark:text-blue-200 tracking-wide select-none transition-all">
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
                   {field.label}
                 </label>
+
                 <div className="flex items-center gap-3">
                   <input
                     type="range"
                     min={field.min}
                     max={field.max}
                     value={field.value}
-                    onChange={(
-                      e: React.ChangeEvent<HTMLInputElement>
-                    ) => field.onChange(Number(e.target.value))}
-                    className="w-full accent-blue-500 transition-[accent-color]"
+                    onChange={(e) =>
+                      field.onChange(Number(e.target.value))
+                    }
+                    className="w-full accent-blue-500"
                   />
-                  <span className="text-sm font-semibold text-blue-700 dark:text-blue-200 whitespace-nowrap">
+                  <span className="text-sm font-bold text-blue-600">
                     ${field.value}
                   </span>
                 </div>
-                <div className="flex justify-between text-xs text-blue-400 dark:text-blue-300 mt-1 tracking-wide">
+
+                <div className="flex justify-between text-xs text-gray-400">
                   <span>${field.min}</span>
                   <span>${field.max}</span>
                 </div>
@@ -212,14 +197,16 @@ export const FilterPanel = ({
         })}
       </form>
 
+      {/* Reset Button */}
       {onReset && (
-        <div className="flex justify-end mt-8 w-full">
+        <div className="flex justify-end mt-8">
           <button
             onClick={onReset}
             type="button"
-            className="inline-block bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 text-white font-semibold px-7 py-2.5 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 hover:scale-[1.03] active:scale-95 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="relative px-6 py-2.5 rounded-xl text-white font-semibold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
           >
-            <span className="tracking-wide">Reset Filters</span>
+            <span className="relative z-10">Reset Filters</span>
+            <span className="absolute inset-0 rounded-xl blur opacity-40 bg-gradient-to-r from-blue-400 to-pink-400"></span>
           </button>
         </div>
       )}

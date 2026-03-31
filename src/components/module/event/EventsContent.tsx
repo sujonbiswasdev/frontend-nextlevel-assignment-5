@@ -23,6 +23,18 @@ export default function EventContent({
   const searchParams = useSearchParams();
   const [search, setsearch] = useState("");
   const router=useRouter()
+  if(!events){
+  return (
+    <div className="w-full flex flex-col items-center justify-center min-h-[400px] py-20">
+      <div className="text-3xl font-semibold text-gray-500 mb-4">
+        No events found
+      </div>
+      <div className="text-gray-400">
+        Try adjusting your filters or search to find events.
+      </div>
+    </div>
+  );
+  }
   
 
   const { updateFilters, reset, isPending } = useFilter();

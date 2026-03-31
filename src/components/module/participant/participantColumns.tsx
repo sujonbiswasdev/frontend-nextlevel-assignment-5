@@ -1,10 +1,11 @@
+import CopyableId from "@/components/shared/CopyId";
+
 export const createParticipantColumns = (router: any) => [
   {
     key: "id",
     label: "ID",
-    render: (p: any) => <span>{p.id.slice(0, 2)}</span>,
+    render: (p: any) => { return <CopyableId id={p.id} href={`/events/${p.id}`} />},
   },
-
   {
     key: "userId",
     label: "User",
@@ -14,7 +15,6 @@ export const createParticipantColumns = (router: any) => [
       </span>
     ),
   },
-
   {
     key: "eventId",
     label: "Event",
@@ -27,7 +27,6 @@ export const createParticipantColumns = (router: any) => [
       </button>
     ),
   },
-
   {
     key: "status",
     label: "Status",
@@ -47,7 +46,6 @@ export const createParticipantColumns = (router: any) => [
       </span>
     ),
   },
-
   {
     key: "paymentStatus",
     label: "Payment",
@@ -76,7 +74,6 @@ export const createParticipantColumns = (router: any) => [
       }
     },
   },
-
   {
     key: "joinedAt",
     label: "Joined At",

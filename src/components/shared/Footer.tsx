@@ -5,6 +5,7 @@ import FacebookFillIcon from "../icons/facebook";
 import YoutubeFillIcon from "../icons/youtube";
 import GithubIcon from "../icons/github";
 
+
 const footerLinks = {
   company: [
     { label: "Contact", href: "/contact" },

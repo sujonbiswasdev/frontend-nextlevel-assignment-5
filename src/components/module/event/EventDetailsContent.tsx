@@ -23,12 +23,6 @@ const EventDetailsPage = ({
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const router=useRouter()
 
-  const formattedDate = new Date(eventData.date).toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-
   const handleAddParticipant = async (id: string) => {
     const toastId = toast.loading("Registering attendance...");
 
@@ -77,13 +71,19 @@ const EventDetailsPage = ({
 
             {/* IMAGE */}
             <div className="relative rounded-2xl overflow-hidden mb-10 border">
-              <Image
-                src={eventData.image}
-                alt={eventData.title}
-                width={1200}
-                height={700}
-                className="w-full h-[420px] object-cover"
-              />
+              {eventData?.image ? (
+                <Image
+                  src={eventData.image}
+                  alt={eventData.title}
+                  width={1200}
+                  height={700}
+                  className="w-full h-[420px] object-cover"
+                />
+              ) : (
+                <div className="w-full h-[420px] flex items-center justify-center bg-gray-200 text-gray-400">
+                  No Image Available
+                </div>
+              )}
             </div>
 
             {/* TITLE & DESCRIPTION */}
@@ -114,7 +114,7 @@ const EventDetailsPage = ({
                 <Calendar className="text-indigo-600" />
                 <div>
                   <p className="text-xs text-slate-400 font-semibold">Date</p>
-                  <p className="text-sm font-bold">{formattedDate}</p>
+              
                   <p className="text-xs text-indigo-600">{eventData.time}</p>
                 </div>
               </div>

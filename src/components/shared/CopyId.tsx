@@ -1,43 +1,61 @@
+// components/CopyableId.tsx
+"use client";
+
 import React from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-interface CopyableIdProps {
+interface Props {
   id: string;
-  displayLength?: number; // how many chars to show
+  href?: string;
+  showShort?: boolean;
 }
 
-export const CopyableId: React.FC<CopyableIdProps> = ({ id, displayLength = 6 }) => {
-  const handleCopy = () => {
-    const textToCopy = id;
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(textToCopy)
-        .then(() => toast.success("ID copied!"))
-        .catch(() => toast.error("Failed to copy ID."));
-    } else {
-      const textArea = document.createElement("textarea");
-      textArea.value = textToCopy;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-9999px";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
+const CopyableId: React.FC<Props> = ({
+  id,
+  href,
+  showShort = true,
+}) => {
+  const router = useRouter();
+
+  const handleClick = async (
+    event: React.MouseEvent<HTMLSpanElement>
+  ) => {
+    event.stopPropagation();
+
+    // 🔹 ALT → Copy only
+    if (event.altKey) {
       try {
-        document.execCommand("copy");
-        toast.success("ID copied!");
+        await navigator.clipboard.writeText(id);
+        toast.success("Copied ID!");
       } catch {
-        toast.error("Failed to copy ID.");
+        toast.error("Copy failed!");
       }
-      document.body.removeChild(textArea);
+      return;
+    }
+
+    // 🔹 Normal click → Navigate
+    if (href) {
+      router.push(href);
     }
   };
 
   return (
     <span
-      className="cursor-pointer text-blue-500 hover:underline"
-      onClick={handleCopy}
-      title="Click to copy ID"
+      onClick={handleClick}
+      className="group inline-flex items-center gap-1 cursor-pointer text-blue-600 hover:text-blue-700 transition-all"
+      title="Click → View | Alt + Click → Copy"
     >
-      {id.slice(0, displayLength)}
+      <span className="hover:underline">
+        {showShort ? `${id.slice(0, 6)}...` : id}
+      </span>
+
+      {/* Hover copy hint */}
+      <span className="text-[10px] opacity-0 group-hover:opacity-100 transition">
+        📋
+      </span>
     </span>
   );
 };
+
+export default CopyableId;

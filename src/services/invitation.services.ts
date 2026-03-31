@@ -1,6 +1,11 @@
 
 import { TOwnInvitations, TResponseInvitation } from "@/types/invitation.types";
+import { ApiErrorResponse } from "@/types/response.type";
 import { cookies } from "next/headers";
+import { ServiceOptionds } from "./event.services";
+import { revalidateTag } from "next/cache";
+import { IBaseEvent } from "@/types/event.types";
+import { IBaseUser } from "@/types/user.types";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
   throw new Error("API_BASE_URL is not defined. Please set NEXT_PUBLIC_API_BASE_URL in your environment variables.");
@@ -18,14 +23,15 @@ const InvitationService = {
   }) => {
     try {
       const cookieStore = await cookies();
-      const response = await fetch(`${API_BASE_URL}/invitation/event/${eventId}`, {
+      const response = await fetch(`${API_BASE_URL}/invitation`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Cookie: cookieStore.toString(),
         },
-        body: JSON.stringify({ inviteeId, message }),
+        body: JSON.stringify({ eventId,inviteeId, message }),
       });
+      revalidateTag("invitation",'max')
       const body = await response.json();
       if (!response.ok) {
         return {
@@ -43,135 +49,43 @@ const InvitationService = {
     }
   },
 
-  GetuserownInvitations: async () => {
+  GetuserownInvitations: async (params?: any, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
-      const response = await fetch(`${API_BASE_URL}/invitation/user`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: cookieStore.toString(),
-        },
-      });
-      const body = await response.json();
-      if (!response.ok) {
-        return {
-          success: false,
-          message: body?.message || "Failed to fetch invitations",
-        };
+      const url = new URL(`${API_BASE_URL}/invitation/user`);
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.append(key, String(value));
+          }
+        });
       }
-      return {
-        success: true,
-        message: body.message || "Invitations fetched successfully",
-        data: body.data as TOwnInvitations<TResponseInvitation>,
+      const config: RequestInit = {};
+      config.headers = {
+        "Content-Type": "application/json",
+        Cookie: cookieStore.toString(),
       };
-    } catch (error: any) {
-      return { success: false, message: error.message || "Server error" };
-    }
-  },
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["invitation","invitations"] };
 
-  getSentInvitationsByUser: async (userId: string) => {
-    try {
-      const cookieStore = await cookies();
-      const response = await fetch(`${API_BASE_URL}/invitation/sent/${userId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: cookieStore.toString(),
-        },
-      });
-      const body = await response.json();
-      if (!response.ok) {
+      const res = await fetch(url.toString(), config);
+      const data = await res.json();
+
+      if (!res.ok) {
         return {
           success: false,
-          message: body?.message || "Failed to fetch sent invitations",
+          message: data?.message || "Failed to fetch invitations",
         };
       }
       return {
         success: true,
-        message: body.message || "Sent invitations fetched successfully",
-        data: body.data,
-      };
-    } catch (error: any) {
-      return { success: false, message: error.message || "Server error" };
-    }
-  },
-
-  acceptInvitation: async (invitationId: string) => {
-    try {
-      const cookieStore = await cookies();
-      const response = await fetch(`${API_BASE_URL}/invitation/${invitationId}/accept`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: cookieStore.toString(),
-        },
-      });
-      const body = await response.json();
-      if (!response.ok) {
-        return {
-          success: false,
-          message: body?.message || "Failed to accept invitation",
-        };
-      }
-      return {
-        success: true,
-        message: body.message || "Invitation accepted successfully",
-        data: body.data,
-      };
-    } catch (error: any) {
-      return { success: false, message: error.message || "Server error" };
-    }
-  },
-
-  rejectInvitation: async (invitationId: string) => {
-    try {
-      const cookieStore = await cookies();
-      const response = await fetch(`${API_BASE_URL}/invitation/${invitationId}/reject`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: cookieStore.toString(),
-        },
-      });
-      const body = await response.json();
-      if (!response.ok) {
-        return {
-          success: false,
-          message: body?.message || "Failed to reject invitation",
-        };
-      }
-      return {
-        success: true,
-        message: body.message || "Invitation rejected successfully",
-        data: body.data,
-      };
-    } catch (error: any) {
-      return { success: false, message: error.message || "Server error" };
-    }
-  },
-
-  deleteInvitation: async (invitationId: string) => {
-    try {
-      const cookieStore = await cookies();
-      const response = await fetch(`${API_BASE_URL}/invitation/${invitationId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: cookieStore.toString(),
-        },
-      });
-      const body = await response.json();
-      if (!response.ok) {
-        return {
-          success: false,
-          message: body?.message || "Failed to delete invitation",
-        };
-      }
-      return {
-        success: true,
-        message: body.message || "Invitation deleted successfully",
-        data: body.data,
+        message: data?.message || "Invitations fetched successfully.",
+        data: data?.data as TOwnInvitations<TResponseInvitation<{event:IBaseEvent,invitee:IBaseUser}>>,
       };
     } catch (error: any) {
       return { success: false, message: error.message || "Server error" };
