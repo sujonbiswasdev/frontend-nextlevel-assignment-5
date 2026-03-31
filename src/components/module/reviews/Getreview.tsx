@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
@@ -18,6 +18,7 @@ import {
 import PaginationPage from "../event/Pagination";
 import { TResponseReviewData } from "@/types/review.types";
 import { deleteReview } from "@/actions/review.actions";
+import UpdateReviewContent from "./UpdateReviewContent";
 
 /**
  * Assign a unique color to each status or action.
@@ -47,12 +48,22 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
   const [open, setOpen] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
 
+  // For passing default values to UpdateReviewContent instantly
+  const [editReviewDefaultValues, setEditReviewDefaultValues] = useState<{rating?: number, comment?: string}|undefined>();
+
   // Filters form state
   const [form, setForm] = useState({
     rating: 0,
     search: "",
     status: "",
   });
+
+  // Keep a ref to the original reviews array to simplify updating a row in-place
+  const originalReviewsRef = useRef<TResponseReviewData<any>[]>(reviews);
+
+  useEffect(() => {
+    originalReviewsRef.current = reviews;
+  }, [reviews]);
 
   // Handle deleting a review with loading, success, and error notifications
   const handleDeleteReview = async (id: string) => {
@@ -86,9 +97,9 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     [form, updateFilters]
   );
 
-  // Filter reviews based on filters
+  // Instead of filtering the "reviews" which never updates, filter the local tableReviews (so the UI reflects changes!)
   useEffect(() => {
-    let filtered = reviews;
+    let filtered = originalReviewsRef.current;
     if (form.search) {
       const s = form.search.toLowerCase();
       filtered = filtered.filter(
@@ -104,7 +115,7 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       filtered = filtered.filter((r) => r.status === form.status);
     }
     setTableReviews(filtered);
-  }, [form, reviews]);
+  }, [form, reviews]); // keep reviews as dependency; originalReviewsRef is synced in an effect
 
   // Table columns with text-[11px] classes
   const columns = [
@@ -176,6 +187,10 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       label: "Edit",
       onClick: (review: any) => {
         setSelectedReviewId(review.id);
+        setEditReviewDefaultValues({
+          rating: review.rating,
+          comment: review.comment,
+        });
         setOpen(true);
       },
       className: ACTION_COLOR_MAP.edit + " text-[11px]",
@@ -268,24 +283,33 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
         open={open}
         onOpenChange={(val) => {
           setOpen(val);
-          if (!val) setSelectedReviewId(null);
+          if (!val) {
+            setSelectedReviewId(null);
+            setEditReviewDefaultValues(undefined);
+          }
         }}
       >
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-lime-50">
           <DialogHeader />
-          {/* {selectedReviewId && (
-            <UpdateReview
-              id={selectedReviewId}
+          {selectedReviewId && (
+            <UpdateReviewContent
+              reviewId={selectedReviewId}
+              defaultValues={editReviewDefaultValues}
               onSuccess={(updated) => {
                 setTableReviews((prev) =>
-                  prev.map((r) => (r.id === updated.id ? updated : r))
+                  prev.map((r) =>
+                    r.id === updated.id ? { ...r, ...updated } : r
+                  )
+                );
+                originalReviewsRef.current = originalReviewsRef.current.map((r) =>
+                  r.id === updated.id ? { ...r, ...updated } : r
                 );
                 setOpen(false);
                 setSelectedReviewId(null);
-                toast.success("Review updated successfully!");
+                setEditReviewDefaultValues(undefined);
               }}
             />
-          )} */}
+          )}
         </DialogContent>
       </Dialog>
 
