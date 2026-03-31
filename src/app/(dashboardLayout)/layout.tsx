@@ -1,5 +1,7 @@
 import { getSessionAction } from '@/actions/auth.actions'
 import { AppSidebar } from '@/components/app-sidebar'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import ErrorFallback from '@/components/ErrorFallback'
 import ProfileCard from '@/components/module/user/ProfileCard'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { IBaseUser } from '@/types/user.types'
@@ -100,6 +102,17 @@ const RootDashboardLayout = async ({
   children: React.ReactNode
 }) => {
   const userinfo = await getSessionAction();
+  if (!userinfo || !userinfo.data || !userinfo.success) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-white dark:bg-gray-900 px-8 py-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800">
+          <h2 className="font-semibold text-lg mb-2 text-red-500">Authentication Error</h2>
+          <p className="text-gray-700 dark:text-gray-300">You must be signed in to view the dashboard.</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <SidebarProvider
       style={
@@ -164,7 +177,9 @@ const RootDashboardLayout = async ({
         </header>
         <div className="flex min-h-0 flex-1 flex-col overflow-auto">
           <div className="flex w-full max-w-[1440px] min-w-0 flex-1 flex-col px-4 sm:px-6">
-            {userinfo.data?.role==='ADMIN'?admin:user}
+            <ErrorBoundary fallback={<ErrorFallback title="Dashboard Load Failed" message="Something went wrong while loading the dashboard." />}>
+              {userinfo.data?.role==='ADMIN'?admin:user}
+            </ErrorBoundary>
           </div>
         </div>
       </SidebarInset>

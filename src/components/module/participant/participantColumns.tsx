@@ -4,7 +4,7 @@ export const createParticipantColumns = (router: any) => [
   {
     key: "id",
     label: "ID",
-    render: (p: any) => { return <CopyableId id={p.id} href={`/events/${p.id}`} />},
+    render: (p: any) => { return <CopyableId id={p.id}  />},
   },
   {
     key: "userId",
@@ -19,12 +19,7 @@ export const createParticipantColumns = (router: any) => [
     key: "eventId",
     label: "Event",
     render: (p: any) => (
-      <button
-        className="text-indigo-600"
-        onClick={() => router.push(`/events/${p.eventId}`)}
-      >
-        {p.eventId.slice(0, 5)}...
-      </button>
+      <CopyableId id={p.eventId} href={`/events/${p.eventId}`} showShort={p.eventId.slice(0, 5)}/>
     ),
   },
   {

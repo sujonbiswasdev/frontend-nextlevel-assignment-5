@@ -1,13 +1,25 @@
 import { getSessionAction } from '@/actions/auth.actions'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import ErrorFallback from '@/components/ErrorFallback'
 import ProfileUserInfo from '@/components/module/user/ProfileCardContent'
 import { IBaseUser } from '@/types/user.types'
 import React from 'react'
 
 const ProfilePage = async() => {
     const userinfo=await getSessionAction()
+  if (!userinfo || !userinfo.data || !userinfo.success) {
+    return (
+      <ErrorFallback
+        title="Authentication Error"
+        message="You must be signed in to view your profile."
+      />
+    );
+  }
   return (
     <div>
-        <ProfileUserInfo user={userinfo.data as IBaseUser}/>
+        <ErrorBoundary fallback={<ErrorFallback title="Profile load failed" message="Something went wrong while loading your profile." />}>
+          <ProfileUserInfo user={userinfo.data as IBaseUser}/>
+        </ErrorBoundary>
     </div>
   )
 }

@@ -14,7 +14,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteParticipantAction } from "@/actions/participant.actions";
 
 export default function ParticipantContent({ participants, role }: any) {
   const router = useRouter();
@@ -23,7 +22,6 @@ export default function ParticipantContent({ participants, role }: any) {
   const [selectedParticipantId, setSelectedParticipantId] = useState<
     string | null
   >(null);
-  console.log(selectedParticipantId, "sf");
 
   const columns = createParticipantColumns(router);
 

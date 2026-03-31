@@ -36,7 +36,9 @@ export default function ProfileCard({ profile }: { profile: IBaseUser }) {
       return;
     }
     toast.dismiss(toastId);
+
     toast.success(res.data?.message || 'Logged out successfully');
+    router.push("/login")
     router.refresh();
   };
 
