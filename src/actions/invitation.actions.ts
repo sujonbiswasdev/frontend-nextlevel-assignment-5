@@ -14,3 +14,7 @@ export const inviteToEventAction = async ({
 }: InviteToEventParams) => {
   return await InvitationService.inviteToEvent({ eventId, inviteeId, message });
 };
+
+export const getOwnUserInvitationsAction = async () => {
+  return await InvitationService.GetuserownInvitations();
+};
