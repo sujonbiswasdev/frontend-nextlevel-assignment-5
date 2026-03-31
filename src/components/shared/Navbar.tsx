@@ -10,6 +10,7 @@ import { navItems } from '@/routes/navitems';
 import { getIconComponent } from '@/lib/iconMapper';
 import { logoutAction } from "@/actions/auth.actions";
 import { toast } from "react-toastify";
+import { NavbarNotifications } from '../module/notification/Notification';
 
 interface NavbarProps { user: IBaseUser | null }
 
@@ -94,7 +95,12 @@ export default function Navbar({ user }: NavbarProps) {
         {/* Right Side */}
         <div className="hidden md:flex items-center gap-3">
           {user ? (
-            <Button
+
+            <div className='flex items-center  gap-4 space-x-2'>
+                 <div className='mt-2'>
+                 <NavbarNotifications  />
+                 </div>
+                  <Button
               variant="outline"
               size="sm"
               onClick={handleLogout}
@@ -102,6 +108,7 @@ export default function Navbar({ user }: NavbarProps) {
             >
               Log out
             </Button>
+            </div>
           ) : (
             <>
               <Link href="/login">

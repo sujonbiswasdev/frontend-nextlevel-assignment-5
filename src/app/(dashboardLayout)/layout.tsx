@@ -2,6 +2,7 @@ import { getSessionAction } from '@/actions/auth.actions'
 import { AppSidebar } from '@/components/app-sidebar'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import ErrorFallback from '@/components/ErrorFallback'
+import { NavbarNotifications } from '@/components/module/notification/Notification'
 import ProfileCard from '@/components/module/user/ProfileCard'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { IBaseUser } from '@/types/user.types'
@@ -171,6 +172,9 @@ const RootDashboardLayout = async ({
 
             {/* Profile Avatar / User Actions -- ProfileCard now opens on click rather than always being open */}
             <div className="flex items-center gap-3 min-w-[2.5rem] justify-end">
+            <div className='mt-2'>
+                 <NavbarNotifications  />
+                 </div>
               <ProfileCard profile={userinfo.data as IBaseUser} />
             </div>
           </div>

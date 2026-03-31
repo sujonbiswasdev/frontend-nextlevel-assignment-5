@@ -91,6 +91,7 @@ const InvitationService = {
       return { success: false, message: error.message || "Server error" };
     }
   },
+  
 };
 
 export default InvitationService;
