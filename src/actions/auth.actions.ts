@@ -43,3 +43,7 @@ export async function logoutAction() {
     const result = await AuthService.logout();
     return result;
 }
+export async function changePasswordAction(data: { currentPassword: string; newPassword: string }) {
+    const result = await AuthService.changePassword(data.currentPassword, data.newPassword);
+    return result;
+}
