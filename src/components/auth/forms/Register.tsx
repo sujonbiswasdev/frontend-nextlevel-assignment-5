@@ -26,6 +26,7 @@ import { registerUserAction } from "@/actions/auth.actions";
 import { UserCreateInput } from "@/types/auth.types";
 import { createUserSchema } from "@/validations/auth.validation";
 import { FormInput } from "@/components/ui/frominput";
+import Link from "next/link";
 
 export function SignupForm() {
   const router = useRouter();
@@ -62,7 +63,20 @@ export function SignupForm() {
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>create a new user</CardTitle>
+        <div className="mb-3">
+          <Link
+            href="/"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+        <CardTitle className="text-center text-2xl font-bold">
+          Create a New Account
+        </CardTitle>
+          <div className="flex justify-center mt-2">
+            <span className="h-1 w-32 rounded-full bg-gradient-to-r from-blue-400 via-fuchsia-500 to-emerald-400 opacity-70 animate-pulse"></span>
+          </div>
       </CardHeader>
       <CardContent>
         <form
@@ -205,8 +219,15 @@ export function SignupForm() {
           </FieldGroup>
         </form>
       </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
+      
+      <CardFooter className=" flex flex-col space-y-3 justify-center items-center">
+      <Link
+            href="/login"
+            className="inline-block text-sm text-blue-600 hover:underline"
+          >
+            Already have an account? Login
+          </Link>
+        <Field orientation="horizontal" className="flex items-center justify-center">
           <Button type="button" variant="outline" onClick={() => form.reset()}>
             Reset
           </Button>

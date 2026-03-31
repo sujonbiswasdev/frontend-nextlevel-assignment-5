@@ -25,6 +25,7 @@ import { loginUserAction } from "@/actions/auth.actions";
 import { forgotPasswordEmailOtpAction } from "@/actions/auth.actions";
 import { useState } from "react";
 import { FormInput } from "@/components/ui/frominput";
+import Link from "next/link";
 
 export function SigninForm() {
   const router = useRouter();
@@ -95,6 +96,14 @@ export function SigninForm() {
     <div className="flex items-center justify-center min-h-screen bg-muted py-6 px-2 sm:px-0">
       <Card className="w-full max-w-md shadow-lg border-0 bg-white dark:bg-gray-900 transition-all sm:rounded-2xl">
         <CardHeader className="text-center">
+          <div className="flex flex-col gap-2 mb-3">
+            <Link
+              href="/"
+              className="inline-block text-sm text-blue-600 hover:underline"
+            >
+              ← Back to Home
+            </Link>
+          </div>
           <CardTitle className="text-2xl font-semibold mb-1">
             Welcome Back
           </CardTitle>
