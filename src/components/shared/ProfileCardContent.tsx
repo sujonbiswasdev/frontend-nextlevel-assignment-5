@@ -1,384 +1,368 @@
 "use client";
+
+import { IBaseUser, TUpdateUserInput } from "@/types/user.types";
+import { updateUserSchema } from "@/validations/user.validation";
 import { Pencil } from "lucide-react";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { toast } from "react-toastify";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import InfoRow from "./InfoRow";
 import { Status, StatusIndicator, StatusLabel } from "../ui/status";
-import { IBaseUser, TUpdateUserInput } from "@/types/user.types";
+import { updateUserProfileAction } from "@/actions/user.actions";
 
-function ProfileUserInfo({ user }: { user: IBaseUser }) {
+function ProfileModal({ user }: { user: IBaseUser }) {
   const router = useRouter();
-  const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user });
+  const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user })
   const [inputvalue, setinputvalue] = useState<Partial<TUpdateUserInput>>({});
-  const [editfield, seteditfield] = useState<"" | "image" | "bgimage" | "name" | "phone" | "isActive">("");
-  const defaultProfile = "https://images.pexels.com/photos/952670/pexels-photo-952670.jpeg";
-
-  useEffect(() => {
-    if (!user) {
-      toast.error("user not found", { autoClose: 2000, theme: "colored" });
-      router.push("/");
+  const [editfield, seteditfield] = useState<
+    string | boolean | "bgimage" | "name" | "phone" | "isActive"
+  >("");
+  if (!user) {
+    toast("user not found", { autoClose: 2000, theme: "colored" });
+    router.push("/");
+  }
+  const defaultProfile =
+    "https://images.pexels.com/photos/952670/pexels-photo-952670.jpeg";
+  const handleUpdateUser = async <k extends keyof IBaseUser>(
+    field: k,
+    value: IBaseUser[k],
+  ) => {
+    if (value == null) {
+      toast.error("please provide a value", {
+        theme: "colored",
+        position: "bottom-right",
+        autoClose: 2000,
+      });
+      return;
     }
-  }, [user]);
+    const parseData = updateUserSchema.safeParse({ [field]: value });
+    if (!parseData.success) {
+      const errors = parseData.error.flatten().fieldErrors;
 
-  // Color Palette
-  const accent = "indigo";
-  const accentDark = "indigo-700";
-  const inputBorder = "border-neutral-200";
-  const labelColor = "text-neutral-600";
-  const cardBg = "bg-white";
-  const shadow = "shadow-lg";
-  const sectionRadius = "rounded-2xl";
+      Object.values(errors).forEach((err) => {
+        if (err) {
+          toast.error(err[1], {
+            position: "bottom-right",
+            autoClose: 2000,
+          });
+        }
+      });
+      return;
+    }
+    try {
+      const toastid = toast.loading(`"user ${field} updating...."`, {
+        theme: "dark",
+        position: "bottom-right",
+        autoClose: 2000,
+      });
+      const res = await updateUserProfileAction({ [field]: value });
+      if (res.error || !res.success) {
+        toast.dismiss(toastid);
+        toast.error(res.message || `"user ${field} update failed"`, {
+          theme: "dark",
+          position: "bottom-right",
+          autoClose: 2000,
+        });
+        return;
+      }
+      toast.dismiss(toastid);
+      toast.success(res.result?.message || `"user ${field} update successfully"`, {
+        theme: "dark",
+        position: "bottom-right",
+        autoClose: 2000,
+      });
+      setuserinfo((prev) => ({ ...prev, [field]: value }));
+    } catch (error: any) {
+      toast.error(`someting went wrong please try again`);
+    }
+  };
 
   return (
-    <section className={`w-full max-w-2xl mx-auto mt-8 mb-8 ${cardBg} ${sectionRadius} ${shadow} border border-neutral-100 transition-all`}>
-      {/* Profile Header with Background */}
+    <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl mx-auto">
+      {/* Header */}
       <div
-        className={`relative min-h-[160px] sm:min-h-[200px] md:min-h-[240px] bg-cover bg-center flex items-end justify-center`}
+        className="flex items-center justify-between border-b p-6 max-w-full bg-cover bg-center"
         style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(30,41,59,0.17), rgba(255,255,255,0.01)), url(${
-            inputvalue.bgimage ||
-            useinfo.bgimage ||
-            "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1200&q=80"
-          })`,
+          backgroundImage: `url(${useinfo.bgimage})`,
         }}
       >
-        {/* Edit background button */}
-        <button
-          className="absolute top-6 right-8 bg-white hover:bg-indigo-100 border border-indigo-100 rounded-full p-2 transition z-10 shadow-md"
-          onClick={() => seteditfield("bgimage")}
-          aria-label="Edit background"
-          style={{ display: editfield === "bgimage" ? "none" : undefined }}
-        >
-          <Pencil className="w-5 h-5 text-indigo-700" />
-        </button>
-        {editfield === "bgimage" && (
-          <div className="absolute top-6 right-8 bg-white p-5 rounded-xl shadow-lg border border-neutral-100 w-[95vw] max-w-md z-30 flex flex-col sm:flex-row gap-4 items-center">
-            <Input
-              className={`flex-1 min-w-[120px] ${inputBorder}`}
-              value={inputvalue.bgimage ?? ""}
-              onChange={(e) => setinputvalue({ ...inputvalue, bgimage: e.target.value })}
-              placeholder="Paste header image URL"
-            />
-            <div className="flex gap-2 mt-2 sm:mt-0">
+        <div className="flex items-center gap-4">
+          {editfield !== "image" ? (
+            <div className="flex items-center justify-between px-6 py-4">
+              <div className="flex gap-1 pr-1">
+                <img
+                  src={useinfo.image || defaultProfile}
+                  alt="profile"
+                  className="w-[100px] h-[100px] object-cover rounded-full shadow-sm border-2"
+                />
+                <button
+                  className="w-[5px] -ml-3 -mt-4"
+                  onClick={() => seteditfield("image")}
+                >
+                  <Pencil className="bg-gray-100 text-blue-800 shadow-sm p-1 rounded-md  text-[5px]" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-1 bg-blue-200 rounded-sm">
+              <Input
+                className="focus:ring-2 placeholder:text-black"
+                onChange={(e) =>
+                  setinputvalue({ ...inputvalue, image: e.target.value })
+                }
+                placeholder="Enter your image url"
+              />
               <button
-                className="px-4 py-2 rounded-md bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 text-xs font-medium"
-                onClick={() => seteditfield("")}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-700 text-xs font-semibold"
+                className="w-[5px] -ml-3 -mt-4"
                 onClick={() => {
-                  setuserinfo((prev) => ({
-                    ...prev,
-                    bgimage: inputvalue.bgimage ?? "",
-                  }));
+                  handleUpdateUser("image", inputvalue.image as string);
                   seteditfield("");
                 }}
               >
                 Save
               </button>
             </div>
-          </div>
-        )}
-        {/* Profile Avatar */}
-        <div className="absolute left-1/2 -translate-x-1/2 translate-y-1/2 z-30 flex flex-col items-center">
-          <div className="relative group rounded-full bg-white p-2 shadow-xl border-4 border-white">
-            <img
-              src={useinfo.image || defaultProfile}
-              alt="profile"
-              className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 object-cover rounded-full border-2 border-white ring-2 ring-indigo-200"
-            />
-            {/* Edit image button */}
-            <button
-              className="absolute bottom-2 right-2 bg-white hover:bg-indigo-100 border border-indigo-100 rounded-full p-2 shadow-md transition"
-              onClick={() => seteditfield("image")}
-              aria-label="Edit image"
-              style={{ display: editfield === "image" ? "none" : undefined }}
-            >
-              <Pencil className="w-5 h-5 text-indigo-700" />
-            </button>
-            {editfield === "image" && (
-              <div className="absolute left-1/2 top-[120%] -translate-x-1/2 z-20 flex flex-col bg-white border border-neutral-200 shadow-lg rounded-xl w-72 max-w-xs p-4 gap-3">
-                <Input
-                  value={inputvalue.image ?? ""}
-                  onChange={e => setinputvalue({ ...inputvalue, image: e.target.value })}
-                  placeholder="Paste profile image URL"
-                  className={`w-full ${inputBorder}`}
-                />
-                <div className="flex gap-2 justify-end">
+          )}
+        </div>
+        <div>
+          <div className="flex items-center gap-4">
+            {editfield !== "bgimage" ? (
+              <div className="flex items-center justify-between px-6 py-4">
+                <div className="flex gap-1 pr-1">
                   <button
-                    className="px-4 py-2 rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 text-xs font-medium"
-                    onClick={() => seteditfield("")}
+                    className="w-[5px] ml-30 -mt-30"
+                    onClick={() => seteditfield("bgimage")}
                   >
-                    Cancel
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white border-none text-xs font-semibold"
-                    onClick={() => {
-                      setuserinfo((prev) => ({ ...prev, image: inputvalue.image ?? "" }));
-                      seteditfield("");
-                    }}
-                  >
-                    Save
+                    <Pencil className="bg-gray-100 text-blue-800 shadow-sm p-1 rounded-md  text-[5px]" />
                   </button>
                 </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-1 bg-blue-200 rounded-sm">
+                <Input
+                  className="focus:ring-2 placeholder:text-black"
+                  onChange={(e) =>
+                    setinputvalue({ ...inputvalue, bgimage: e.target.value })
+                  }
+                  placeholder="Enter your image url"
+                />
+                <button
+                  className="w-[5px] -ml-3 -mt-4"
+                  onClick={() => {
+                    handleUpdateUser("bgimage", inputvalue.bgimage as string);
+                    seteditfield("");
+                  }}
+                >
+                  {/* Uncommented update call button */}
+                  Save
+                </button>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Details Card */}
-      <div className="relative pt-24 pb-10 px-5 sm:px-10 md:px-14 bg-white">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
-          {/* Name */}
-          <div>
-            <Label className={`block text-xs font-semibold ${labelColor} uppercase mb-2`}>
-              Full Name
-            </Label>
-            <div className="flex items-center gap-4">
-              {editfield !== "name" ? (
-                <>
-                  <span className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{useinfo.name}</span>
-                  <button
-                    className="ml-2 p-2 rounded-full border border-indigo-100 bg-white hover:bg-indigo-50 transition shadow-sm"
-                    onClick={() => seteditfield("name")}
-                    aria-label="Edit name"
-                  >
-                    <Pencil className="w-4 h-4 text-indigo-700" />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Input
-                    value={inputvalue.name ?? ""}
-                    onChange={(e) => setinputvalue({ ...inputvalue, name: e.target.value })}
-                    placeholder="Enter your name"
-                    className={`w-44 ${inputBorder}`}
-                  />
-                  <div className="flex gap-2 ml-2">
-                    <button
-                      className="px-4 py-2 rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 text-xs font-medium"
-                      onClick={() => seteditfield("")}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
-                      onClick={() => {
-                        setuserinfo((prev) => ({ ...prev, name: inputvalue.name ?? "" }));
-                        seteditfield("");
-                      }}
-                    >
-                      Save
-                    </button>
-                  </div>
-                </>
-              )}
+      {/* Details */}
+      <div className="divide-y">
+        {editfield !== "name" ? (
+          <div className="flex items-center justify-between px-6 py-4">
+            <Label className="text-gray-600">Name</Label>
+            <div className="flex gap-1 pr-1">
+              <p className="text-gray-900">{useinfo?.name}</p>
+              <button className="w-[5px]" onClick={() => seteditfield("name")}>
+                <Pencil className="text-green-800 text-[5px]" />
+              </button>
             </div>
           </div>
-          {/* Email */}
-          <div>
-            <Label className={`block text-xs font-semibold ${labelColor} uppercase mb-2`}>
-              Email Address
-            </Label>
-            <div className="font-medium text-base text-gray-800 truncate">{user.email}</div>
+        ) : (
+          <div className="flex items-center justify-between px-6 py-4 gap-1">
+            <Input
+              onChange={(e) =>
+                setinputvalue({ ...inputvalue, name: e.target.value })
+              }
+              placeholder="Enter your name"
+            />
+            <button
+              onClick={() => {
+                handleUpdateUser("name", inputvalue.name as string);
+                seteditfield("");
+              }}
+            >
+              Save
+            </button>
           </div>
-          {/* Phone */}
-          <div>
-            <Label className={`block text-xs font-semibold ${labelColor} uppercase mb-2`}>
-              Phone
-            </Label>
-            <div className="flex items-center gap-4">
-              {editfield !== "phone" ? (
-                <>
-                  <span className="text-base text-gray-800 font-medium">
-                    {useinfo.phone || "017********"}
-                  </span>
-                  <button
-                    className="p-2 rounded-full border border-indigo-100 bg-white hover:bg-indigo-50 transition shadow-sm"
-                    onClick={() => seteditfield("phone")}
-                    aria-label="Edit phone"
-                  >
-                    <Pencil className="w-4 h-4 text-indigo-700" />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Input
-                    type="tel"
-                    value={inputvalue.phone ?? ""}
-                    onChange={(e) =>
-                      setinputvalue({ ...inputvalue, phone: e.target.value })
-                    }
-                    placeholder="Enter your phone number"
-                    className={`w-44 ${inputBorder}`}
-                  />
-                  <div className="flex gap-2 ml-2">
-                    <button
-                      className="px-4 py-2 rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 text-xs font-medium"
-                      onClick={() => seteditfield("")}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
-                      onClick={() => {
-                        setuserinfo((prev) => ({ ...prev, phone: inputvalue.phone ?? "" }));
-                        seteditfield("");
-                      }}
-                    >
-                      Save
-                    </button>
-                  </div>
-                </>
-              )}
+        )}
+
+        <InfoRow label="Email Address" value={user.email} />
+
+        {/* Phone */}
+        {editfield !== "phone" ? (
+          <div className="flex items-center justify-between px-6 py-4">
+            <Label className="text-gray-600">phone</Label>
+            <div className="flex gap-1 pr-1">
+              <p className="text-gray-900">
+                {useinfo?.phone || "017********"}
+              </p>
+              <button className="w-[5px]" onClick={() => seteditfield("phone")}>
+                <Pencil className="text-green-800 text-[5px]" />
+              </button>
             </div>
           </div>
-          {/* Role */}
-          <div>
-            <Label className={`block text-xs font-semibold ${labelColor} uppercase mb-2`}>
-              Role
-            </Label>
-            <span className="font-semibold uppercase text-indigo-700 bg-indigo-100 px-3 py-1.5 rounded text-xs shadow">{user.role as string}</span>
+        ) : (
+          <div className="flex items-center justify-between px-6 py-4 gap-1">
+            <Input
+              onChange={(e) =>
+                setinputvalue({ ...inputvalue, phone: e.target.value })
+              }
+              placeholder="Enter your phone number"
+            />
+            <button
+              onClick={() => {
+                handleUpdateUser("phone", inputvalue.phone as string);
+                seteditfield("");
+              }}
+            >
+              Save
+            </button>
           </div>
-          {/* Status */}
-          <div>
-            <Label className={`block text-xs font-semibold ${labelColor} uppercase mb-2`}>
-              Status
-            </Label>
-            <div className="text-sm mt-1">
-              {user.status === "ACTIVE" && (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-100 text-green-700 font-semibold border border-green-200">
-                  <span className="w-3 h-3 rounded-full bg-green-500 mr-1"></span>
-                  Active
+        )}
+
+        {/* Role (info only) */}
+        <InfoRow label="Role" value={user.role as string} />
+
+        {/* Status */}
+        <div className="flex items-center justify-between px-6 py-4">
+          <Label className="text-gray-600">Status</Label>
+          <h4>
+            {/* Show a tag for each possible user status, with relevant data */}
+            {user.status === "ACTIVE" ? (
+              <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+                Active
+                <span className="ml-2 text-gray-500">
+                  {user.status}
                 </span>
-              )}
-              {user.status === "BLOCKED" && (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-100 text-yellow-800 font-semibold border border-yellow-300">
-                  <span className="w-3 h-3 rounded-full bg-yellow-400 mr-1"></span>
-                  Blocked
+              </span>
+            ) : user.status === "BLOCKED" ? (
+              <span className="inline-flex items-center px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">
+                Blocked
+                <span className="ml-2 text-gray-500">
+                  {user.status}
                 </span>
-              )}
-              {user.status === "DELETED" && (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-100 text-red-700 font-semibold border border-red-200">
-                  <span className="w-3 h-3 rounded-full bg-red-400 mr-1"></span>
-                  Deleted
+              </span>
+            ) : user.status === "DELETED" ? (
+              <span className="inline-flex items-center px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">
+                Deleted
+                <span className="ml-2 text-gray-500">
+                  {user.status}
                 </span>
-              )}
-            </div>
-          </div>
-          {/* Email Verified */}
-          <div>
-            <Label className={`block text-xs font-semibold ${labelColor} uppercase mb-2`}>
-              Email Verified
-            </Label>
-            <div>
-              {user.emailVerified ? (
+              </span>
+            ) : (
+              <span className="inline-flex items-center px-2 py-1 rounded bg-gray-100 text-gray-800 text-xs font-medium">
+                Unknown
+                <span className="ml-2 text-gray-500">
+                  {user.status}
+                </span>
+              </span>
+            )}
+          </h4>
+        </div>
+
+        {/* Email Verified */}
+        <div className="flex items-center justify-between px-6 py-4">
+          <Label className="text-gray-600">Email Verified</Label>
+          <h4>
+            {user.emailVerified ? (
+              <div>
                 <Status variant="success">
                   <StatusIndicator />
-                  <StatusLabel className="text-green-700 font-semibold">Yes</StatusLabel>
+                  <StatusLabel className="text-gray-900">Yes</StatusLabel>
                 </Status>
-              ) : (
+              </div>
+            ) : (
+              <>
                 <Status variant="error">
                   <StatusIndicator />
-                  <StatusLabel className="text-red-700 font-semibold">No</StatusLabel>
+                  <StatusLabel className="text-gray-900">No</StatusLabel>
                 </Status>
-              )}
-            </div>
-          </div>
-          {/* Active */}
-          <div>
-            <Label className={`block text-xs font-semibold ${labelColor} uppercase mb-2`}>
-              Active
-            </Label>
-            <div className="flex items-center gap-4">
-              {editfield !== "isActive" ? (
-                <>
-                  {useinfo.isActive ? (
+              </>
+            )}
+          </h4>
+        </div>
+
+        <div className="flex items-center justify-between px-6 py-4">
+          <Label className="text-gray-600">isActive</Label>
+
+          {editfield !== "isActive" ? (
+            <div className="flex gap-1">
+              <h4>
+                {useinfo.isActive ? (
+                  <div className="">
                     <Status variant="success">
-                      <StatusIndicator className="bg-green-400" />
-                      <StatusLabel className="text-green-800 font-bold">Online</StatusLabel>
+                      <StatusIndicator />
+                      <StatusLabel className="text-gray-900">
+                        online
+                      </StatusLabel>
                     </Status>
-                  ) : (
-                    <Status variant="error">
-                      <StatusIndicator className="bg-red-400" />
-                      <StatusLabel className="text-red-700 font-bold">Offline</StatusLabel>
-                    </Status>
-                  )}
-                  <button
-                    className="p-2 rounded-full border border-indigo-100 bg-white hover:bg-indigo-50 transition shadow-sm"
-                    onClick={() => seteditfield("isActive")}
-                    aria-label="Edit active"
-                  >
-                    <Pencil className="w-4 h-4 text-indigo-700" />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <label className="inline-flex items-center cursor-pointer gap-3">
-                    <span className="text-sm text-gray-900 font-medium">Active?</span>
-                    <input
-                      type="checkbox"
-                      checked={inputvalue.isActive ?? useinfo.isActive ?? false}
-                      onChange={e =>
-                        setinputvalue((prev: any) => ({
-                          ...prev,
-                          isActive: e.target.checked,
-                        }))
-                      }
-                      className="accent-indigo-600 w-5 h-5"
-                      aria-label="Active status"
-                    />
-                  </label>
-                  <div className="flex gap-2 ml-2">
-                    <button
-                      className="px-4 py-2 rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 text-xs font-medium"
-                      onClick={() => seteditfield("")}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
-                      onClick={() => {
-                        setuserinfo((prev) => ({
-                          ...prev,
-                          isActive: inputvalue.isActive ?? useinfo.isActive ?? false,
-                        }));
-                        seteditfield("");
-                      }}
-                    >
-                      Save
-                    </button>
                   </div>
-                </>
-              )}
+                ) : (
+                  <>
+                    <Status variant="error">
+                      <StatusIndicator />
+                      <StatusLabel className="text-gray-900">
+                        offline
+                      </StatusLabel>
+                    </Status>
+                  </>
+                )}
+              </h4>
+              <button
+                className="w-[5px]"
+                onClick={() => seteditfield("isActive")}
+              >
+                <Pencil className="text-green-800 text-[5px]" />
+              </button>
             </div>
-          </div>
+          ) : (
+            <div className="flex items-center justify-between px-6 py-4 gap-1">
+              <Input
+                type="checkbox"
+                checked={(inputvalue.isActive as boolean) || false}
+                onChange={(e) =>
+                  setinputvalue((prev: any) => ({
+                    ...prev,
+                    isActive: e.target.checked,
+                  }))
+                }
+              />
+              <button
+                onClick={() => {
+                  handleUpdateUser("isActive", inputvalue.isActive as boolean);
+                  seteditfield("");
+                }}
+              >
+                Save
+              </button>
+            </div>
+          )}
         </div>
-        {/* Divider & Footers */}
-        <div className="mt-12 flex flex-col md:flex-row items-start md:items-center justify-between border-t pt-8 gap-3">
-          <h2 className="text-lg font-semibold text-indigo-900 tracking-wide">
-            Profile
-          </h2>
-          <span className="text-xs text-neutral-400 italic mt-2 md:mt-0">
-            Share/profile features coming soon
-          </span>
+     <InfoRow
+          label="createdAt"
+          value={user.createdAt.toLocaleString().slice(0, 10)}
+        /> 
+        <div className="flex items-center justify-between px-6 py-4">
+          <h2 className="text-sm font-semibold text-gray-600">Profile</h2>
+         
         </div>
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-5 pb-2 gap-3">
-          <h2 className="text-lg font-semibold text-pink-700 tracking-wide">
-            Account
-          </h2>
-          <span className="text-xs text-neutral-300 italic mt-2 md:mt-0">
-            Remove account feature coming soon
-          </span>
+        <div className="flex items-center justify-between px-6 py-4">
+          <h2 className="text-sm font-semibold text-gray-600">account</h2>
+
+         
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
-export default ProfileUserInfo;
+export default ProfileModal;

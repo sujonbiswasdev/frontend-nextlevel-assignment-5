@@ -63,7 +63,7 @@ export const UserNavItems : NavSection[] = [
             },
             {
                 title: "Settings",
-                href: "/user/dashboard/setting",
+                href: "/user/dashboard/settings",
                 icon: "Settings"
             }
         ]
