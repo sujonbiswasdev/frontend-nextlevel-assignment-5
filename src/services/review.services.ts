@@ -92,4 +92,51 @@ export const reviewService = {
       return { message: "something went wrong please try again" };
     }
   },
+  deleteReview: async (reviewid: string, options?: ServiceOptionds) => {
+    try {
+      const cookieStore = await cookies();
+      const url = new URL(`${API_BASE_URL}/review/${reviewid}`);
+
+      const config: RequestInit = {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+        credentials: "include",
+      };
+
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["review", "reviews"] };
+
+      const res = await fetch(url.toString(), config);
+      const data = await res.json();
+
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: error.success,
+          message: error.message || "Failed to delete review",
+        };
+      }
+
+      return {
+        success: data.success,
+        message: data.message || "Review deleted successfully",
+        data: data.data,
+      };
+    } catch (e: any) {
+      return {
+        success: false,
+        message: e.message || "Server error",
+        error: "Server error"
+      };
+    }
+  },
+  
 }

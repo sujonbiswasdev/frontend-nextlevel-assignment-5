@@ -8,3 +8,7 @@ export const createReview = async (eventid: string, data: ICreatereviewData) => 
 export const getMyReviews = async (params?: any, options?: any) => {
   return await reviewService.getMyReview(params, options);
 };
+
+export const deleteReview = async (id: string, options?: any) => {
+  return await reviewService.deleteReview(id, options);
+};

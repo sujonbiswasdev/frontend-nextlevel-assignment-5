@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 import { ReusableTable } from "../table/Table";
 import { FilterPanel } from "@/components/Filter";
-import { TPagination, TResponseEvent } from "@/types/event.types";
+import { TPagination } from "@/types/event.types";
 import { TFilterField } from "@/types/filter.types";
 import { useFilter } from "@/components/ReusableFilter";
 import {
@@ -17,6 +17,22 @@ import {
 } from "@/components/ui/dialog";
 import PaginationPage from "../event/Pagination";
 import { TResponseReviewData } from "@/types/review.types";
+import { deleteReview } from "@/actions/review.actions";
+
+/**
+ * Assign a unique color to each status or action.
+ */
+const STATUS_COLOR_MAP: Record<string, string> = {
+  APPROVED: "bg-green-200 text-green-800",
+  PENDING: "bg-yellow-200 text-yellow-800",
+  REJECTED: "bg-red-200 text-red-800"
+};
+
+const ACTION_COLOR_MAP = {
+  view: "text-fuchsia-500 hover:bg-fuchsia-50",
+  edit: "text-cyan-700 hover:bg-cyan-50",
+  delete: "text-rose-600 hover:bg-rose-50"
+};
 
 interface MyReviewsTableProps {
   reviews: TResponseReviewData<any>[];
@@ -30,8 +46,6 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
   const [loading] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
-  console.log(tableReviews,'tsd')
-  
 
   // Filters form state
   const [form, setForm] = useState({
@@ -39,6 +53,27 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     search: "",
     status: "",
   });
+
+  // Handle deleting a review with loading, success, and error notifications
+  const handleDeleteReview = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this review? This action cannot be undone.")) {
+      return;
+    }
+    try {
+      const toastId = toast.loading("Deleting review...");
+      const result = await deleteReview(id);
+      toast.dismiss(toastId);
+
+      if (result && result.success) {
+        toast.success(result.message || "Review deleted successfully!");
+        setTableReviews(prev => prev.filter((review) => review.id !== id));
+      } else {
+        toast.error(result?.message || "Failed to delete review");
+      }
+    } catch (e: any) {
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
 
   const { updateFilters, reset } = useFilter();
 
@@ -51,11 +86,9 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     [form, updateFilters]
   );
 
-  // Filter reviews based on status or other filters if needed
+  // Filter reviews based on filters
   useEffect(() => {
     let filtered = reviews;
-
-    // Filter by search
     if (form.search) {
       const s = form.search.toLowerCase();
       filtered = filtered.filter(
@@ -64,38 +97,79 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
           r.event?.title?.toLowerCase().includes(s)
       );
     }
-
-    // Filter by rating
     if (form.rating > 0) {
       filtered = filtered.filter((r) => r.rating >= form.rating);
     }
-
-    // Filter by status
     if (form.status) {
       filtered = filtered.filter((r) => r.status === form.status);
     }
-
     setTableReviews(filtered);
   }, [form, reviews]);
 
-  // Table columns
+  // Table columns with text-[11px] classes
   const columns = [
-    { key: "id", label: "ID", render: (r: any) => r.id.slice(0, 6) },
-    { key: "event", label: "Event", render: (r: any) => r.event?.title },
-    { key: "user", label: "User", render: (r: any) => {return r.user?.name && r.user.email} },
-    { key: "comment", label: "Comment", render: (r: any) => r.comment.slice(0, 40) + "..." },
-    { key: "rating", label: "Rating" },
-    { key: "status", label: "Status" },
-    { key: "createdAt", label: "Created At", render: (r: any) => new Date(r.createdAt).toLocaleString() },
+    {
+      key: "id",
+      label: "ID",
+      render: (r: any) => (
+        <span className="font-mono text-blue-900 text-[11px]">{r.id.slice(0, 6)}</span>
+      )
+    },
+    {
+      key: "event",
+      label: "Event",
+      render: (r: any) => (
+        <span className="text-violet-700 text-[11px]">{r.event?.title?.slice(0, 12)}</span>
+      )
+    },
+    {
+      key: "user",
+      label: "User",
+      render: (r: any) => (
+        <span className="text-emerald-800 text-[11px]">
+          {r.user?.name} <br /> <span className="text-[11px] font-light">{r.user?.email}</span>
+        </span>
+      )
+    },
+    {
+      key: "comment",
+      label: "Comment",
+      render: (r: any) => (
+        <span className="text-gray-700 italic text-[11px]">{r.comment?.slice(0, 24) + (r.comment?.length > 24 ? "..." : "")}</span>
+      )
+    },
+    {
+      key: "rating",
+      label: "Rating",
+      render: (r: any) => (
+        <span className="bg-purple-200 px-2 py-1 rounded-md font-semibold text-purple-800 text-[11px]">{r.rating}</span>
+      )
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (r: any) => (
+        <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest shadow-md ${STATUS_COLOR_MAP[r.status] || "bg-gray-200 text-gray-800"} text-[11px]`}>
+          {r.status}
+        </span>
+      )
+    },
+    {
+      key: "createdAt",
+      label: "Created At",
+      render: (r: any) => (
+        <span className="text-indigo-600 text-[11px]">{r.createdAt?.slice(0, 10)}</span>
+      )
+    },
   ];
 
-  // Actions
+  // Actions with unique colors using text-[11px]
   const actions = [
     {
       icon: Eye,
       label: "View",
       onClick: (review: any) => router.push(`/events/${review.eventId}`),
-      className: "text-green-500",
+      className: ACTION_COLOR_MAP.view + " text-[11px]",
     },
     {
       icon: Pencil,
@@ -104,29 +178,15 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
         setSelectedReviewId(review.id);
         setOpen(true);
       },
-      className: "text-blue-500",
+      className: ACTION_COLOR_MAP.edit + " text-[11px]",
     },
     {
       icon: Trash2,
       label: "Delete",
       onClick: async (review: any) => {
-        if (!window.confirm("Are you sure you want to delete this review?")) return;
-        const toastId = toast.loading("Deleting review...");
-        // try {
-        //   const resp = await deleteReview(review.id);
-        //   toast.dismiss(toastId);
-        //   if (resp.success) {
-        //     setTableReviews((prev) => prev.filter((r) => r.id !== review.id));
-        //     toast.success(resp.message || "Review deleted");
-        //   } else {
-        //     toast.error(resp.message || "Failed to delete review");
-        //   }
-        // } catch (err: any) {
-        //   toast.dismiss();
-        //   toast.error("Error deleting review: " + (err.message || ""));
-        // }
+        handleDeleteReview(review.id);
       },
-      className: "text-red-500",
+      className: ACTION_COLOR_MAP.delete + " text-[11px]",
     },
   ];
 
@@ -166,7 +226,7 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     <div className="max-w-[1480px] mx-auto px-4 py-8">
       {/* Filter panel */}
       <section className="w-full mb-10 px-2">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white/80 dark:bg-gray-900/80 shadow-lg rounded-2xl p-6 md:p-8 border border-blue-100 dark:border-blue-900/40 transition-all">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-gradient-to-tr from-sky-50 via-white to-indigo-50 dark:bg-gradient-to-tr dark:from-gray-900 dark:to-slate-900 shadow-lg rounded-2xl p-6 md:p-8 border border-sky-200 dark:border-blue-900/40 transition-all">
           <div className="flex-1">
             <FilterPanel
               fields={fields}
@@ -183,10 +243,16 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       {/* Table container */}
       <div
         className="w-full"
-        style={{ maxHeight: "60vh", overflowY: "auto", overflowX: "auto", borderRadius: "1rem", background: "white" }}
+        style={{
+          maxHeight: "60vh",
+          overflowY: "auto",
+          overflowX: "auto",
+          borderRadius: "1rem",
+          background: "linear-gradient(135deg, #f0f9ff 0%, #fcf6fd 100%)"
+        }}
       >
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <p className="text-center text-lg text-cyan-500 font-semibold py-8">Loading...</p>
         ) : (
           <ReusableTable
             columns={columns as any}
@@ -205,7 +271,7 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
           if (!val) setSelectedReviewId(null);
         }}
       >
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-lime-50">
           <DialogHeader />
           {/* {selectedReviewId && (
             <UpdateReview
