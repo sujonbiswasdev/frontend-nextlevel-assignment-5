@@ -26,3 +26,8 @@ export const deleteParticipantAction = async (id: string) => {
 
 
 
+
+export const getOwnParticipantPayment = async (id:string) => {
+  const response = await ParticipantService.getOwnPayment(id);
+  return response;
+};

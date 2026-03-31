@@ -93,7 +93,7 @@ const DashboardSearchInput = () => {
 const RootDashboardLayout = async ({
   admin,
   user,
-  children: _children,
+  children,
 }: {
   admin: React.ReactNode
   user: React.ReactNode
@@ -165,7 +165,7 @@ const RootDashboardLayout = async ({
         <div className="flex min-h-0 flex-1 flex-col overflow-auto">
           <div className="flex w-full max-w-[1440px] min-w-0 flex-1 flex-col px-4 sm:px-6">
             {/* {admin} */}
-            {user}
+            {userinfo.data?.role==='ADMIN'?admin:user} {children}
           </div>
         </div>
       </SidebarInset>

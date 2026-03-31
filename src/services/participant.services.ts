@@ -26,6 +26,7 @@ const ParticipantService = {
       });
       revalidateTag("participant", "max");
       const data = await response.json();
+      console.log(data,'dskfjddfsfs')
       if (!response.ok) {
         return {
           success: false,
@@ -162,6 +163,37 @@ const ParticipantService = {
       return {
         success: false,
         message: "Something went wrong",
+      };
+    }
+  },
+  getOwnPayment: async (id:string) => {
+    try {
+      const cookieStore = await cookies();
+      const res = await fetch(`${API_BASE_URL}/participant/event/${id}/own-payment`, {
+        method: "GET",
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        return {
+          success: false,
+          message: error.message || "Failed to fetch payment information",
+        };
+      }
+
+      const data = await res.json();
+      return {
+        success: true,
+        data: data.data,
+        message: data.message || "Fetched payment information successfully",
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err?.message || "Something went wrong while fetching payment info",
       };
     }
   },

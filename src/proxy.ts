@@ -57,6 +57,15 @@ export const proxy = async (request: NextRequest) => {
       }
     }
 
+    if (pathname.startsWith("/payment")) {
+      if (role !== "ADMIN" && role !== "USER") {
+        return NextResponse.json(
+          { error: "Access denied. Only users and admins can access payment routes." },
+          { status: 403 }
+        );
+      }
+    }
+
     if (pathname.startsWith("/user")) {
       if (role !== "USER") {
         return NextResponse.json(
@@ -93,5 +102,5 @@ export const proxy = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/admin/:path*", "/user/:path*", "/dashboard/:path*"],
+  matcher: ["/admin/:path*", "/user/:path*", "/dashboard/:path*","/payment/:path*"],
 };

@@ -13,6 +13,7 @@ import { createParticipant } from "@/actions/participant.actions";
 import { getEventAction } from "@/utils/event.actions";
 import ReviewForm from "../reviews/CreateReview";
 import ReviewItem from "../reviews/ReviewItem";
+import { useRouter } from "next/navigation";
 
 const EventDetailsPage = ({
   eventData,
@@ -20,6 +21,7 @@ const EventDetailsPage = ({
   eventData: TResponseEvent<{ organizer: IBaseUser; reviews: TResponseReviewData<{ user: IBaseUser; event: IBaseEvent }>[] }>;
 }) => {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
+  const router=useRouter()
 
   const formattedDate = new Date(eventData.date).toLocaleDateString("en-US", {
     weekday: "long",
@@ -29,11 +31,14 @@ const EventDetailsPage = ({
 
   const handleAddParticipant = async (id: string) => {
     const toastId = toast.loading("Registering attendance...");
+
     try {
       const res = await createParticipant(id);
       toast.dismiss(toastId);
       if (res.success) {
-        toast.success(res.message || "You have been added as a participant!");
+        router.push(res.data.paymentUrl)
+        console.log(res)
+        toast.success((res.message, res.data) || "You have been added as a participant!");
       } else {
         toast.error(res.message || "Failed to add participant.");
       }
@@ -43,10 +48,8 @@ const EventDetailsPage = ({
       console.error(err);
     }
   };
-
   return (
     <div className="min-h-screen bg-slate-50">
-
       {/* NAVBAR */}
       <nav className="sticky top-0 z-40 bg-white/70 backdrop-blur border-b">
         <div className="max-w-[1480px] mx-auto px-6 h-20 flex items-center justify-between">
@@ -54,7 +57,6 @@ const EventDetailsPage = ({
             <ChevronLeft size={18} />
             Back to Events
           </button>
-
           <div className="flex gap-3">
             <button className="p-2 border rounded-full hover:bg-slate-100">
               <Share2 size={16} />
