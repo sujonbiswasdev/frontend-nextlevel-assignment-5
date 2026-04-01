@@ -1,23 +1,24 @@
 'use client'
-import { DashboardData } from '@/types/stats.types'
+import { DashboardData, MonthlyRevenue } from '@/types/stats.types'
 import React from 'react'
 import { StatCard } from './StatsCard'
 import { DashboardBarChart, monthlyRevenue } from './DashboardBarChart'
 import { ChartContainer, ChartTooltip } from '../ui/chart'
 import { BarChart } from 'lucide-react'
 import { Bar } from 'recharts'
-const DashboardContent = ({stats}:{stats:DashboardData}) => {
-  console.log(stats.pieChartData,'pieChartData')
-  const chartConfig = {
-    dataKey: 'value',
-    fill: 'var(--color-primary)',
-    radius: 8,
-  }
+import EarningChart from './chart/EarningChart'
+const DashboardContent = ({stats}:{stats:DashboardData<MonthlyRevenue >}) => {
+  console.log(stats.barChartData,'barChartData',stats.pieChartData,'pieChartData',stats.monthlyRevenue,'monthlyRevenue')
   return (
     <div>
       <StatsCounts statsCount={stats.counts}/>
       <EventStatusCounts eventStatus={stats.eventStatus as unknown as { upcoming: number; completed: number; cancelled: number }} />
-      <DashboardBarChart stats={stats.monthlyRevenue as unknown as monthlyRevenue[]} />     
+      <EarningChart
+        stats={
+          stats.monthlyRevenue as monthlyRevenue[]
+        }
+        earningRate={stats.totalRevenue}
+      />
       </div>
   )
 }

@@ -10,6 +10,11 @@ export interface Counts {
   payments: number;
 }
 
+export interface MonthlyRevenue {
+  month: string;
+  revenue: number;
+}
+
 export interface EventStatus {
   upcoming: number;
   completed: number;
@@ -22,11 +27,11 @@ export interface ChartData {
   value: number;
 }
 
-export interface DashboardData {
+export interface DashboardData<T> {
   counts: Counts;
   totalRevenue: number;
-  monthlyRevenue: ChartData[]; // month + value
+  monthlyRevenue: T[]; // month + value
   eventStatus: EventStatus;
-  pieChartData: ChartData[];   // label + value
-  barChartData: ChartData[];   // month + value
+  pieChartData: T[];   // label + value
+  barChartData: T[];   // month + value
 }
