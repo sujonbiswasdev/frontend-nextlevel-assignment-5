@@ -1,7 +1,7 @@
 import { getSessionAction } from '@/actions/auth.actions';
 import { getParticipants } from '@/actions/participant.actions';
 import ParticipantContent from '@/components/module/participant/ParticipantContent';
-import { IBaseEvent } from '@/types/event.types';
+import { IBaseEvent, TPagination } from '@/types/event.types';
 import { TResponseParticipant } from '@/types/participant.types';
 import { IBaseUser } from '@/types/user.types';
 import next from 'next';
@@ -20,9 +20,10 @@ const ParticipantPage = async({
   const participants= await getParticipants(search,{
     revalidate: 2
   });
+  console.log(participants,'ts')
   return (
     <div>
-      <ParticipantContent participants={participants.data as TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[]} role={role}/>
+      <ParticipantContent pagination={participants.pagination as TPagination} participants={participants.data as TResponseParticipant<{ user: IBaseUser[]; event: IBaseEvent[]}>[]} role={role as string}/>
     </div>
   )
 }

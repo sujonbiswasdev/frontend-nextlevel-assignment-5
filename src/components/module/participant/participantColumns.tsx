@@ -1,83 +1,120 @@
 import CopyableId from "@/components/shared/CopyId";
 
-export const createParticipantColumns = (router: any) => [
+export const createParticipantColumns = () => [
   {
     key: "id",
     label: "ID",
-    render: (p: any) => { return <CopyableId id={p.id}  />},
-  },
-  {
-    key: "userId",
-    label: "User",
-    render: (p: any) => (
-      <span className="px-2 py-1 rounded bg-indigo-100 text-indigo-700">
-        {p.userId.slice(0, 5)}...
-      </span>
+    render: (row: any) => (
+      <CopyableId id={row.id} showShort={row.id.slice(0, 8)} />
     ),
   },
   {
     key: "eventId",
     label: "Event",
-    render: (p: any) => (
-      <CopyableId id={p.eventId} href={`/events/${p.eventId}`} showShort={p.eventId.slice(0, 5)}/>
+    render: (row: any) => (
+      <CopyableId
+        id={row.eventId}
+        href={row.eventId ? `/events/${row.eventId}` : undefined}
+        showShort={row.eventId?.slice(0, 8)}
+      />
+    ),
+  },
+  {
+    key: "userId",
+    label: "User",
+    render: (row: any) => (
+      <CopyableId
+        id={row.userId}
+        href={row.userId ? `/users/${row.userId}` : undefined}
+        showShort={row.userId?.slice(0, 8)}
+      />
     ),
   },
   {
     key: "status",
     label: "Status",
-    render: (p: any) => (
-      <span className={
-        p.status === "PENDING"
-          ? "text-yellow-500"
-          : p.status === "APPROVED"
-            ? "text-green-500"
-            : p.status === "REJECTED"
-              ? "text-red-500"
-              : p.status === "BANNED"
-                ? "text-purple-700"
-                : "text-gray-500"
-      }>
-        {p.status}
-      </span>
-    ),
+    render: (row: any) => {
+      let color = "";
+      let text = "";
+      switch (row.status) {
+        case "PENDING":
+          color = "bg-yellow-100 text-yellow-800";
+          text = "Pending";
+          break;
+        case "APPROVED":
+          color = "bg-green-100 text-green-800";
+          text = "Approved";
+          break;
+        case "REJECTED":
+          color = "bg-red-100 text-red-800";
+          text = "Rejected";
+          break;
+        case "BANNED":
+          color = "bg-gray-800 text-white border-gray-600";
+          text = "Banned";
+          break;
+        default:
+          color = "bg-gray-100 text-gray-800";
+          text = row.status;
+      }
+      return (
+        <span
+          className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${color}`}
+        >
+          {text}
+        </span>
+      );
+    },
   },
   {
     key: "paymentStatus",
     label: "Payment",
-    render: (p: any) => {
-      switch (p.paymentStatus) {
-        case 'PAID':
-          return (
-            <span className="text-xs sm:text-sm inline-block px-2 py-1 rounded bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 font-semibold min-w-[40px]">
-              PAID
-            </span>
-          );
-        case 'UNPAID':
-          return (
-            <span className="text-xs sm:text-sm inline-block px-2 py-1 rounded bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 font-semibold min-w-[46px]">
-              UNPAID
-            </span>
-          );
-        case 'FREE':
-          return (
-            <span className="text-xs sm:text-sm inline-block px-2 py-1 rounded bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-200 font-semibold min-w-[80px]">
-              FREE atake kore daw
-            </span>
-          );
+    render: (row: any) => {
+      let color = "";
+      let text = "";
+      switch (row.paymentStatus) {
+        case "PAID":
+          color = "bg-green-100 text-green-800";
+          text = "Paid";
+          break;
+        case "UNPAID":
+          color = "bg-red-100 text-red-800";
+          text = "Unpaid";
+          break;
+        case "FREE":
+          color = "bg-gray-100 text-gray-800";
+          text = "Free";
+          break;
         default:
-          return <span className="text-xs sm:text-sm text-gray-400">N/A</span>;
+          color = "bg-gray-50 text-gray-400";
+          text = "N/A";
       }
+      return (
+        <span
+          className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${color}`}
+        >
+          {text}
+        </span>
+      );
     },
   },
   {
     key: "joinedAt",
     label: "Joined At",
-    render: (p: any) => (
-      <span>
-        {p.joinedAt
-          ? new Date(p.joinedAt).toLocaleString()
-          : "N/A"}
-      </span>
-    ),
+    render: (row: any) =>
+      row.joinedAt ? (
+        <span
+          className="text-gray-600"
+          title={new Date(row.joinedAt).toLocaleString()}
+        >
+          {new Date(row.joinedAt).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ) : (
+        <span className="text-gray-400">--</span>
+      ),
   },
 ];

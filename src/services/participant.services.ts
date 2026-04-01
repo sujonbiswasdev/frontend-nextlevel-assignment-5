@@ -4,7 +4,7 @@ import { ServiceOptionds } from "./event.services";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { TResponseParticipant } from "@/types/participant.types";
 import { IBaseUser } from "@/types/user.types";
-import { IBaseEvent } from "@/types/event.types";
+import { IBaseEvent, TPagination } from "@/types/event.types";
 import { UpdateParticipantInput } from "@/validations/participant.validation";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
@@ -76,7 +76,6 @@ const ParticipantService = {
 
        });
       const data = await res.json() ;
-      const result =data as ApiResponse<TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[]>
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {
@@ -86,8 +85,9 @@ const ParticipantService = {
       }
       return {
         success: true,
-        message: result?.message || "Participants retrieved successfully",
-        data: result?.data,
+        message: data?.message || "Participants retrieved successfully",
+        data: data?.data.result as TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[],
+        pagination:data.data.pagination as TPagination
       };
     } catch (error) {
       return {
