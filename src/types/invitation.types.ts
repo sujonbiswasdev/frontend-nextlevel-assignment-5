@@ -1,4 +1,5 @@
 import { paymentStatusEnum, InvitationStatusEnum } from "@/validations/invitation.validation";
+import { TPagination } from "./event.types";
 
 export const INVITATION_PaymentStatus_ARR = paymentStatusEnum.options;
 export const INVITATION_Status_ARR = InvitationStatusEnum.options;
@@ -23,4 +24,6 @@ export type TResponseInvitation<T = unknown> = TInvitation & T;
 export type TOwnInvitations<T> = {
   receivedInvitations: TResponseInvitation<T>[];
   sentInvitations: TResponseInvitation<T>[];
+  receivedPagination: TPagination,
+  sentPagination: TPagination
 };
