@@ -247,6 +247,36 @@ const ParticipantService = {
       };
     }
   },
+  deleteEventRequiestJoinData: async (id: string) => {
+    try {
+      const cookieStore = await cookies();
+      const res = await fetch(`${API_BASE_URL}/participant/request/event/${id}`, {
+        method: "DELETE",
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data.message || "Failed to delete event request",
+        };
+      }
+
+      return {
+        success: data.success,
+        message: data.message || "Event request deleted successfully",
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err?.message || "Something went wrong while deleting event request",
+      };
+    }
+  },
 
 };
 

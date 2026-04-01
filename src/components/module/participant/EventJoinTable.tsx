@@ -21,6 +21,7 @@ import PaginationPage from "../event/Pagination";
 import { createParticipantColumns } from "./participantColumns";
 import { toast } from "react-toastify";
 import ViewParticipantData from "./ViewParicipantData";
+import { deleteEventRequiestJoinData } from "@/actions/participant.actions";
 
 export default function RequestEventJoinContent({
   participants,
@@ -94,14 +95,14 @@ export default function RequestEventJoinContent({
         return;
       }
       const toastId = toast.loading("Deleting event. Please wait...");
-    //   const resp = await deleteEvent(eventId);
-    //   toast.dismiss(toastId);
-    //   if (resp.success) {
-    //     setTableData((prev) => prev.filter((participant) => participant.id !== eventId));
-    //     toast.success(resp.message || "Event deleted successfully");
-    //   } else {
-    //     toast.error(resp.message || "Failed to delete event");
-    //   }
+      const resp = await deleteEventRequiestJoinData(eventId);
+      toast.dismiss(toastId);
+      if (resp.success) {
+        setTableData((prev) => prev.filter((participant) => participant.id !== eventId));
+        toast.success(resp.message || "The event join request has been successfully deleted.");
+      } else {
+        toast.error(resp.message || "Failed to delete event request. Please contact support if the problem persists.");
+      }
     } catch (error: any) {
       toast.dismiss();
       toast.error(

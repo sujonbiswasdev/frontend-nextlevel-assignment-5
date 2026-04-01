@@ -29,6 +29,11 @@ export const getParticipantsByEvent = async (params?: any, options?: any) => {
   return response;
 };
 
+export const deleteEventRequiestJoinData = async (id: string) => {
+  return await ParticipantService.deleteEventRequiestJoinData(id);
+};
+
+
 
 
 export const getOwnParticipantPayment = async (id:string) => {
