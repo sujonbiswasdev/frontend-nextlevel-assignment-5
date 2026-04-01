@@ -24,6 +24,10 @@ export const deleteParticipantAction = async (id: string) => {
   return await ParticipantService.participantDelete(id);
 };
 
+export const getParticipantsByEvent = async (params?: any, options?: any) => {
+  const response = await ParticipantService.getParticipantsByEvent(params, options);
+  return response;
+};
 
 
 

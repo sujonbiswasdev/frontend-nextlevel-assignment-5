@@ -14,6 +14,7 @@ import { getEventAction } from "@/utils/event.actions";
 import ReviewForm from "../reviews/CreateReview";
 import ReviewItem from "../reviews/ReviewItem";
 import { useRouter } from "next/navigation";
+import { initiatePayLater, initiatePayment } from "@/actions/payment.actions";
 
 const EventDetailsPage = ({
   eventData,
@@ -31,7 +32,6 @@ const EventDetailsPage = ({
       toast.dismiss(toastId);
       if (res.success) {
         router.push(res.data.paymentUrl)
-        console.log(res)
         toast.success((res.message, res.data) || "You have been added as a participant!");
       } else {
         toast.error(res.message || "Failed to add participant.");
@@ -42,6 +42,47 @@ const EventDetailsPage = ({
       console.error(err);
     }
   };
+
+  // handlePayNow ata diya function daw
+
+  const handlePayNow = async (eventId: string) => {
+    const toastId = toast.loading("Processing payment...");
+
+    try {
+      const res = await createParticipant(eventId);
+      toast.dismiss(toastId);
+      if (res.success && res.data?.paymentUrl) {
+        router.push(res.data.paymentUrl);
+        toast.success(res.message || "Redirecting to payment.");
+      } else {
+        toast.error(res.message || "Payment could not be initiated.");
+      }
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error("Payment processing failed.");
+      console.error(err);
+    }
+  };
+
+  const handlePayLater = async (eventId: string) => {
+    const toastId = toast.loading("Processing Pay Later request...");
+
+    try {
+      const res = await initiatePayLater(eventId);
+      toast.dismiss(toastId);
+      if (res.success && res.data?.redirectUrl) {
+        toast.success(res.message || "Redirecting to your payment page.");
+      } else {
+        toast.error(res.message || "Pay Later could not be initiated.");
+      }
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error("Request failed for Pay Later.");
+      console.error(err);
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* NAVBAR */}
@@ -169,13 +210,29 @@ const EventDetailsPage = ({
                   <p>Status: {eventData.status}</p>
                 </div>
 
-                <button
-                  onClick={() => handleAddParticipant(eventData.id)}
-                  className="w-full py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition"
-                >
-                  {getEventAction(eventData.priceType as IEventPricing, eventData.visibility as unknown as IEventTypeEnum)}
-                  <ArrowRight size={16} />
-                </button>
+                {eventData.fee === 0 ? (
+                  <button
+                    onClick={() => handleAddParticipant(eventData.id)}
+                    className="w-full py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition"
+                  >
+                    Join Now
+                  </button>
+                ) : (
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handlePayNow(eventData.id)}
+                      className="flex-1 py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition"
+                    >
+                      Pay & Join
+                    </button>
+                    <button
+                      onClick={() => handlePayLater(eventData.id)}
+                      className="flex-1 py-3 bg-slate-200 text-slate-800 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-slate-300 transition"
+                    >
+                      Pay Later & request
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

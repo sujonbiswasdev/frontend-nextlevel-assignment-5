@@ -7,14 +7,16 @@ import React from 'react';
 const ViewParticipantData = ({
   viewMode,
   viewData,
+  ispay
 }: {
+  ispay?:boolean;
   viewMode: boolean;
   viewData?: TResponseParticipant<{ event: IBaseEvent; user: IBaseUser; }>;
 }) => {
   return (
     <div>
       {viewMode && viewData && (
-        <div className="rounded-2xl border border-gray-100 bg-white shadow-xl px-4 sm:px-6 py-6 space-y-8">
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-xl px-4 sm:px-6 py-6 space-y-8 overflow-y-scroll">
           <div className="flex flex-col sm:flex-row gap-6 items-center">
             <div className="flex-shrink-0 w-28 h-28 flex items-center justify-center border border-blue-100 rounded-xl bg-gradient-to-tr from-blue-50 to-indigo-50 shadow-inner overflow-hidden">
               {viewData.event?.image ? (
@@ -130,7 +132,7 @@ const ViewParticipantData = ({
                 {viewData.paymentStatus}
               </span>
             </div>
-            
+
             <div>
               <span className="text-gray-500 font-medium">Email:</span>
               <span className="block mt-0.5">{viewData.user.email}</span>
@@ -149,6 +151,29 @@ const ViewParticipantData = ({
                   : '-'}
               </span>
             </div>
+
+            {ispay ? (
+              <div className="flex items-center sm:col-span-2">
+                <button
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg cursor-pointer bg-indigo-600 hover:bg-indigo-700 focus:bg-indigo-800 text-white text-base font-semibold shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-700"
+                  style={{ minWidth: "140px", letterSpacing: "0.01rem" }}
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a5 5 0 00-10 0v2m2 8h6M12 17v1m-6-3h12a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z" />
+                  </svg>
+                  Pay Now
+                </button>
+              </div>
+            ) : null}
+            
           </div>
         </div>
       )}

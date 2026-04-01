@@ -96,6 +96,56 @@ const ParticipantService = {
       };
     }
   },
+  getParticipantsByEvent: async (params?: any, options?: ServiceOptionds) => {
+    try {
+      const cookieStore = await cookies();
+      const url = new URL(`${API_BASE_URL}/participant/request/event`);
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.append(key, String(value));
+          }
+        });
+      }
+      const config: RequestInit = {};
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["participant"] };
+
+      const res = await fetch(url.toString(), {
+        ...config,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: error.success,
+          message: error.message || "retrieve participants by event failed",
+        };
+      }
+      return {
+        success: true,
+        message: data?.message || "Participants by event retrieved successfully",
+        data: data?.data as TResponseParticipant<{event: IBaseEvent[] ,user:IBaseUser[]}>[],
+        pagination: data.data.pagination as TPagination,
+      };
+    } catch (error) {
+      return { 
+        success: false,
+        message: "Something went wrong please try again",
+      };
+    }
+  },
   participantUpdate: async (id: string, payload: UpdateParticipantInput) => {
     try {
       const cookieStore = await cookies(); // if using Next.js server cookies
@@ -197,6 +247,7 @@ const ParticipantService = {
       };
     }
   },
+
 };
 
 export default ParticipantService;
