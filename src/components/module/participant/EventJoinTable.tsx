@@ -26,7 +26,7 @@ import { deleteEventRequiestJoinData } from "@/actions/participant.actions";
 export default function RequestEventJoinContent({
   participants,
 }: {
-  participants: TResponseParticipant<{event: IBaseEvent[],user:IBaseUser[] }>[],
+  participants: TResponseParticipant<{event: IBaseEvent,user:IBaseUser }>[],
 }) {
   const [tableData, setTableData] = useState(participants);
   const [open, setOpen] = useState(false);
@@ -98,6 +98,7 @@ export default function RequestEventJoinContent({
       const resp = await deleteEventRequiestJoinData(eventId);
       toast.dismiss(toastId);
       if (resp.success) {
+        router.refresh()
         setTableData((prev) => prev.filter((participant) => participant.id !== eventId));
         toast.success(resp.message || "The event join request has been successfully deleted.");
       } else {

@@ -20,7 +20,7 @@ const RequestEventJoin = async({
     <React.Suspense fallback={<div>Loading event participant requests...</div>}>
       <ErrorBoundary fallback={<div>Something went wrong loading event join requests.</div>}>
         <div>
-            <RequestEventJoinContent participants={participantsByEvent.data as TResponseParticipant<{event: IBaseEvent[],user:IBaseUser[] }>[]}/>
+            <RequestEventJoinContent participants={participantsByEvent.data as TResponseParticipant<{event: IBaseEvent,user:IBaseUser }>[]}/>
         </div>
       </ErrorBoundary>
     </React.Suspense>

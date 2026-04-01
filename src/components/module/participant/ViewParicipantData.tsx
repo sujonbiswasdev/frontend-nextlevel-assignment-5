@@ -1,7 +1,11 @@
+import { deleteEventRequiestJoinData } from '@/actions/participant.actions';
+import { initiatePayLater, initiatePayment } from '@/actions/payment.actions';
 import { IBaseEvent } from '@/types/event.types';
 import { TBaseParticipant, TResponseParticipant } from '@/types/participant.types';
 import { IBaseUser } from '@/types/user.types';
+import { useRouter } from 'next/navigation';
 import React from 'react';
+import { toast } from 'react-toastify';
 
 
 const ViewParticipantData = ({
@@ -13,6 +17,29 @@ const ViewParticipantData = ({
   viewMode: boolean;
   viewData?: TResponseParticipant<{ event: IBaseEvent; user: IBaseUser; }>;
 }) => {
+  const router=useRouter()
+
+
+  const handlePayNow = async (eventId: string) => {
+    const toastId = toast.loading("Processing payment...");
+    try {
+      const res = await initiatePayment(eventId);
+      toast.dismiss(toastId);
+      if (res.success && res.data?.paymentUrl) {
+        router.push(res.data.paymentUrl);
+        toast.success(res.message || "Redirecting to payment.");
+        return
+      } else {
+        toast.error(res.message || "Payment could not be initiated.");
+      }
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error("Payment processing failed.");
+      console.error(err);
+    }
+  };
+
+
   return (
     <div>
       {viewMode && viewData && (
@@ -134,6 +161,13 @@ const ViewParticipantData = ({
             </div>
 
             <div>
+              <span className="text-gray-500 font-medium">fee:</span>
+              <span className="block mt-0.5">
+                {viewData.event.fee}
+              </span>
+            </div>
+
+            <div>
               <span className="text-gray-500 font-medium">Email:</span>
               <span className="block mt-0.5">{viewData.user.email}</span>
             </div>
@@ -154,7 +188,7 @@ const ViewParticipantData = ({
 
             {ispay ? (
               <div className="flex items-center sm:col-span-2">
-                <button
+                <button onClick={()=>handlePayNow(viewData.event.id)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg cursor-pointer bg-indigo-600 hover:bg-indigo-700 focus:bg-indigo-800 text-white text-base font-semibold shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-700"
                   style={{ minWidth: "140px", letterSpacing: "0.01rem" }}
                 >

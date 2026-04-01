@@ -26,7 +26,6 @@ export function UpdateParticipantForm({
   role: string;
   onSuccess: (updated: any) => void;
 }) {
-  console.log(id,'id')
   const form = useForm({
     defaultValues: { status: "PENDING", // Enum default value
       paymentStatus: "UNPAID",},

@@ -30,6 +30,7 @@ export const PaymentService={
           }
       
           const data = await res.json();
+          console.log(data,'ressd')
           return {
             success: true,
             data: data.data,

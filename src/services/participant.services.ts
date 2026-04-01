@@ -136,7 +136,7 @@ const ParticipantService = {
       return {
         success: true,
         message: data?.message || "Participants by event retrieved successfully",
-        data: data?.data as TResponseParticipant<{event: IBaseEvent[] ,user:IBaseUser[]}>[],
+        data: data?.data as TResponseParticipant<{event: IBaseEvent ,user:IBaseUser}>[],
         pagination: data.data.pagination as TPagination,
       };
     } catch (error) {

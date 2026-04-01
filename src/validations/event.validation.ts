@@ -71,7 +71,7 @@ export const CreateEventSchema = z.object({
   image: z.string().url("Image URL is required"),
   visibility: EventTypeEnum.default("PUBLIC"),
   priceType: PricingTypeEnum.default('FREE'),
-  fee: z.coerce.number().min(0, { message: "Fee cannot be negative" }).optional(),
+  fee: z.coerce.number().min(60, "Minimum amount must be at least 60 BDT").optional(),
   status: EventStatusEnum.default("UPCOMING"),
   is_featured: z.boolean().optional().default(false),
 })

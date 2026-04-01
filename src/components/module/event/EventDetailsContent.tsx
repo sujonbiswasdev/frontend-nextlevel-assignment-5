@@ -47,7 +47,6 @@ const EventDetailsPage = ({
 
   const handlePayNow = async (eventId: string) => {
     const toastId = toast.loading("Processing payment...");
-
     try {
       const res = await createParticipant(eventId);
       toast.dismiss(toastId);
