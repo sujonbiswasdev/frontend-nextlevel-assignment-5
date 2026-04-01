@@ -19,6 +19,7 @@ import {
 import UpdateEvent from "./UpdateEvent";
 import { deleteEvent } from "@/actions/event.actions";
 import CopyableId from "@/components/shared/CopyId";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MyEventsTableProps {
   Events: TGroupedEvents;
@@ -270,7 +271,7 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
         {loading ? (
           <p className="text-center">Loading...</p>
         ) : (
-          <ReusableTable
+           <ReusableTable
             columns={columns as any}
             data={tableEvents}
             actions={role === "USER" ? actions : undefined}

@@ -65,7 +65,7 @@ const EventCategoryCard: React.FC<EventCategoryCardProps> = ({ event }) => {
           </span>
           <span className="flex items-center gap-1">
             <svg width="16" height="16" className="text-yellow-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27L16.18 18l-1.64-7.03L19 7.245l-7.19-.61L10 0 8.19 6.635 1 7.245l5.46 3.725L4.82 18z"></path></svg>
-            {parseFloat(event.avgRating?.toString() || "0").toFixed(1)} ({event.totalReviews ?? 0} reviews)
+            {parseFloat(event.avgRating.toFixed(1)?.toString() || "0").toFixed(1)} ({event.totalReviews ?? 0} reviews)
           </span>
         </div>
         <p className="text-gray-600 text-[15px] md:text-base leading-normal max-h-[60px] md:max-h-[72px] line-clamp-3">
