@@ -1,4 +1,4 @@
-import {  ICreateEvent, IUpdateEventInput, TGroupedEventsResponse, TResponseEvent } from "@/types/event.types";
+import {  IBaseEvent, ICreateEvent, IUpdateEventInput, TGroupedEventsResponse, TResponseEvent } from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { IgetReviewData } from "@/types/review.types";
 import { IBaseUser } from "@/types/user.types";
@@ -262,6 +262,45 @@ const EventService = {
         success: data.success,
         message: data.message || "Event deleted successfully",
         data: data.data, // expected to be the deleted event object
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || "Something went wrong. Please try again.",
+      };
+    }
+  },
+  getFeaturedEvent: async (options?: ServiceOptionds) => {
+    try {
+      const url = new URL(`${API_BASE_URL}/event/isfeatured`);
+      const config: RequestInit = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        },
+      };
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["event", "featured"] };
+
+      const res = await fetch(url.toString(), config);
+      const data = await res.json();
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: false,
+          message: error.message || "Failed to fetch featured event",
+        };
+      }
+
+      return {
+        success: true,
+        message: data.message || "Featured event fetched successfully",
+        data: data.data as IBaseEvent[],
       };
     } catch (error: any) {
       return {

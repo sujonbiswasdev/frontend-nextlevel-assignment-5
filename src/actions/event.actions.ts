@@ -39,3 +39,8 @@ export const deleteEvent = async (
   const response = await EventService.deleteEvent(id, options);
   return response;
 };
+
+export const getFeaturedEvent = async (options?: { cache?: RequestCache; revalidate?: number }) => {
+  const response = await EventService.getFeaturedEvent(options);
+  return response;
+};

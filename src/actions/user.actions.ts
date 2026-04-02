@@ -27,3 +27,8 @@ export async function deleteUserByAdminAction(id: string) {
     const result = await userService.deleteUserByAdmin(id);
     return result;
 }
+
+export async function getUserByIdAction(id: string) {
+    const result = await userService.getuserbyid(id);
+    return result;
+}

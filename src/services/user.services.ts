@@ -144,6 +144,32 @@ deleteUserByAdmin: async (id: string) => {
     return { success: false, message: error.message || "An error occurred while deleting user" };
   }
 },
+getuserbyid: async (id: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/profile/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include"
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data?.message || "Failed to fetch user",
+        errors: data?.errors,
+      };
+    }
+    return {
+      success: data.success,
+      message: data.message || "User fetched successfully",
+      data: data.data,
+    };
+  } catch (error: any) {
+    return { success: false, message: error.message || "An error occurred while fetching user" };
+  }
+},
 
 
 
