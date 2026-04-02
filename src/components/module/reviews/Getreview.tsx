@@ -21,9 +21,6 @@ import { deleteReview } from "@/actions/review.actions";
 import UpdateReviewContent from "./UpdateReviewContent";
 import ModerateUpdateForm from "./ModerateUpdateForm";
 
-/**
- * Assign a unique color to each status or action.
- */
 const STATUS_COLOR_MAP: Record<string, string> = {
   APPROVED: "bg-green-200 text-green-800",
   PENDING: "bg-yellow-200 text-yellow-800",
@@ -44,29 +41,25 @@ interface MyReviewsTableProps {
 
 export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsTableProps) {
   const router = useRouter();
-  const [tableReviews, setTableReviews] = useState(reviews);
+  const [tableReviews, setTableReviews] = useState<TResponseReviewData<any>[]>(reviews);
   const [loading] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
-
-  // For passing default values to UpdateReviewContent instantly
-  const [editReviewDefaultValues, setEditReviewDefaultValues] = useState<{rating?: number, comment?: string}|undefined>();
-
-  // Filters form state
+  const [editReviewDefaultValues, setEditReviewDefaultValues] = useState<{ rating?: number, comment?: string } | undefined>();
   const [form, setForm] = useState({
     rating: 0,
     search: "",
     status: "",
   });
 
-  // Keep a ref to the original reviews array to simplify updating a row in-place
+  // Keep a ref to the original reviews to handle local filtering/editing
   const originalReviewsRef = useRef<TResponseReviewData<any>[]>(reviews);
 
   useEffect(() => {
     originalReviewsRef.current = reviews;
+    setTableReviews(reviews);
   }, [reviews]);
 
-  // Handle deleting a review with loading, success, and error notifications
   const handleDeleteReview = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this review? This action cannot be undone.")) {
       return;
@@ -79,6 +72,7 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       if (result && result.success) {
         toast.success(result.message || "Review deleted successfully!");
         setTableReviews(prev => prev.filter((review) => review.id !== id));
+        originalReviewsRef.current = originalReviewsRef.current.filter((review) => review.id !== id);
       } else {
         toast.error(result?.message || "Failed to delete review");
       }
@@ -98,15 +92,14 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     [form, updateFilters]
   );
 
-  // Instead of filtering the "reviews" which never updates, filter the local tableReviews (so the UI reflects changes!)
   useEffect(() => {
-    let filtered = originalReviewsRef.current;
+    let filtered = [...originalReviewsRef.current];
     if (form.search) {
       const s = form.search.toLowerCase();
       filtered = filtered.filter(
         (r) =>
-          r.comment?.toLowerCase().includes(s) ||
-          r.event?.title?.toLowerCase().includes(s)
+          (r.comment?.toLowerCase().includes(s) ?? false) ||
+          (r.event?.title?.toLowerCase().includes(s) ?? false)
       );
     }
     if (form.rating > 0) {
@@ -116,15 +109,14 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       filtered = filtered.filter((r) => r.status === form.status);
     }
     setTableReviews(filtered);
-  }, [form, reviews]); // keep reviews as dependency; originalReviewsRef is synced in an effect
+  }, [form, reviews]);
 
-  // Table columns with text-[11px] classes
   const columns = [
     {
       key: "id",
       label: "ID",
       render: (r: any) => (
-        <span className="font-mono text-blue-900 text-[11px]">{r.id.slice(0, 6)}</span>
+        <span className="font-mono text-blue-900 text-[11px]">{r.id?.slice(0, 6)}</span>
       )
     },
     {
@@ -147,7 +139,11 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       key: "comment",
       label: "Comment",
       render: (r: any) => (
-        <span className="text-gray-700 italic text-[11px]">{r.comment?.slice(0, 24) + (r.comment?.length > 24 ? "..." : "")}</span>
+        <span className="text-gray-700 italic text-[11px]">
+          {r.comment
+            ? r.comment.slice(0, 24) + (r.comment.length > 24 ? "..." : "")
+            : ""}
+        </span>
       )
     },
     {
@@ -175,7 +171,6 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     },
   ];
 
-  // Actions with unique colors using text-[11px]
   const actions = [
     {
       icon: Eye,
@@ -200,13 +195,12 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       icon: Trash2,
       label: "Delete",
       onClick: async (review: any) => {
-        handleDeleteReview(review.id);
+        await handleDeleteReview(review.id);
       },
       className: ACTION_COLOR_MAP.delete + " text-[11px]",
     },
   ];
 
-  // Filter fields
   const fields: TFilterField[] = [
     {
       type: "text",
@@ -295,28 +289,10 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       >
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-lime-50">
           <DialogHeader />
-          {selectedReviewId && role==="ADMIN"?<>
-          <ModerateUpdateForm 
-              id={selectedReviewId as string}
-              onSuccess={(updated) => {
-                setTableReviews((prev) =>
-                  prev.map((r) =>
-                    r.id === updated.id ? { ...r, ...updated } : r
-                  )
-                );
-                originalReviewsRef.current = originalReviewsRef.current.map((r) =>
-                  r.id === updated.id ? { ...r, ...updated } : r
-                );
-                setOpen(false);
-                setSelectedReviewId(null);
-                setEditReviewDefaultValues(undefined);
-              }}/>
-          <input type="text" name="" id="" />
-          </> : (
-            selectedReviewId ? (
-              <UpdateReviewContent
-                reviewId={selectedReviewId as string}
-                defaultValues={editReviewDefaultValues}
+          {selectedReviewId ? (
+            role === "ADMIN" ? (
+              <ModerateUpdateForm
+                id={selectedReviewId}
                 onSuccess={(updated) => {
                   setTableReviews((prev) =>
                     prev.map((r) =>
@@ -332,10 +308,28 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
                 }}
               />
             ) : (
-              <div className="text-center text-sm text-gray-400 py-8">
-                Please select a review to update.
-              </div>
+              <UpdateReviewContent
+                reviewId={selectedReviewId}
+                defaultValues={editReviewDefaultValues}
+                onSuccess={(updated) => {
+                  setTableReviews((prev) =>
+                    prev.map((r) =>
+                      r.id === updated.id ? { ...r, ...updated } : r
+                    )
+                  );
+                  originalReviewsRef.current = originalReviewsRef.current.map((r) =>
+                    r.id === updated.id ? { ...r, ...updated } : r
+                  );
+                  setOpen(false);
+                  setSelectedReviewId(null);
+                  setEditReviewDefaultValues(undefined);
+                }}
+              />
             )
+          ) : (
+            <div className="text-center text-sm text-gray-400 py-8">
+              Please select a review to update.
+            </div>
           )}
         </DialogContent>
       </Dialog>
@@ -343,6 +337,6 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       <div className="flex justify-center py-4">
         {pagination && <PaginationPage pagination={pagination as TPagination} />}
       </div>
-      </div>
+    </div>
   );
 }

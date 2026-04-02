@@ -4,21 +4,20 @@ import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { ICreatereviewData, TResponseReviewData } from "@/types/review.types";
 import { cookies } from "next/headers";
 import { ServiceOptionds } from "./event.services";
-import { Award } from "lucide-react";
 
 export interface IModerateData {
-  status:string;
+  status: string;
 }
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
-    throw new Error("API_BASE_URL is not defined. Please set NEXT_PUBLIC_API_BASE_URL in your environment variables.");
+  throw new Error("API_BASE_URL is not defined. Please set NEXT_PUBLIC_API_BASE_URL in your environment variables.");
 }
 
 export const reviewService = {
   createReview: async (eventid: string, data: ICreatereviewData) => {
     try {
       const cookieStore = await cookies();
-
       const res = await fetch(`${API_BASE_URL}/event/${eventid}/review`, {
         method: "POST",
         credentials: "include",
@@ -27,12 +26,11 @@ export const reviewService = {
           Cookie: cookieStore.toString(),
         },
         body: JSON.stringify(data),
-        next:{
-            tags:['review','reviews']
-        }
+        next: {
+          tags: ['review', 'reviews'],
+        },
       });
       const body = await res.json();
-      const result = body as ApiResponse<TResponseReviewData>;
       if (!res.ok) {
         const error = body as ApiErrorResponse;
         return {
@@ -40,12 +38,12 @@ export const reviewService = {
           message: error.message || "review create failed",
         };
       }
-
-      return result;
+      return body as ApiResponse<TResponseReviewData>;
     } catch (e: any) {
       return { success: false, message: e.message, error: "Server error" };
     }
   },
+
   getMyReview: async (params?: any, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
@@ -57,7 +55,6 @@ export const reviewService = {
           }
         });
       }
-
       const config: RequestInit = {};
       if (options?.cache) {
         config.cache = options.cache;
@@ -65,7 +62,7 @@ export const reviewService = {
       if (options?.revalidate) {
         config.next = { revalidate: options.revalidate };
       }
-      config.next = { ...config.next, tags: ["review","reviews"] };
+      config.next = { ...config.next, tags: ["review", "reviews"] };
 
       config.headers = {
         "Content-Type": "application/json",
@@ -85,13 +82,14 @@ export const reviewService = {
       return {
         success: data.success,
         message: data.message || "Retrieved all your reviews successfully",
-        data: data.data.data as TResponseReviewData[],
-        pagination: data.data.pagination as TPagination,
+        data: data.data?.data as TResponseReviewData[],
+        pagination: data.data?.pagination as TPagination,
       };
     } catch (e: any) {
       return { message: "something went wrong please try again" };
     }
   },
+
   deleteReview: async (reviewid: string, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
@@ -134,20 +132,17 @@ export const reviewService = {
       return {
         success: false,
         message: e.message || "Server error",
-        error: "Server error"
+        error: "Server error",
       };
     }
   },
+
   updateReview: async (
     reviewId: string,
-    updateData: Partial<{
-      comment: string;
-      rating: number;
-    }>,
+    updateData: Partial<{ comment: string; rating: number }>,
     options?: ServiceOptionds
   ) => {
     try {
-
       const cookieStore = await cookies();
       const url = new URL(`${API_BASE_URL}/review/${reviewId}`);
 
@@ -189,45 +184,27 @@ export const reviewService = {
       return {
         success: false,
         message: e.message || "Server error",
-        error: "Server error"
+        error: "Server error",
       };
     }
   },
+
   moderateReview: async (
     reviewId: string,
-<<<<<<< HEAD
-    data: any,
-  ) => {
-    try {
-      console.log(data,'data')
-      const cookieStore = await cookies();
-      const res =await fetch(`${API_BASE_URL}/review/${reviewId}/moderate`,{
-        method: "PUT",
-=======
     data: IModerateData,
     options?: ServiceOptionds
   ) => {
     try {
       const cookieStore = await cookies();
       const url = new URL(`${API_BASE_URL}/review/${reviewId}/moderate`);
-
       const config: RequestInit = {
-        method: "patch",
->>>>>>> 2df5e7a (handle update payment)
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Cookie: cookieStore.toString(),
         },
         credentials: "include",
         body: JSON.stringify(data),
-<<<<<<< HEAD
-
-      });
-      const body=await res.json()
-      if (!res.ok) {
-        const error = body as ApiErrorResponse;
-        console.log(error.message,'s')
-=======
       };
 
       if (options?.cache) {
@@ -243,7 +220,6 @@ export const reviewService = {
 
       if (!res.ok) {
         const error = responseData as ApiErrorResponse;
->>>>>>> 2df5e7a (handle update payment)
         return {
           success: error.success,
           message: error.message || "Failed to moderate review",
@@ -251,22 +227,16 @@ export const reviewService = {
       }
 
       return {
-<<<<<<< HEAD
-        success: body.success,
-        message: body.message || "Review moderated successfully",
-        data: body.data,
-=======
         success: responseData.success,
         message: responseData.message || "Review moderated successfully",
         data: responseData.data,
->>>>>>> 2df5e7a (handle update payment)
       };
     } catch (e: any) {
       return {
         success: false,
         message: e.message || "Server error",
-        error: "Server error"
+        error: "Server error",
       };
     }
   },
-}
+};
