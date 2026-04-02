@@ -22,8 +22,10 @@ export type TResponseInvitation<T = unknown> = TInvitation & T;
 
 
 export type TOwnInvitations<T> = {
-  receivedInvitations: TResponseInvitation<T>[];
-  sentInvitations: TResponseInvitation<T>[];
-  receivedPagination: TPagination,
-  sentPagination: TPagination
+  receivedInvitations?: TResponseInvitation<T>[];
+  sentInvitations?: TResponseInvitation<T>[];
+  receivedPagination?: TPagination,
+  sentPagination?: TPagination,
+  invitations?:any[],
+  pagination:TPagination
 };

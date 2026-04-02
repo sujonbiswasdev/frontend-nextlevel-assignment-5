@@ -49,7 +49,7 @@ const InvitationService = {
     }
   },
 
-  GetuserownInvitations: async (params?: any, options?: ServiceOptionds) => {
+  GetAllinvitaions: async (params?: any, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
       const url = new URL(`${API_BASE_URL}/invitation/user`);
@@ -144,6 +144,7 @@ const InvitationService = {
       return { success: false, message: error.message || "Server error" };
     }
   },
+
   
 };
 

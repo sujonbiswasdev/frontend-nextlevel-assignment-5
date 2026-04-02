@@ -18,7 +18,7 @@ import PaginationPage from "../event/Pagination";
 import { IBaseUser } from "@/types/user.types";
 import ViewInvitationData from "./ViewData";
 
-export default function GetOwnInvitations({ invitations,pagination }: { invitations: TResponseInvitation[],pagination:TPagination }) {
+export default function GetInvitations({ invitations,pagination ,user}: { invitations: TResponseInvitation[],pagination:TPagination,user?:IBaseUser }) {
   const router = useRouter();
   const [tableData, setTableData] = useState<TResponseInvitation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -160,7 +160,12 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
   ];
 
   const handleAddInvitation = () => {
-    router.push('/user/dashboard/invitations/create-invitation');
+    // Add role based navigation for create-invitation page
+    if (user?.role === "ADMIN") {
+      router.push('/admin/dashboard/invitations/create-invitation');
+    } else {
+      router.push('/user/dashboard/invitations/create-invitation');
+    }
   };
 
   return (
