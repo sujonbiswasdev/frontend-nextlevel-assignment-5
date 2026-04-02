@@ -1,12 +1,12 @@
 import LoadingContentPage from '@/components/LoadingPage'
 import React from 'react'
 
-const LoadingEvents = () => {
+const LoadingPage = () => {
   return (
     <div>
-      <LoadingContentPage/>
+    <LoadingContentPage />
     </div>
   )
 }
 
-export default LoadingEvents
+export default LoadingPage

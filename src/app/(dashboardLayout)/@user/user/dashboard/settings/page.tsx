@@ -1,8 +1,6 @@
 import { ChangePasswordForm } from '@/components/auth/ChangePassword'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import ErrorFallback from '@/components/ErrorFallback'
-import React from 'react'
-
 const SettingPage = () => {
   return (
     <div>

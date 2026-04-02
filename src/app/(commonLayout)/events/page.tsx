@@ -1,7 +1,9 @@
 import { fetchEvents } from "@/actions/event.actions";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import EventContent from "@/components/module/event/EventsContent";
 import { cn } from "@/lib/utils";
 import { TPagination, TResponseEvent } from "@/types/event.types";
+import { IgetReviewData } from "@/types/review.types";
 import React from "react";
 
 const EventsPage = async ({
@@ -20,10 +22,14 @@ const EventsPage = async ({
 
   return (
    <div className={"mt-10"}>
-     <EventContent
-      events={eventsResponse.data?.UPCOMING as TResponseEvent<{ reviews: any[] }>[]} 
-      pagination={eventsResponse.pagination as TPagination}
-    />
+     <React.Suspense fallback={<div>Loading events...</div>}>
+       <ErrorBoundary fallback={<div>Failed to load events.</div>}>
+         <EventContent
+           events={eventsResponse.data?.UPCOMING as TResponseEvent<{ reviews: IgetReviewData[] }>[]} 
+           pagination={eventsResponse.pagination as TPagination}
+         />
+       </ErrorBoundary>
+     </React.Suspense>
    </div>
   );
 };

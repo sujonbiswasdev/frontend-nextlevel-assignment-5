@@ -30,7 +30,7 @@ export const StatsServices = {
       }
       return { 
         success: true, 
-        data: body.data as DashboardData,
+        data: body.data as DashboardData<any>,
         message: body.message ?? "Stats fetched successfully.",
       };
     } catch (error: any) {

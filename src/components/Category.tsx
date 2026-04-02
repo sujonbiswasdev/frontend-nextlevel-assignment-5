@@ -20,7 +20,7 @@ interface EventsListProps {
 const FILTERS = ["Public Free", "Public Paid", "Private Free", "Private Paid"];
 
 const EventsList: React.FC<EventsListProps> = ({ events }) => {
-  const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [selectedFilter, setSelectedFilter] = useState<string>("Public Free");
   const [eventData, setEventData] = useState<IBaseEvent[]>([]);
   const [totalitems,settotalitems]=useState()
 

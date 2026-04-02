@@ -1,5 +1,7 @@
 import {  ICreateEvent, IUpdateEventInput, TGroupedEventsResponse, TResponseEvent } from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
+import { IgetReviewData } from "@/types/review.types";
+import { IBaseUser } from "@/types/user.types";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -29,9 +31,9 @@ const EventService = {
       }
       config.next = { ...config.next, tags: ["events","event"] };
 
-      const res = await fetch(url.toString(), config);
+      const res = await fetch(url.toString(), {cache:"no-store"});
       const data = await res.json();
-      const result = data as TGroupedEventsResponse<{reviews:any[],organizer:{image:string,name:string,email:string}}>;
+      const result = data as TGroupedEventsResponse<{reviews:IgetReviewData[],organizer:IBaseUser[]}>;
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {

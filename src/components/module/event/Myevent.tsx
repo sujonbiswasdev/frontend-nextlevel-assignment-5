@@ -27,7 +27,7 @@ interface MyEventsTableProps {
   role: string;
 }
 
-export default function MyEventsTable({ Events, pagination, role }: MyEventsTableProps) {
+export default function EventsTable({ Events, pagination, role }: MyEventsTableProps) {
   const router = useRouter();
   const [selectedStatus, setSelectedStatus] = useState<keyof TGroupedEvents>("UPCOMING");
   const [tableEvents, setTableEvents] = useState<IBaseEvent[]>([]);
@@ -229,6 +229,7 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
     <div className="max-w-[1480px] mx-auto px-4 py-8">
       {/* Filter panel */}
       <section className="w-full mb-10 px-2">
+
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white/80 dark:bg-gray-900/80 shadow-lg rounded-2xl p-6 md:p-8 border border-blue-100 dark:border-blue-900/40 transition-all">
           <div className="flex-1">
             <FilterPanel
@@ -248,7 +249,11 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
                 reset();
                 if (role === "USER") {
                   router.push("/user/dashboard/my-events");
-                } else {
+                }
+                else if(role==="ADMIN"){
+                  router.push("/admin/dashboard/events");
+                }
+                 else {
                   router.push("/events");
                 }
               }}
@@ -271,12 +276,29 @@ export default function MyEventsTable({ Events, pagination, role }: MyEventsTabl
         {loading ? (
           <p className="text-center">Loading...</p>
         ) : (
-           <ReusableTable
+          <div>
+             <div className="flex justify-end mb-4">
+               <button
+                 className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition"
+                 onClick={() => {
+                   // Example action: navigate to create event
+                   if (role === "USER") {
+                     router.push("/user/dashboard/create-event");
+                   } else if (role === "ADMIN") {
+                     router.push("/admin/dashboard/events/create");
+                   }
+                 }}
+               >
+                 + Add Event
+               </button>
+             </div>
+             <ReusableTable
             columns={columns as any}
             data={tableEvents}
-            actions={role === "USER" ? actions : undefined}
+            actions={actions }
             emptyMessage="No events found"
           />
+          </div>
         )}
       </div>
 

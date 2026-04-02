@@ -13,3 +13,8 @@ export async function deleteuserown() {
     const result = await userService.deleteUserOwn();
     return result;
 }
+
+export async function getAllUsersAction(params?: any, options?: { cache?: RequestCache; revalidate?: number }) {
+    const result = await userService.getAllUsers(params, options);
+    return result;
+}

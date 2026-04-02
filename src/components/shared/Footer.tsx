@@ -56,10 +56,10 @@ const Footer = () => {
             {/* Social Icons */}
             <div className="flex gap-4">
             <div className="flex gap-4">
-                <Link href={"/https://facebook.com/sujonbiswasdev"}><FacebookFillIcon/></Link>
-                <Link href={"/https://youtube.com/nextgenprogrammer01"}><YoutubeFillIcon/></Link>
+                {/* <Link href={"/https://facebook.com/sujonbiswasdev"}><FacebookFillIcon/></Link> */}
+                {/* <Link href={"/https://youtube.com/nextgenprogrammer01"}><YoutubeFillIcon/></Link>
                 <Link href={"/https://linkedin.com/in/sujonbiswasdev"}><YoutubeFillIcon/></Link>
-                <Link href={"/https://github.com/in/sujonbiswasdev"}><GithubIcon/></Link>
+                <Link href={"/https://github.com/in/sujonbiswasdev"}><GithubIcon/></Link> */}
             </div>
             </div>
           </div>
