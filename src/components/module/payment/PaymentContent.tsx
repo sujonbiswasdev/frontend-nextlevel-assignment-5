@@ -92,7 +92,7 @@ export default function PaymentContent({
       options: [
         { label: "Paid", value: "PAID" },
         { label: "Unpaid", value: "UNPAID" },
-        { label: "Refunded", value: "REFUNDED" },
+        { label: "FREE", value: "FREE" },
       ],
     },
   ];

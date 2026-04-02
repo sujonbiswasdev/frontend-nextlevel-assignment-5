@@ -103,10 +103,7 @@ export const PaymentService={
             },
             credentials: "include",
         });
-
         const data = await res.json();
-        console.log(data,'datafor')
-
         if (!res.ok) {
             return {
                 success: false,

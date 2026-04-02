@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ModerateUpdateForm = ({ id, onSuccess }: Props) => {
-  const [status, setStatus] = useState<string>("");
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -27,7 +27,7 @@ const ModerateUpdateForm = ({ id, onSuccess }: Props) => {
       setLoading(true);
       const toastId = toast.loading("Updating moderation status...");
 
-      const res = await moderateReview(id, { status });
+      const res = await moderateReview(id, {status} );
 
       toast.dismiss(toastId);
 
@@ -39,6 +39,7 @@ const ModerateUpdateForm = ({ id, onSuccess }: Props) => {
         toast.error(res.message || "Failed to update review status");
       }
     } catch (err: any) {
+      console.log(err.error)
       toast.dismiss();
       toast.error(err.message || "Something went wrong");
     } finally {
@@ -54,7 +55,7 @@ const ModerateUpdateForm = ({ id, onSuccess }: Props) => {
         </label>
 
         <select
-          value={status}
+          value={status }
           onChange={(e) => setStatus(e.target.value)}
           className="w-full mt-2 border rounded-md p-2.5 dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
