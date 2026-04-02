@@ -1,8 +1,11 @@
+import LoadingContentPage from '@/components/LoadingPage'
 import React from 'react'
 
 const Loading = () => {
   return (
-    <div>Loading</div>
+    <div>
+       <LoadingContentPage/>
+    </div>
   )
 }
 

@@ -4,7 +4,7 @@ import React from 'react'
 const LoadignPage = () => {
   return (
     <div>
-       <LoadingContentPage/>
+         <LoadingContentPage/>
     </div>
   )
 }

@@ -2,6 +2,9 @@ import { getAllUsersAction } from '@/actions/user.actions';
 import ErrorBoundary from '@/components/ErrorBoundary'
 import UserTable from '@/components/module/user/UserTable';
 import NotFoundItem from '@/components/NotFoundItem';
+import { IBaseEvent, TPagination } from '@/types/event.types';
+import { IgetReviewData } from '@/types/review.types';
+import { TResponseUserData } from '@/types/user.types';
 import React from 'react'
 
 const UsersPage =async ({
@@ -17,9 +20,6 @@ const UsersPage =async ({
     console.error("Users fetch error:", err);
     usersResponse = { data: [], pagination: { total: 0, page: 1, limit: 10, totalpage: 1 } };
   }
-
-  console.log(usersResponse,'usrere')
-  
   return (
     <React.Suspense fallback={<span>Loading users...</span>}>
       <ErrorBoundary fallback={<span>Something went wrong while loading users.</span>}>
@@ -29,7 +29,7 @@ const UsersPage =async ({
              <NotFoundItem content="No users found." emoji="😕" filter="" key="no-users"/>
             </ul>
           ) : (
-            <UserTable/>
+            <UserTable users={usersResponse.users as TResponseUserData<{ reviews: IgetReviewData[]; events: IBaseEvent[]; }>[]} pagination={usersResponse.pagination as TPagination}/>
           )}
         </div>
       </ErrorBoundary>
