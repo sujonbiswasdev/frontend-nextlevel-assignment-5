@@ -102,6 +102,28 @@ getAllUsers: async (params?: any, options?: { cache?: RequestCache; revalidate?:
     return { success: false, message: error.message || "An error occurred while fetching users" };
   }
 },
+updateUserByADmin: async (id: string, body: Partial<IBaseUser>) => {
+  try {
+    const cookieStore = await cookies();
+    const res = await fetch(`${API_BASE_URL}/admin/profile/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieStore.toString()
+      },
+      credentials: "include",
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, message: data?.message || "Failed to update user", errors: data?.errors };
+    }
+    return { success: data.success, message: data.message || "User updated successfully", user: data.data };
+  } catch (error: any) {
+    return { success: false, message: error.message || "An error occurred while updating user" };
+  }
+},
+
 
 
 

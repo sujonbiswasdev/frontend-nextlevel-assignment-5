@@ -42,3 +42,23 @@ export const updateUserSchema = z.object({
   phone: z.string().min(10).max(15).optional(),
   isActive: z.boolean().optional(),
 });
+
+
+export const UpdateUserCommonData = z
+  .object({
+    role: z.enum(["ADMIN", "USER"]).optional(),
+
+    status: z
+      .enum(["ACTIVE", "INACTIVE", "BLOCKED", "DELETED"])
+      .optional(),
+
+    email: z
+      .string()
+      .trim()
+      .optional()
+      .refine(
+        (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+        "Invalid email format"
+      ),
+  })
+  .strict();

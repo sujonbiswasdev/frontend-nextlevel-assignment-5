@@ -13,9 +13,10 @@ import ViewUserData from "./viewUserData";
 import { deleteEventRequiestJoinData } from "@/actions/participant.actions";
 import { IBaseEvent, TPagination } from "@/types/event.types";
 import { IgetReviewData } from "@/types/review.types";
-import { TResponseUserData } from "@/types/user.types";
+import { IBaseUser, TResponseUserData } from "@/types/user.types";
 import { createUserColumns } from "./createUserColums";
 import { TFilterField } from "@/types/filter.types";
+import { UpdateUserForm } from "./UpdateUser";
 
 export default function UserContentPage({
   users,
@@ -31,6 +32,7 @@ export default function UserContentPage({
   const [viewData, setViewData] = useState<any>(null);
   const router = useRouter();
   const { updateFilters, reset } = useFilter();
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -146,7 +148,7 @@ export default function UserContentPage({
       icon: Pencil,
       label: "Edit",
       onClick: (item: any) => {
-        setViewData(item);
+        setSelectedUserId(item.id);
         setViewMode(false);
         setOpen(true);
       },
@@ -200,12 +202,24 @@ export default function UserContentPage({
               {viewMode ? "Participant Details" : "Edit Participant"}
             </DialogTitle>
             <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-0 text-center">
-              {viewMode ? "Review participant information below." : "Update status or details as needed."}
+              {/* {viewMode ? "Review participant information below." : "Update status or details as needed."} */}
             </p>
           </DialogHeader>
 
+          {!viewMode && !viewData && selectedUserId && (
+            <UpdateUserForm
+              id={selectedUserId}
+              onSuccess={(updated:any) => {
+                setOpen(updated);
+                setSelectedUserId(null);
+              }}
+            />
+          )}
+
+          
+
           <div style={{ maxHeight: '70vh', overflowY: 'auto' }} className="py-6 px-4 sm:px-8">
-            <ViewUserData viewData={viewData} viewMode={viewMode} />
+            {viewData && viewMode==true? ( <ViewUserData viewData={viewData} viewMode={viewMode} />):null}
           </div>
         </DialogContent>
       </Dialog>

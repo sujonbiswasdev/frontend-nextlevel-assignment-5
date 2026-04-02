@@ -18,3 +18,7 @@ export async function getAllUsersAction(params?: any, options?: { cache?: Reques
     const result = await userService.getAllUsers(params, options);
     return result;
 }
+export async function updateUserByAdminAction(id: string, data: Partial<{ [key: string]: any }>) {
+    const result = await userService.updateUserByADmin(id, data);
+    return result;
+}
