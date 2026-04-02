@@ -171,6 +171,7 @@ const ViewParticipantData = ({
               <span className="text-gray-500 font-medium">Email:</span>
               <span className="block mt-0.5">{viewData.user.email}</span>
             </div>
+            
             <div className="sm:col-span-2">
               <span className="text-gray-500 font-medium">Joined At:</span>
               <span className="block mt-0.5">

@@ -22,3 +22,11 @@ export const updateReview = async (
 ) => {
   return await reviewService.updateReview(reviewId, updateData, options);
 };
+
+export const moderateReview = async (
+  reviewId: string,
+  data: any,
+  options?: any
+) => {
+  return await reviewService.moderateReview(reviewId, data, options);
+};

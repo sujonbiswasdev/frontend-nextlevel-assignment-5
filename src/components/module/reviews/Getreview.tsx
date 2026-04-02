@@ -19,6 +19,7 @@ import PaginationPage from "../event/Pagination";
 import { TResponseReviewData } from "@/types/review.types";
 import { deleteReview } from "@/actions/review.actions";
 import UpdateReviewContent from "./UpdateReviewContent";
+import ModerateUpdateForm from "./ModerateUpdateForm";
 
 /**
  * Assign a unique color to each status or action.
@@ -295,7 +296,21 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-lime-50">
           <DialogHeader />
           {selectedReviewId && role==="ADMIN"?<>
-          <input type="text" name="" id="" />
+          <ModerateUpdateForm 
+              id={selectedReviewId as string}
+              onSuccess={(updated) => {
+                setTableReviews((prev) =>
+                  prev.map((r) =>
+                    r.id === updated.id ? { ...r, ...updated } : r
+                  )
+                );
+                originalReviewsRef.current = originalReviewsRef.current.map((r) =>
+                  r.id === updated.id ? { ...r, ...updated } : r
+                );
+                setOpen(false);
+                setSelectedReviewId(null);
+                setEditReviewDefaultValues(undefined);
+              }}/>
           </>: <UpdateReviewContent
               reviewId={selectedReviewId as string}
               defaultValues={editReviewDefaultValues}

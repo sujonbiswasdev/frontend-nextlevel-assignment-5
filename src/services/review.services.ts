@@ -196,6 +196,7 @@ export const reviewService = {
     data: IModerateData,
     options?: ServiceOptionds
   ) => {
+    const datas =JSON.stringify(data)
     try {
       const cookieStore = await cookies();
       const url = new URL(`${API_BASE_URL}/review/${reviewId}/moderate`);
@@ -207,7 +208,7 @@ export const reviewService = {
           Cookie: cookieStore.toString(),
         },
         credentials: "include",
-        body: JSON.stringify(data),
+        body: JSON.stringify(datas),
       };
 
       if (options?.cache) {

@@ -1,11 +1,14 @@
 
 import { getSessionAction } from '@/actions/auth.actions'
+import { ChangePasswordForm } from '@/components/auth/ChangePassword'
 import React from 'react'
 
 const SettingPage = async() => {
   const userinfo=await getSessionAction()
   return (
-    <div>SettingPage</div>
+    <div>
+      <ChangePasswordForm/>
+    </div>
   )
 }
 

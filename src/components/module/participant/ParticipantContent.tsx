@@ -90,6 +90,7 @@ export default function ParticipantContent({
     },
     {
       type: "date",
+      label: "joinedAt",
       name: "joinedAt",
       value: form.joinedAt || "",
       onChange: (val: string) => handleChange("joinedAt", val),
@@ -196,7 +197,7 @@ export default function ParticipantContent({
              setForm({
                status: "",
                paymentStatus: "",
-               joinedAt: "",
+               joinedAt: ""
              });
              reset();
            }}

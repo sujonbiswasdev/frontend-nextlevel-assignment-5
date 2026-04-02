@@ -77,11 +77,6 @@ export const adminNavItems: NavSection[] = [
         title: "Event Management",
         items: [
             {
-                title: "Categories",
-                href: "/admin/dashboard/categories",
-                icon: "LayoutGrid"
-            },
-            {
                 title: "Events",
                 href: "/admin/dashboard/events",
                 icon: "Calendar"
