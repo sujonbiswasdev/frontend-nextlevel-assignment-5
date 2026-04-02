@@ -1,7 +1,7 @@
 import CreateInvitationForm from '@/components/module/invitation/CreateInvitation'
 import React from 'react'
 
-const page = () => {
+const CreateInvitationPage = () => {
   return (
     <div>
         <CreateInvitationForm/>
@@ -9,4 +9,4 @@ const page = () => {
   )
 }
 
-export default page
+export default CreateInvitationPage

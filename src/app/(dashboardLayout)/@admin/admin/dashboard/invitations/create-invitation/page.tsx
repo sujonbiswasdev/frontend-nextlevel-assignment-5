@@ -1,9 +1,12 @@
+import CreateInvitationForm from '@/components/module/invitation/CreateInvitation'
 import React from 'react'
 
-const InvitationPage = () => {
+const Page = () => {
   return (
-    <div>InvitationsPage</div>
+    <div>
+        <CreateInvitationForm/>
+    </div>
   )
 }
 
-export default InvitationPage
+export default Page
