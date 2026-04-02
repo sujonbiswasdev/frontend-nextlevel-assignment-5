@@ -191,4 +191,55 @@ export const reviewService = {
       };
     }
   },
+  moderateReview: async (
+    reviewId: string,
+    data: IModerateData,
+    options?: ServiceOptionds
+  ) => {
+    try {
+      const cookieStore = await cookies();
+      const url = new URL(`${API_BASE_URL}/review/${reviewId}/moderate`);
+
+      const config: RequestInit = {
+        method: "patch",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      };
+
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["review", "reviews"] };
+
+      const res = await fetch(url.toString(), config);
+      const responseData = await res.json();
+
+      if (!res.ok) {
+        const error = responseData as ApiErrorResponse;
+        return {
+          success: error.success,
+          message: error.message || "Failed to moderate review",
+        };
+      }
+
+      return {
+        success: responseData.success,
+        message: responseData.message || "Review moderated successfully",
+        data: responseData.data,
+      };
+    } catch (e: any) {
+      return {
+        success: false,
+        message: e.message || "Server error",
+        error: "Server error"
+      };
+    }
+  },
 }

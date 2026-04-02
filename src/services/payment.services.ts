@@ -1,3 +1,7 @@
+import { IBaseEvent, TPagination } from "@/types/event.types";
+import { TBaseParticipant } from "@/types/participant.types";
+import { TResponsePayment } from "@/types/payment.types";
+import { IBaseUser } from "@/types/user.types";
 import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
@@ -80,5 +84,92 @@ export const PaymentService={
             };
         }
     },
+    getAllPayments: async (params?: Record<string, any>) => {
+    try {
+        const cookieStore = await cookies();
+        const url = new URL(`${API_BASE_URL}/payments`);
+        if (params) {
+            Object.keys(params).forEach((key) => {
+                if (params[key] !== undefined && params[key] !== null) {
+                    url.searchParams.append(key, String(params[key]));
+                }
+            });
+        }
+
+        const res = await fetch(url.toString(), {
+            method: "GET",
+            headers: {
+                Cookie: cookieStore.toString(),
+            },
+            credentials: "include",
+        });
+
+        const data = await res.json();
+        console.log(data,'datafor')
+
+        if (!res.ok) {
+            return {
+                success: false,
+                message: data.message || "Failed to fetch payments",
+                data: null,
+            };
+        }
+
+        return {
+            success: true,
+            data: data.data.payments as TResponsePayment<{ event: IBaseEvent; participant: TBaseParticipant ,user:IBaseUser}>[],
+            pagination:data.data.pagination as TPagination,
+            message: data.message || "Payments fetched successfully",
+        };
+    } catch (err: any) {
+        return {
+            success: false,
+            message: err?.message || "Something went wrong while fetching payments",
+            data: null,
+        };
+    }
+},
+
+    updatePaymentStatus: async (
+        paymentId: string,
+        status: string
+    ) => {
+        try {
+            const cookieStore = await cookies();
+
+            const res = await fetch(`${API_BASE_URL}/payments/${paymentId}/status`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: cookieStore.toString(),
+                },
+                credentials: "include",
+                body: JSON.stringify({ status }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                return {
+                    success: false,
+                    message: data.message || "Failed to update payment status",
+                    data: null,
+                };
+            }
+
+            return {
+                success: true,
+                data: data.data,
+                message: data.message || "Payment status updated successfully",
+            };
+        } catch (err: any) {
+            return {
+                success: false,
+                message: err?.message || "Something went wrong while updating payment status",
+                data: null,
+            };
+        }
+    },
+
 
 }

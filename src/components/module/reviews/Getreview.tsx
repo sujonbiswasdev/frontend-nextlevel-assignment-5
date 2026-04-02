@@ -247,7 +247,11 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
               onReset={() => {
                 setForm({ search: "", rating: 0, status: "" });
                 reset();
-                router.push("/reviews");
+                if (role === "ADMIN") {
+                  router.push("/admin/dashboard/reviews");
+                } else if (role === "USER") {
+                  router.push("/user/dashboard/my-reviews");
+                }
               }}
             />
           </div>
@@ -271,7 +275,7 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
           <ReusableTable
             columns={columns as any}
             data={tableReviews}
-            actions={role === "USER" ? actions : undefined}
+            actions={actions}
             emptyMessage="No reviews found"
           />
         )}
@@ -290,9 +294,10 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
       >
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-lime-50">
           <DialogHeader />
-          {selectedReviewId && (
-            <UpdateReviewContent
-              reviewId={selectedReviewId}
+          {selectedReviewId && role==="ADMIN"?<>
+          <input type="text" name="" id="" />
+          </>: <UpdateReviewContent
+              reviewId={selectedReviewId as string}
               defaultValues={editReviewDefaultValues}
               onSuccess={(updated) => {
                 setTableReviews((prev) =>
@@ -307,8 +312,7 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
                 setSelectedReviewId(null);
                 setEditReviewDefaultValues(undefined);
               }}
-            />
-          )}
+            />}
         </DialogContent>
       </Dialog>
 

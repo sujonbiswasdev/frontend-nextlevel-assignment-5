@@ -130,6 +130,7 @@ export default function ParticipantContent({
     }
   };
 
+
   const actions = [
     {
       icon: Eye,

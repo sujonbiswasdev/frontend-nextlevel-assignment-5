@@ -12,3 +12,13 @@ export const initiatePayLater = async (eventId: string) => {
     const response = await PaymentService.createParticipantPayLater(eventId);
     return response;
 };
+
+export const getAllPayments = async (params?: Record<string, any>) => {
+  const response = await PaymentService.getAllPayments(params);
+  return response;
+};
+
+export const updatePaymentStatus = async (paymentId: string, status: string) => {
+  const response = await PaymentService.updatePaymentStatus(paymentId, status);
+  return response;
+};
