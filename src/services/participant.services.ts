@@ -76,6 +76,7 @@ const ParticipantService = {
 
        });
       const data = await res.json() ;
+      console.log(data,'data')
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {
@@ -86,8 +87,9 @@ const ParticipantService = {
       return {
         success: true,
         message: data?.message || "Participants retrieved successfully",
-        data: data?.data.result as TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[],
+        data: data?.data.result || data.data.participants as TResponseParticipant<{user:IBaseUser[],event:IBaseEvent[]}>[],
         pagination:data.data.pagination as TPagination
+
       };
     } catch (error) {
       return {

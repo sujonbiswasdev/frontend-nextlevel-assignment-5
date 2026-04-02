@@ -8,7 +8,6 @@ import { Bar } from 'recharts'
 import EarningChart from './chart/EarningChart'
 import { StatsCard } from './StatsCard'
 const DashboardContent = ({stats}:{stats:DashboardData<{ monthlyRevenue: any[]; eventStatus: any; pieChartData: any[]; barChartData: any[]}>}) => {
-  console.log(stats.barChartData,'barChartData',stats.pieChartData,'pieChartData',stats.monthlyRevenue,'monthlyRevenue')
   return (
     <div>
       <StatsCounts statsCount={stats.counts}/>

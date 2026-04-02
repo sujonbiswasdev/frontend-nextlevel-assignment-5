@@ -25,7 +25,7 @@ export const createParticipantColumns = () => [
     render: (row: any) => (
       <CopyableId
         id={row.userId}
-        href={row.userId ? `/users/${row.userId}` : undefined}
+        href={row.userId ? `/profile/${row.userId}` : undefined}
         showShort={row.userId?.slice(0, 8)}
       />
     ),
