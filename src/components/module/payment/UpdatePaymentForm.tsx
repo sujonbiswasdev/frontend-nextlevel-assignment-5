@@ -1,12 +1,16 @@
 "use client";
 
 import { updatePaymentStatus } from "@/actions/payment.actions";
+<<<<<<< HEAD
 import { useRouter } from "next/navigation";
+=======
+>>>>>>> 2df5e7a (handle update payment)
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 interface Props {
   id: string;
+<<<<<<< HEAD
   onSuccess: (updated: any) => void;
 }
 
@@ -14,6 +18,15 @@ const UpdatePaymentStatusForm = ({ id, onSuccess }: Props) => {
   const [status, setStatus] = useState<string>( "");
   const [loading, setLoading] = useState(false);
   const router=useRouter()
+=======
+  currentStatus: string;
+  onSuccess: (updated: any) => void;
+}
+
+const UpdatePaymentStatusForm = ({ id, currentStatus, onSuccess }: Props) => {
+  const [status, setStatus] = useState<string>(currentStatus || "");
+  const [loading, setLoading] = useState(false);
+>>>>>>> 2df5e7a (handle update payment)
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -32,9 +45,14 @@ const UpdatePaymentStatusForm = ({ id, onSuccess }: Props) => {
       toast.dismiss(toastId);
 
       if (res.success) {
+<<<<<<< HEAD
         router.refresh()
         toast.success(res.message || "Status updated successfully");
         onSuccess(res.data);
+=======
+        toast.success(res.message || "Status updated successfully");
+        onSuccess(res.data); // ✅ return updated payment
+>>>>>>> 2df5e7a (handle update payment)
       } else {
         toast.error(res.message || "Failed to update status");
       }

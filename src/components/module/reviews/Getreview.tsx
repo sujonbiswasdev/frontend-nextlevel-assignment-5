@@ -296,6 +296,7 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-lime-50">
           <DialogHeader />
           {selectedReviewId && role==="ADMIN"?<>
+<<<<<<< HEAD
           <ModerateUpdateForm 
               id={selectedReviewId as string}
               onSuccess={(updated) => {
@@ -311,6 +312,9 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
                 setSelectedReviewId(null);
                 setEditReviewDefaultValues(undefined);
               }}/>
+=======
+          <input type="text" name="" id="" />
+>>>>>>> 2df5e7a (handle update payment)
           </>: <UpdateReviewContent
               reviewId={selectedReviewId as string}
               defaultValues={editReviewDefaultValues}

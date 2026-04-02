@@ -103,7 +103,14 @@ export const PaymentService={
             },
             credentials: "include",
         });
+<<<<<<< HEAD
         const data = await res.json();
+=======
+
+        const data = await res.json();
+        console.log(data,'datafor')
+
+>>>>>>> 2df5e7a (handle update payment)
         if (!res.ok) {
             return {
                 success: false,
@@ -167,6 +174,7 @@ export const PaymentService={
             };
         }
     },
+<<<<<<< HEAD
     deletePayment: async (paymentId: string) => {
         try {
             const cookieStore = await cookies();
@@ -203,6 +211,8 @@ export const PaymentService={
             };
         }
     },
+=======
+>>>>>>> 2df5e7a (handle update payment)
 
 
 }

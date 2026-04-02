@@ -195,6 +195,7 @@ export const reviewService = {
   },
   moderateReview: async (
     reviewId: string,
+<<<<<<< HEAD
     data: any,
   ) => {
     try {
@@ -202,18 +203,47 @@ export const reviewService = {
       const cookieStore = await cookies();
       const res =await fetch(`${API_BASE_URL}/review/${reviewId}/moderate`,{
         method: "PUT",
+=======
+    data: IModerateData,
+    options?: ServiceOptionds
+  ) => {
+    try {
+      const cookieStore = await cookies();
+      const url = new URL(`${API_BASE_URL}/review/${reviewId}/moderate`);
+
+      const config: RequestInit = {
+        method: "patch",
+>>>>>>> 2df5e7a (handle update payment)
         headers: {
           "Content-Type": "application/json",
           Cookie: cookieStore.toString(),
         },
         credentials: "include",
         body: JSON.stringify(data),
+<<<<<<< HEAD
 
       });
       const body=await res.json()
       if (!res.ok) {
         const error = body as ApiErrorResponse;
         console.log(error.message,'s')
+=======
+      };
+
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["review", "reviews"] };
+
+      const res = await fetch(url.toString(), config);
+      const responseData = await res.json();
+
+      if (!res.ok) {
+        const error = responseData as ApiErrorResponse;
+>>>>>>> 2df5e7a (handle update payment)
         return {
           success: error.success,
           message: error.message || "Failed to moderate review",
@@ -221,9 +251,15 @@ export const reviewService = {
       }
 
       return {
+<<<<<<< HEAD
         success: body.success,
         message: body.message || "Review moderated successfully",
         data: body.data,
+=======
+        success: responseData.success,
+        message: responseData.message || "Review moderated successfully",
+        data: responseData.data,
+>>>>>>> 2df5e7a (handle update payment)
       };
     } catch (e: any) {
       return {

@@ -21,8 +21,11 @@ export const getAllPayments = async (params?: Record<string, any>) => {
 export const updatePaymentStatus = async (paymentId: string, status: string) => {
   const response = await PaymentService.updatePaymentStatus(paymentId, status);
   return response;
+<<<<<<< HEAD
 };
 export const deletePayment = async (paymentId: string) => {
   const response = await PaymentService.deletePayment(paymentId);
   return response;
+=======
+>>>>>>> 2df5e7a (handle update payment)
 };
