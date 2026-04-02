@@ -19,7 +19,6 @@ export const StatsServices = {
         cache: "no-store",
       });
       const body = await response.json();
-      console.log(body,'bodysfsdfsdfsdfdsf')
       if (!response.ok) {
         const error =body as ApiErrorResponse
         return {

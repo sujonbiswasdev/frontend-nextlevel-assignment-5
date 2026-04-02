@@ -12,7 +12,7 @@ export type StatCardProps = {
   bgGradient?: string;
 };
 
-export const StatCard: React.FC<StatCardProps> = ({
+export const StatsCard: React.FC<StatCardProps> = ({
   title,
   value,
   percentage,

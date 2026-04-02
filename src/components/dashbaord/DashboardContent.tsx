@@ -1,13 +1,13 @@
 'use client'
 import { DashboardData, MonthlyRevenue } from '@/types/stats.types'
 import React from 'react'
-import { StatCard } from './StatsCard'
 import { DashboardBarChart, monthlyRevenue } from './DashboardBarChart'
 import { ChartContainer, ChartTooltip } from '../ui/chart'
 import { BarChart } from 'lucide-react'
 import { Bar } from 'recharts'
 import EarningChart from './chart/EarningChart'
-const DashboardContent = ({stats}:{stats:DashboardData<MonthlyRevenue >}) => {
+import { StatsCard } from './StatsCard'
+const DashboardContent = ({stats}:{stats:DashboardData<{ monthlyRevenue: any[]; eventStatus: any; pieChartData: any[]; barChartData: any[]}>}) => {
   console.log(stats.barChartData,'barChartData',stats.pieChartData,'pieChartData',stats.monthlyRevenue,'monthlyRevenue')
   return (
     <div>
@@ -15,7 +15,7 @@ const DashboardContent = ({stats}:{stats:DashboardData<MonthlyRevenue >}) => {
       <EventStatusCounts eventStatus={stats.eventStatus as unknown as { upcoming: number; completed: number; cancelled: number }} />
       <EarningChart
         stats={
-          stats.monthlyRevenue as monthlyRevenue[]
+          stats.monthlyRevenue as unknown as monthlyRevenue[]
         }
         earningRate={stats.totalRevenue}
       />
@@ -30,7 +30,7 @@ export const StatsCounts=({statsCount}:{statsCount:{participatedEvents:number;in
  return (
   <div className="max-w-[1380px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-4">
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <StatCard
+      <StatsCard
         title="Participated Events"
         value={statsCount.participatedEvents.toString()}
         bgGradient="from-blue-500 to-blue-300"
@@ -39,7 +39,7 @@ export const StatsCounts=({statsCount}:{statsCount:{participatedEvents:number;in
         percentage={((statsCount.participatedEvents / (statsCount.participatedEvents + statsCount.invitations + statsCount.payments)) * 100).toFixed(0)}
         trend="up"
       />
-      <StatCard
+      <StatsCard
         title="Invitations"
         value={statsCount.invitations.toString()}
         bgGradient="from-green-500 to-green-300"
@@ -48,7 +48,7 @@ export const StatsCounts=({statsCount}:{statsCount:{participatedEvents:number;in
         percentage={((statsCount.invitations / (statsCount.participatedEvents + statsCount.invitations + statsCount.payments)) * 100).toFixed(0)}
         trend="up"
       />
-      <StatCard
+      <StatsCard
         title="Payments"
         value={statsCount.payments.toString()}
         bgGradient="from-purple-500 to-purple-300"
@@ -106,7 +106,7 @@ export const EventStatusCounts = ({
     <div className="max-w-[1380px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {cardData.map((card) => (
-          <StatCard
+          <StatsCard
             title={card.title}
             value={card.value}
             bgGradient={card.bgGradient}
