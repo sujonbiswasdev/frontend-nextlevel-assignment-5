@@ -124,6 +124,28 @@ updateUserByADmin: async (id: string, body: Partial<IBaseUser>) => {
   }
 },
 
+deleteUserByAdmin: async (id: string) => {
+  try {
+    const cookieStore = await cookies();
+    const res = await fetch(`${API_BASE_URL}/admin/profile/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieStore.toString()
+      },
+      credentials: "include"
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, message: data?.message || "Failed to delete user", errors: data?.errors };
+    }
+    return { success: data.success, message: data.message || "User deleted successfully" };
+  } catch (error: any) {
+    return { success: false, message: error.message || "An error occurred while deleting user" };
+  }
+},
+
+
 
 
 

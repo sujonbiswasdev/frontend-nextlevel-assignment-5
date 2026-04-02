@@ -22,3 +22,8 @@ export async function updateUserByAdminAction(id: string, data: Partial<{ [key: 
     const result = await userService.updateUserByADmin(id, data);
     return result;
 }
+
+export async function deleteUserByAdminAction(id: string) {
+    const result = await userService.deleteUserByAdmin(id);
+    return result;
+}

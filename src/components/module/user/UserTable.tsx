@@ -17,6 +17,7 @@ import { IBaseUser, TResponseUserData } from "@/types/user.types";
 import { createUserColumns } from "./createUserColums";
 import { TFilterField } from "@/types/filter.types";
 import { UpdateUserForm } from "./UpdateUser";
+import { deleteUserByAdminAction } from "@/actions/user.actions";
 
 export default function UserContentPage({
   users,
@@ -114,11 +115,11 @@ export default function UserContentPage({
     },
   ];
 
-  const handleDeleteEventRequst = useCallback(async (id: string) => {
+  const handleDeleteUser = useCallback(async (id: string) => {
     try {
-      if (!window.confirm("Are you sure you want to delete this join request?")) return;
-      const toastId = toast.loading("Deleting event. Please wait...");
-      const resp = await deleteEventRequiestJoinData(id);
+      if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+      const toastId = toast.loading("Deleting user. Please wait...");
+      const resp = await deleteUserByAdminAction(id);
       toast.dismiss(toastId);
 
       if (resp.success) {
@@ -157,7 +158,7 @@ export default function UserContentPage({
     {
       icon: Trash2,
       label: "Delete",
-      onClick: (item: any) => handleDeleteEventRequst(item.id),
+      onClick: (item: any) => handleDeleteUser(item.id),
       className: "text-red-500",
     },
   ];
