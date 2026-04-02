@@ -296,7 +296,6 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-lime-50">
           <DialogHeader />
           {selectedReviewId && role==="ADMIN"?<>
-<<<<<<< HEAD
           <ModerateUpdateForm 
               id={selectedReviewId as string}
               onSuccess={(updated) => {
@@ -312,32 +311,38 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
                 setSelectedReviewId(null);
                 setEditReviewDefaultValues(undefined);
               }}/>
-=======
           <input type="text" name="" id="" />
->>>>>>> 2df5e7a (handle update payment)
-          </>: <UpdateReviewContent
-              reviewId={selectedReviewId as string}
-              defaultValues={editReviewDefaultValues}
-              onSuccess={(updated) => {
-                setTableReviews((prev) =>
-                  prev.map((r) =>
+          </> : (
+            selectedReviewId ? (
+              <UpdateReviewContent
+                reviewId={selectedReviewId as string}
+                defaultValues={editReviewDefaultValues}
+                onSuccess={(updated) => {
+                  setTableReviews((prev) =>
+                    prev.map((r) =>
+                      r.id === updated.id ? { ...r, ...updated } : r
+                    )
+                  );
+                  originalReviewsRef.current = originalReviewsRef.current.map((r) =>
                     r.id === updated.id ? { ...r, ...updated } : r
-                  )
-                );
-                originalReviewsRef.current = originalReviewsRef.current.map((r) =>
-                  r.id === updated.id ? { ...r, ...updated } : r
-                );
-                setOpen(false);
-                setSelectedReviewId(null);
-                setEditReviewDefaultValues(undefined);
-              }}
-            />}
+                  );
+                  setOpen(false);
+                  setSelectedReviewId(null);
+                  setEditReviewDefaultValues(undefined);
+                }}
+              />
+            ) : (
+              <div className="text-center text-sm text-gray-400 py-8">
+                Please select a review to update.
+              </div>
+            )
+          )}
         </DialogContent>
       </Dialog>
 
       <div className="flex justify-center py-4">
-        <PaginationPage pagination={pagination as TPagination} />
+        {pagination && <PaginationPage pagination={pagination as TPagination} />}
       </div>
-    </div>
+      </div>
   );
 }

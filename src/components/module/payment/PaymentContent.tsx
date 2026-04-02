@@ -24,9 +24,13 @@ import { IBaseUser } from "@/types/user.types";
 import UpdatePaymentForm from "./UpdatePaymentForm";
 import UpdatePaymentStatusForm from "./UpdatePaymentForm";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { deletePayment } from "@/actions/payment.actions";
 =======
 >>>>>>> 2df5e7a (handle update payment)
+=======
+import { deletePayment } from "@/actions/payment.actions";
+>>>>>>> 18a93c9 (delete payment)
 
 export default function PaymentContent({
   payments,
@@ -105,12 +109,16 @@ export default function PaymentContent({
   ];
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 18a93c9 (delete payment)
   const handleDeletePayment = useCallback(async (id: string) => {
     try {
       if (!window.confirm("Are you sure you want to delete this payment?")) return;
       const toastId = toast.loading("Deleting payment...");
       const resp = await deletePayment(id);
       toast.dismiss(toastId);
+<<<<<<< HEAD
 
       if (resp.success) {
         setTableData((prev) => prev.filter((item) => item.id !== id));
@@ -145,6 +153,21 @@ export default function PaymentContent({
   //   }
   // }, []);
 >>>>>>> 2df5e7a (handle update payment)
+=======
+
+      if (resp.success) {
+        setTableData((prev) => prev.filter((item) => item.id !== id));
+        router.refresh();
+        toast.success(resp.message || "Payment deleted successfully");
+      } else {
+        toast.error(resp.message || "Failed to delete payment.");
+      }
+    } catch (error: any) {
+      toast.dismiss();
+      toast.error("Something went wrong. " + (error?.message || ""));
+    }
+  }, []);
+>>>>>>> 18a93c9 (delete payment)
 
   const actions = [
     {
@@ -170,10 +193,14 @@ export default function PaymentContent({
       icon: Trash2,
       label: "Delete",
 <<<<<<< HEAD
+<<<<<<< HEAD
       onClick: (item: any) => handleDeletePayment(item.id),
 =======
       onClick: (item: any) => <></>,
 >>>>>>> 2df5e7a (handle update payment)
+=======
+      onClick: (item: any) => handleDeletePayment(item.id),
+>>>>>>> 18a93c9 (delete payment)
       className: "text-red-500",
     },
   ];
@@ -219,6 +246,7 @@ export default function PaymentContent({
           </DialogHeader>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
           <div
             className="py-6 px-4 sm:px-8"
             style={{
@@ -263,12 +291,38 @@ export default function PaymentContent({
             </div>
           )}
 
+=======
+>>>>>>> 18a93c9 (delete payment)
           <div
-            style={{ maxHeight: "70vh", overflowY: "auto" }}
             className="py-6 px-4 sm:px-8"
+            style={{
+              maxHeight: '70vh',
+              overflowY: 'auto',
+            }}
           >
+<<<<<<< HEAD
             {viewData ? <ViewPaymentData viewData={viewData} /> : null}
 >>>>>>> 2df5e7a (handle update payment)
+=======
+            {viewData && <ViewPaymentData viewData={viewData} />}
+
+            {!viewMode && selectedPayment && (
+              <div className="mt-6">
+                <UpdatePaymentStatusForm
+                  id={selectedPayment}
+                  onSuccess={(updated: any) => {
+                    setTableData((prev: any) =>
+                      prev.map((item: any) =>
+                        item.id === updated.id ? updated : item
+                      )
+                    );
+                    setOpen(false);
+                    setSelectedPayment(null);
+                  }}
+                />
+              </div>
+            )}
+>>>>>>> 18a93c9 (delete payment)
           </div>
         </DialogContent>
       </Dialog>

@@ -175,6 +175,9 @@ export const PaymentService={
         }
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 18a93c9 (delete payment)
     deletePayment: async (paymentId: string) => {
         try {
             const cookieStore = await cookies();
@@ -211,8 +214,11 @@ export const PaymentService={
             };
         }
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 2df5e7a (handle update payment)
+=======
+>>>>>>> 18a93c9 (delete payment)
 
 
 }
