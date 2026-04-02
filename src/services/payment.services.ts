@@ -103,14 +103,8 @@ export const PaymentService={
             },
             credentials: "include",
         });
-<<<<<<< HEAD
+        // Remove merge conflict markers and duplicate/console.log/data lines, use only the correct code:
         const data = await res.json();
-=======
-
-        const data = await res.json();
-        console.log(data,'datafor')
-
->>>>>>> 2df5e7a (handle update payment)
         if (!res.ok) {
             return {
                 success: false,
@@ -174,10 +168,6 @@ export const PaymentService={
             };
         }
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 18a93c9 (delete payment)
     deletePayment: async (paymentId: string) => {
         try {
             const cookieStore = await cookies();
@@ -214,11 +204,6 @@ export const PaymentService={
             };
         }
     },
-<<<<<<< HEAD
-=======
->>>>>>> 2df5e7a (handle update payment)
-=======
->>>>>>> 18a93c9 (delete payment)
 
 
 }

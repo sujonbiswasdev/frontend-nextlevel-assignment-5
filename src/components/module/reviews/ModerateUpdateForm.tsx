@@ -27,7 +27,7 @@ const ModerateUpdateForm = ({ id, onSuccess }: Props) => {
       setLoading(true);
       const toastId = toast.loading("Updating moderation status...");
 
-      const res = await moderateReview(id, { status });
+      const res = await moderateReview(id, {status} );
 
       toast.dismiss(toastId);
 
@@ -39,6 +39,7 @@ const ModerateUpdateForm = ({ id, onSuccess }: Props) => {
         toast.error(res.message || "Failed to update review status");
       }
     } catch (err: any) {
+      console.log(err.error)
       toast.dismiss();
       toast.error(err.message || "Something went wrong");
     } finally {

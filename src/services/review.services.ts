@@ -4,6 +4,7 @@ import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { ICreatereviewData, TResponseReviewData } from "@/types/review.types";
 import { cookies } from "next/headers";
 import { ServiceOptionds } from "./event.services";
+import { Award } from "lucide-react";
 
 export interface IModerateData {
   status: string;
@@ -27,7 +28,7 @@ export const reviewService = {
         },
         body: JSON.stringify(data),
         next: {
-          tags: ['review', 'reviews'],
+          tags: ["review", "reviews"],
         },
       });
       const body = await res.json();
@@ -191,45 +192,32 @@ export const reviewService = {
 
   moderateReview: async (
     reviewId: string,
-    data: IModerateData,
-    options?: ServiceOptionds
+    data: IModerateData
   ) => {
     try {
       const cookieStore = await cookies();
-      const url = new URL(`${API_BASE_URL}/review/${reviewId}/moderate`);
-      const config: RequestInit = {
-        method: "PATCH",
+      const res = await fetch(`${API_BASE_URL}/review/${reviewId}/moderate`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Cookie: cookieStore.toString(),
         },
         credentials: "include",
         body: JSON.stringify(data),
-      };
-
-      if (options?.cache) {
-        config.cache = options.cache;
-      }
-      if (options?.revalidate) {
-        config.next = { revalidate: options.revalidate };
-      }
-      config.next = { ...config.next, tags: ["review", "reviews"] };
-
-      const res = await fetch(url.toString(), config);
-      const responseData = await res.json();
-
+        next: { tags: ["review", "reviews"] },
+      });
+      const body = await res.json();
       if (!res.ok) {
-        const error = responseData as ApiErrorResponse;
+        const error = body as ApiErrorResponse;
         return {
           success: error.success,
           message: error.message || "Failed to moderate review",
         };
       }
-
       return {
-        success: responseData.success,
-        message: responseData.message || "Review moderated successfully",
-        data: responseData.data,
+        success: body.success,
+        message: body.message || "Review moderated successfully",
+        data: body.data,
       };
     } catch (e: any) {
       return {
