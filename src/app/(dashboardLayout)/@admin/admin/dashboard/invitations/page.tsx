@@ -15,7 +15,6 @@ const InvitationsPage = async({
   const userinfo=await getSessionAction()
   const search=await searchParams
   const invitationsPromise =await GetAllinvitaionsAction(search);
-  console.log(invitationsPromise,'invita')
   const invitationdata=invitationsPromise.data?.invitations
   const pagination=invitationsPromise.data?.pagination as TPagination
   if (!invitationdata || !Array.isArray(invitationdata)) {

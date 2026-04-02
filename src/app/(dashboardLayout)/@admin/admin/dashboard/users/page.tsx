@@ -23,8 +23,6 @@ const UsersPage =async ({
     usersResponse = { data: [], pagination: { total: 0, page: 1, limit: 10, totalpage: 1 } };
   }
 
-  console.log(usersResponse.users,'usrere')
-  
   return (
     <React.Suspense fallback={<span>Loading users...</span>}>
       <ErrorBoundary fallback={<span>Something went wrong while loading users.</span>}>

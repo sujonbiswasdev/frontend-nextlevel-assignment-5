@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, Pencil } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { ReusableTable } from "../table/Table";
@@ -21,6 +21,8 @@ import { useFilter } from "@/components/ReusableFilter";
 import { FilterPanel } from "@/components/Filter";
 import PaginationPage from "../event/Pagination";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "react-toastify";
+import { deleteParticipantAction } from "@/actions/participant.actions";
 
 export default function ParticipantContent({
   participants,
@@ -94,6 +96,40 @@ export default function ParticipantContent({
     },
   ];
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this participant? This action cannot be undone.")) {
+      return;
+    }
+    const toastId = toast.loading("Deleting participants...");
+    try {
+      const res = await deleteParticipantAction(id);
+      toast.dismiss(toastId);
+      if (res?.success) {
+        toast.update(toastId, {
+          render: res.message || "participants deleted successfully.",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+        setTableData((prev) => prev.filter((item) => item.id !== id));
+      } else {
+        toast.update(toastId, {
+          render: res?.message || "Failed to delete participants.",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      }
+    } catch (err: any) {
+      toast.update(toastId, {
+        render: err?.message || "Server error",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+  };
+
   const actions = [
     {
       icon: Eye,
@@ -113,6 +149,17 @@ export default function ParticipantContent({
         setOpen(true);
       },
     },
+  ...(role === "ADMIN"
+    ? [
+        {
+          icon: Trash2,
+          label: "delete",
+          onClick: (item: any) => {
+            handleDelete(item.id);
+          },
+        },
+      ]
+    : []),
   ];
 
   return (
@@ -156,7 +203,13 @@ export default function ParticipantContent({
        </div>
 
       <div className="mb-6 overflow-x-auto rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
-        <ReusableTable columns={columns as any} data={tableData} actions={actions} />
+        {tableData && Array.isArray(tableData) && tableData.length > 0 ? (
+          <ReusableTable columns={columns as any} data={tableData} actions={actions} />
+        ) : (
+          <div className="p-8 text-center text-gray-400 dark:text-gray-500 text-base select-none">
+            No participant data found.
+          </div>
+        )}
       </div>
 
       {/* Changed Modal Design: Make content scrollable, NOT the modal itself */}
