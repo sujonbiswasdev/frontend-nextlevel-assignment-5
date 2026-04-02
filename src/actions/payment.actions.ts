@@ -22,3 +22,7 @@ export const updatePaymentStatus = async (paymentId: string, status: string) => 
   const response = await PaymentService.updatePaymentStatus(paymentId, status);
   return response;
 };
+export const deletePayment = async (paymentId: string) => {
+  const response = await PaymentService.deletePayment(paymentId);
+  return response;
+};

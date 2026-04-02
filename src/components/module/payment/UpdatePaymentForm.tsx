@@ -1,18 +1,19 @@
 "use client";
 
 import { updatePaymentStatus } from "@/actions/payment.actions";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 interface Props {
   id: string;
-  currentStatus: string;
   onSuccess: (updated: any) => void;
 }
 
-const UpdatePaymentStatusForm = ({ id, currentStatus, onSuccess }: Props) => {
-  const [status, setStatus] = useState<string>(currentStatus || "");
+const UpdatePaymentStatusForm = ({ id, onSuccess }: Props) => {
+  const [status, setStatus] = useState<string>( "");
   const [loading, setLoading] = useState(false);
+  const router=useRouter()
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -31,8 +32,9 @@ const UpdatePaymentStatusForm = ({ id, currentStatus, onSuccess }: Props) => {
       toast.dismiss(toastId);
 
       if (res.success) {
+        router.refresh()
         toast.success(res.message || "Status updated successfully");
-        onSuccess(res.data); // ✅ return updated payment
+        onSuccess(res.data);
       } else {
         toast.error(res.message || "Failed to update status");
       }

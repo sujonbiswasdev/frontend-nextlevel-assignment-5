@@ -170,6 +170,42 @@ export const PaymentService={
             };
         }
     },
+    deletePayment: async (paymentId: string) => {
+        try {
+            const cookieStore = await cookies();
+
+            const res = await fetch(`${API_BASE_URL}/payments/${paymentId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: cookieStore.toString(),
+                },
+                credentials: "include",
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                return {
+                    success: false,
+                    message: data.message || "Failed to delete payment",
+                    data: null,
+                };
+            }
+
+            return {
+                success: true,
+                data: data.data,
+                message: data.message || "Payment deleted successfully",
+            };
+        } catch (err: any) {
+            return {
+                success: false,
+                message: err?.message || "Something went wrong while deleting payment",
+                data: null,
+            };
+        }
+    },
 
 
 }
