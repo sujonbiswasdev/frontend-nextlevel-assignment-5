@@ -24,10 +24,7 @@ export const proxy = async (request: NextRequest) => {
     );
 
     if (!tokenVerify.success) {
-      return NextResponse.json(
-        { error: "Invalid or expired access token." },
-        { status: 401 }
-      );
+      return NextResponse.redirect(new URL("/login?Invalid_or_expired_access_token", request.url));
     }
     const userSession = await getSessionAction();
     if (!userSession?.success || !userSession?.data) {
@@ -35,36 +32,24 @@ export const proxy = async (request: NextRequest) => {
     }
     const user = userSession.data;
     if (user.status === "BLOCKED") {
-      return NextResponse.json(
-        { error: "Your account is blocked. Contact support." },
-        { status: 403 }
-      );
+      return NextResponse.redirect(new URL("/login?Your_account_is_blocked.please contact support", request.url));
     }
     const role = user.role as TUserRole;
     if (pathname.startsWith("/admin")) {
       if (role !== "ADMIN") {
-        return NextResponse.json(
-          { error: "Access denied. Admins only." },
-          { status: 403 }
-        );
+        return NextResponse.redirect(new URL("/login?Access_denied_Admins_only", request.url));
       }
     }
 
     if (pathname.startsWith("/payment")) {
       if (role !== "ADMIN" && role !== "USER") {
-        return NextResponse.json(
-          { error: "Access denied. Only users and admins can access payment routes." },
-          { status: 403 }
-        );
+        return NextResponse.redirect(new URL("/login?Access_denied_Only_users_and_admins_can_access_payment_routes.", request.url));
       }
     }
 
     if (pathname.startsWith("/user")) {
       if (role !== "USER") {
-        return NextResponse.json(
-          { error: "Access denied. Users only." },
-          { status: 403 }
-        );
+        return NextResponse.redirect(new URL("/login?Access_denied_Only_users.", request.url));
       }
     }
 
@@ -87,10 +72,7 @@ export const proxy = async (request: NextRequest) => {
     return NextResponse.next();
   } catch (err) {
     console.error("Auth middleware error:", err);
-    return NextResponse.json(
-      { error: "Something went wrong while verifying authentication." },
-      { status: 500 }
-    );
+    return NextResponse.redirect(new URL("/login?Something_went_wrong_while_verifying_authentication", request.url));
   }
 };
 

@@ -60,5 +60,6 @@ export const UpdateUserCommonData = z
         (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
         "Invalid email format"
       ),
+      isRegister:z.boolean().optional()
   })
   .strict();

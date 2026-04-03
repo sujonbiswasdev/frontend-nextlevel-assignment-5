@@ -8,6 +8,7 @@ export interface Counts {
   participatedEvents: number;
   invitations: number;
   payments: number;
+  user:number
 }
 
 export interface MonthlyRevenue {

@@ -33,6 +33,7 @@ export function ReusableTable<T extends { id: string }>({
   emptyMessage = 'No data found',
   className,
 }: ReusableTableProps<T>) {
+  console.log(data,'suer')
   return (
     <section className={cn('w-full flex justify-center px-4 sm:px-6 lg:px-8 py-6', className)}>
       <div className="w-full max-w-[1480px]">

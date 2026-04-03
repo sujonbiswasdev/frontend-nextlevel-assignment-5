@@ -60,7 +60,7 @@ export const StatsCard: React.FC<StatCardProps> = ({
         </div>
 
         {/* Mini sparkline effect */}
-        <div className="relative w-full h-2 rounded-full bg-gradient-to-r from-indigo-100 via-white to-purple-100 shadow-inner overflow-hidden">
+       {title=="Users"?"": <div className="relative w-full h-2 rounded-full bg-gradient-to-r from-indigo-100 via-white to-purple-100 shadow-inner overflow-hidden">
           <div
             className="absolute top-0 left-0 h-3 py-1 rounded-full bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 transition-all duration-700 ease-in-out shadow-md"
             style={{
@@ -79,7 +79,7 @@ export const StatsCard: React.FC<StatCardProps> = ({
               {percentage || "--"}%
             </span>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

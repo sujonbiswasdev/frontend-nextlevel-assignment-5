@@ -18,6 +18,7 @@ import { createUserColumns } from "./createUserColums";
 import { TFilterField } from "@/types/filter.types";
 import { UpdateUserForm } from "./UpdateUser";
 import { deleteUserByAdminAction } from "@/actions/user.actions";
+import PaginationPage from "../event/Pagination";
 
 export default function UserContentPage({
   users,
@@ -223,6 +224,10 @@ export default function UserContentPage({
           </div>
         </DialogContent>
       </Dialog>
+
+      <div>
+        <PaginationPage pagination={pagination as TPagination}/>
+      </div>
     </div>
   );
 }

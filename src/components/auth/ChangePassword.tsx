@@ -26,8 +26,11 @@ import { changePasswordAction } from "@/actions/auth.actions";
 // Simple Zod validator for password fields.
 import { z } from "zod";
 const changePasswordSchema = z.object({
-  currentPassword: z.string().min(6, "Current password is required"),
-  newPassword: z.string().min(6, "New password is required"),
+  currentPassword: z.string().min(8, "Current password is required"),
+  newPassword: z.string().min(8, "New password is required").regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
+    "Password must contain uppercase, lowercase, number, and special character"
+  ),
 });
 
 export function ChangePasswordForm() {
@@ -96,8 +99,6 @@ export function ChangePasswordForm() {
               }}
             >
               {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <>
                     <FormInput
@@ -105,9 +106,7 @@ export function ChangePasswordForm() {
                       label="Current Password"
                       isPassword
                     />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
+                    
                   </>
                 );
               }}
@@ -120,8 +119,7 @@ export function ChangePasswordForm() {
               }}
             >
               {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                
                 return (
                   <>
                     <FormInput
@@ -129,9 +127,7 @@ export function ChangePasswordForm() {
                       label="New Password"
                       isPassword
                     />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
+                    
                   </>
                 );
               }}
