@@ -97,7 +97,7 @@ export function NavbarNotifications() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="relative outline-none rounded-full">
+      <DropdownMenuTrigger  className="relative outline-none rounded-full">
         <span className="relative flex items-center justify-center w-7 h-7">
           <Bell size={16} strokeWidth={2.1} className="text-gray-700" />
 

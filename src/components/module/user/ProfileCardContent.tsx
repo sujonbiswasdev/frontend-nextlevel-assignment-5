@@ -13,7 +13,7 @@ import { Status, StatusIndicator, StatusLabel } from "../../ui/status";
 import { deleteuserown, updateUserProfileAction } from "@/actions/user.actions";
 import ShareProfileButton from "./profileshare";
 
-function ProfileModal({ user }: { user: IBaseUser }) {
+function ProfileModal({ user,notification }: { user: IBaseUser,notification:any }) {
   const router = useRouter();
   const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user })
   const [inputvalue, setinputvalue] = useState<Partial<TUpdateUserInput>>({});
@@ -95,6 +95,7 @@ function ProfileModal({ user }: { user: IBaseUser }) {
   return (
     <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl mx-auto">
       {/* Header */}
+      <div className="flex justify-end">  {notification}</div>
       <div
         className="flex items-center justify-between border-b p-6 max-w-full bg-cover bg-center"
         style={{
