@@ -1,8 +1,9 @@
 import { revalidateTag } from 'next/cache';
 import { cookies } from "next/headers"
 import { ApiErrorResponse, ApiResponse } from '@/types/response.type';
-import { IBaseUser, TUpdateUserInput } from '@/types/user.types';
-import { TPagination } from '@/types/event.types';
+import { IBaseUser, TResponseUserData, TUpdateUserInput } from '@/types/user.types';
+import { IBaseEvent, TPagination } from '@/types/event.types';
+import { IgetReviewData } from '@/types/review.types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
@@ -60,6 +61,7 @@ deleteUserOwn: async () => {
 },
 getAllUsers: async (params?: any, options?: { cache?: RequestCache; revalidate?: number }) => {
   try {
+
     const cookieStore = await cookies();
     const url = new URL(`${API_BASE_URL}/admin/users`);
     if (params) {
@@ -86,7 +88,7 @@ getAllUsers: async (params?: any, options?: { cache?: RequestCache; revalidate?:
       } 
     });
     const data = await res.json();
-    console.log(data,'datas')
+    console.log(data.data.data,'desdfsdfdsfsdf')
     if (!res.ok) {
       const error = data as ApiErrorResponse;
       return { success: false, message: error.message || "Failed to retrieve users" };
@@ -95,7 +97,7 @@ getAllUsers: async (params?: any, options?: { cache?: RequestCache; revalidate?:
     return {
       success: data.success,
       message: data.message || "Users retrieved successfully",
-      users: data.data.data as IBaseUser[],
+      users: data.data.data as TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[], accounts: { password: string; }[]}>[],
       pagination:data.data.pagination as TPagination,
     };
   } catch (error: any) {

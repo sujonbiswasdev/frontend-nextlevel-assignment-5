@@ -10,7 +10,7 @@ const Page = async() => {
     <ErrorBoundary fallback={<div className="text-red-600">An error occurred while loading the admin dashboard. Please refresh the page or try again later.</div>}>
        {statsData ? (
          <div>
-            <DashboardContent stats={statsData.data as DashboardData<{ monthlyRevenue: any[]; eventStatus: any; pieChartData: any[]; barChartData: any[] }>} />
+            <DashboardContent eventVisivility={statsData.EventVisivillity} stats={statsData.data as DashboardData<{ monthlyRevenue: any[]; eventStatus: any; pieChartData: any[]; barChartData: any[] }>} />
 
          </div>
        ) : (

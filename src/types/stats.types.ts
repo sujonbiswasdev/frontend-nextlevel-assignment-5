@@ -19,6 +19,8 @@ export interface EventStatus {
   upcoming: number;
   completed: number;
   cancelled: number;
+  draft: number;
+  ongoing: number;
 }
 
 export interface ChartData {
@@ -27,9 +29,22 @@ export interface ChartData {
   value: number;
 }
 
+export interface EventVisivillity {
+  public: number;
+  private: number;
+}
+
+export interface PriceType {
+  free: number;
+  paid: number;
+}
+
+
 export interface DashboardData<T> {
   counts: Counts;
   totalRevenue: number;
+  eventVisibility: EventVisivillity;
+  priceType: PriceType;
   monthlyRevenue: T[]; // month + value
   eventStatus: EventStatus;
   pieChartData: T[];   // label + value

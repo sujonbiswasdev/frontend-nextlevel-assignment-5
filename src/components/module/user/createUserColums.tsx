@@ -5,7 +5,7 @@ export const createUserColumns = () => [
     key: "id",
     label: "ID",
     render: (row: any) => (
-      <CopyableId id={row.id} showShort={row.id?.slice(0, 8)} />
+      <CopyableId id={row.id} href={`/profile/${row.id}`} showShort={row.id?.slice(0, 8)} />
     ),
   },
   {

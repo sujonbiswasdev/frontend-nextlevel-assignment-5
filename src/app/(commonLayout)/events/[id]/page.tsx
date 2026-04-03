@@ -48,7 +48,7 @@ const EventDetailsPageWrapper = async ({
       throw new Error("Event not found.");
     }
 
-    const singleEventData = eventData.data as TResponseEvent<{ organizer: IBaseUser; reviews: IgetReviewData[] }>;
+    const singleEventData = eventData.data as TResponseEvent<{reviews:IgetReviewData[],organizer:IBaseUser}>;
 
     return (
       <div>

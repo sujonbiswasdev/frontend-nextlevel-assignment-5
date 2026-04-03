@@ -12,8 +12,6 @@ const UsersPage =async ({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
-  console.log('sjfsdjflksdjklfjsdjflskdjfklsdjfksdjfksdjf')
-  console.log('sdlfjsdjfjsdklfjsdf')
   let usersResponse;
   try {
     const search = await searchParams;
@@ -32,7 +30,7 @@ const UsersPage =async ({
              <NotFoundItem content="No users found." emoji="😕" filter="" key="no-users"/>
             </ul>
           ) : (
-            <UserTable users={usersResponse.users as TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[]}>[]} pagination={usersResponse.pagination as TPagination}/>
+            <UserTable users={usersResponse.users as TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[], accounts: { password: string; }[]}>[]} pagination={usersResponse.pagination as TPagination}/>
           )}
         </div>
       </ErrorBoundary>

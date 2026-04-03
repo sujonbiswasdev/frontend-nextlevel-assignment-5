@@ -115,7 +115,7 @@ const EventService = {
         }
       );
       const data = await res.json();
-      const result =data as ApiResponse<TResponseEvent<{reviews:any[]}>>
+      const result =data as ApiResponse<TResponseEvent<{reviews:IgetReviewData[],organizer:IBaseUser}>>
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {

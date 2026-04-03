@@ -24,7 +24,8 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col">
-      <HeroSlider data={isfeatured.data as IBaseEvent[]} />
+      sdfsdf
+      {!isfeatured || !isfeatured.success || !isfeatured.data?<NotFoundItem  content="hero section data not found"/>:<HeroSlider data={isfeatured.data as IBaseEvent[]} />}
       <UpcommingEvent />
       <CallToAction />
       <ErrorBoundary fallback={<ErrorFallback title="Failed to load events list." />}>

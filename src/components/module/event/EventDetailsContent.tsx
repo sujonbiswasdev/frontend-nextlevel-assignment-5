@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Calendar, MapPin, Share2, Heart, Star, ArrowRight, ChevronLeft } from "lucide-react";
 import { toast } from "react-toastify";
 
 import { IBaseEvent, IEventPricing, IEventTypeEnum, TResponseEvent } from "@/types/event.types";
 import { IBaseUser } from "@/types/user.types";
-import { TResponseReviewData } from "@/types/review.types";
+import { IgetReviewData, TResponseReviewData } from "@/types/review.types";
 
 import { createParticipant } from "@/actions/participant.actions";
 import { getEventAction } from "@/utils/event.actions";
@@ -15,14 +15,15 @@ import ReviewForm from "../reviews/CreateReview";
 import ReviewItem from "../reviews/ReviewItem";
 import { useRouter } from "next/navigation";
 import { initiatePayLater, initiatePayment } from "@/actions/payment.actions";
+import { Button } from "@/components/ui/button";
 
-const EventDetailsPage = ({
-  eventData,
-}: {
-  eventData: TResponseEvent<{ organizer: IBaseUser; reviews: TResponseReviewData<{ user: IBaseUser; event: IBaseEvent }>[] }>;
-}) => {
+const EventDetailsPage = ({eventData}: {eventData:TResponseEvent<{reviews:IgetReviewData[],organizer:IBaseUser}> }) => {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const router=useRouter()
+  const [buttondata,setbuttondata]=useState("")
+  console.log(eventData,'s')
+
+
 
   const handleAddParticipant = async (id: string) => {
     const toastId = toast.loading("Registering attendance...");
@@ -31,8 +32,10 @@ const EventDetailsPage = ({
       const res = await createParticipant(id);
       toast.dismiss(toastId);
       if (res.success) {
-        router.push(res.data.paymentUrl)
-        toast.success((res.message, res.data) || "You have been added as a participant!");
+        toast.success("You have been added as a participant!");
+        if(eventData.visibility==="PUBLIC" && eventData.priceType==="FREE"){
+          router.push(res.data.paymentUrl)
+        }
       } else {
         toast.error(res.message || "Failed to add participant.");
       }
@@ -173,7 +176,7 @@ const EventDetailsPage = ({
               <h2 className="text-xl font-semibold mb-4">Reviews</h2>
 
               {eventData.reviews?.length > 0 ? (
-                eventData.reviews.map((review) => (
+                eventData.reviews.map((review:any) => (
                   <ReviewItem
                     key={review.id}
                     user={eventData.organizer}
@@ -208,30 +211,9 @@ const EventDetailsPage = ({
                   <p>Category: {eventData.categories}</p>
                   <p>Status: {eventData.status}</p>
                 </div>
-
-                {eventData.fee === 0 ? (
-                  <button
-                    onClick={() => handleAddParticipant(eventData.id)}
-                    className="w-full py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition"
-                  >
-                    Join Now
-                  </button>
-                ) : (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handlePayNow(eventData.id)}
-                      className="flex-1 py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition"
-                    >
-                      Pay & Join
-                    </button>
-                    <button
-                      onClick={() => handlePayLater(eventData.id)}
-                      className="flex-1 py-3 bg-slate-200 text-slate-800 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-slate-300 transition"
-                    >
-                      Pay Later & request
-                    </button>
-                  </div>
-                )}
+               <div>
+                {eventData.visibility==="PUBLIC" && eventData.priceType==="FREE"?<button onClick={()=>handleAddParticipant(eventData.id)}>join</button>:eventData.visibility=="PUBLIC" && eventData.priceType=="PAID"?<button onClick={()=>handleAddParticipant(eventData.id)}>pay & join</button>:eventData.visibility=="PRIVATE" && eventData.priceType=="FREE"?<button>request & join</button>:<button>pay & join</button>}
+               </div>
               </div>
             </div>
           </div>

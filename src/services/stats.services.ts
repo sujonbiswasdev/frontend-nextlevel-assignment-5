@@ -1,3 +1,4 @@
+import { EventVisivillity } from './../types/stats.types';
 import { ApiErrorResponse } from '@/types/response.type';
 
 import { DashboardData } from "@/types/stats.types";
@@ -19,6 +20,7 @@ export const StatsServices = {
         cache: "no-store",
       });
       const body = await response.json();
+
       if (!response.ok) {
         const error =body as ApiErrorResponse
         return {
@@ -29,6 +31,7 @@ export const StatsServices = {
       }
       return { 
         success: true, 
+        EventVisivillity:body.data.eventVisivillity,
         data: body.data as DashboardData<any>,
         message: body.message ?? "Stats fetched successfully.",
       };

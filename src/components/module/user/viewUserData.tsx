@@ -1,3 +1,4 @@
+import CopyableId from '@/components/shared/CopyId';
 import { IBaseEvent } from '@/types/event.types';
 import { IgetReviewData } from '@/types/review.types';
 import { IBaseUser, TResponseUserData } from '@/types/user.types';
@@ -16,11 +17,13 @@ const ViewUserData = ({
   viewData,
 }: {
   viewMode: boolean;
-  viewData?: TResponseUserData<{ reviews: IgetReviewData[], event: IBaseEvent[] }>;
+  viewData?: TResponseUserData<{ reviews: IgetReviewData[], event: IBaseEvent[],accounts:{password:string}[] }>;
 }) => {
   if (!viewMode || !viewData) {
     return null;
   }
+
+  console.log(viewData,'viwddddddd')
 
   const statusStyle =
     USER_STATUS_STYLES[viewData.status as keyof typeof USER_STATUS_STYLES] || {
@@ -133,6 +136,17 @@ const ViewUserData = ({
           <span className="text-slate-500 text-sm font-medium mb-1">Created At</span>
           <span className="font-mono text-base text-gray-700 bg-gray-50 rounded-lg px-3 py-2 border border-slate-100">
             {viewData.createdAt ? new Date(viewData.createdAt).toLocaleDateString() : "N/A"}
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-slate-500 text-sm font-medium mb-1">password</span>
+          <span className="font-mono text-base text-gray-700 bg-gray-50 rounded-lg px-3 py-2 border border-slate-100">
+            {viewData.accounts.map((item)=>{
+              return <>
+              <CopyableId  href={`${item.password}`} id={viewData.id}/>
+              </>
+            })}
           </span>
         </div>
       </div>

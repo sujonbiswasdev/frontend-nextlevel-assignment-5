@@ -23,10 +23,9 @@ export default function UserContentPage({
   users,
   pagination,
 }: {
-  users: TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[]}>[]; // your dynamic data
+  users: TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[],accounts:{password:string}[]}>[]; // your dynamic data
   pagination?: TPagination;
 }) {
-  console.log(users,'sue')
   const [tableData, setTableData] = useState(users);
   const [open, setOpen] = useState(false);
   const [viewMode, setViewMode] = useState(false);

@@ -18,9 +18,9 @@ export const StatsCard: React.FC<StatCardProps> = ({
   percentage,
   trend = "up",
   iconName,
-  bgGradient = "from-indigo-50 via-white to-purple-50",
+  bgGradient = "from-gray-300 via-white to-gray-400",
 }) => {
-  const trendColor = trend === "up" ? "text-emerald-500" : "text-red-500";
+  const trendColor = trend === "up" ? "text-yellow-500" : "text-red-500";
 
   // Fix for LucideIcon issue
   const IconComponent = iconName ? getIconComponent(iconName) : null;
@@ -39,7 +39,13 @@ export const StatsCard: React.FC<StatCardProps> = ({
         {/* Title + Icon */}
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-600 tracking-wide">{title}</h3>
-          {IconComponent && React.createElement(IconComponent, { className: "w-5 h-5 text-gray-400" })}
+          {IconComponent && (
+            <span className="inline-flex items-center justify-center rounded-full shadow bg-white w-8 h-8">
+              {React.createElement(IconComponent, {
+                className: "w-5 h-5 text-blue-500",
+              })}
+            </span>
+          )}
         </div>
 
         {/* Value + Trend */}
@@ -56,7 +62,7 @@ export const StatsCard: React.FC<StatCardProps> = ({
         {/* Mini sparkline effect */}
         <div className="relative w-full h-2 rounded-full bg-gradient-to-r from-indigo-100 via-white to-purple-100 shadow-inner overflow-hidden">
           <div
-            className="absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-700 ease-in-out shadow-md"
+            className="absolute top-0 left-0 h-3 py-1 rounded-full bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 transition-all duration-700 ease-in-out shadow-md"
             style={{
               width: percentage
                 ? `${Math.min(100, Math.max(0, parseFloat(percentage)))}%`
@@ -68,8 +74,10 @@ export const StatsCard: React.FC<StatCardProps> = ({
               opacity: 0.87,
             }}
           />
-          <div className="absolute top-1/2 left-0 transform -translate-y-1/2 flex items-center w-full pointer-events-none">
-            <span className="ml-auto mr-2 text-xs font-medium text-gray-500/70 select-none">{percentage || "--"}%</span>
+          <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+            <span className="text-[10px] font-medium text-gray-200 bg-gray-800/80 rounded-full px-2 py-0.5 shadow">
+              {percentage || "--"}%
+            </span>
           </div>
         </div>
       </div>

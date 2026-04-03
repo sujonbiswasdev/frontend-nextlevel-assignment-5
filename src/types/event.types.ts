@@ -42,7 +42,7 @@ export type IBaseEvent = {
     time: string;
     venue: string;
     image: string;
-    visibility?: ICreateEvent;
+    visibility?: "PUBLIC" | "PRIVATE";
     priceType?: IEventPricing;
     status: IEventStatusEnum;
     is_featured: boolean;

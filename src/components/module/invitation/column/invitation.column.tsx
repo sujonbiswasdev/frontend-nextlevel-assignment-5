@@ -23,14 +23,14 @@ export const createInvitationColumns = () => [
     key: "inviterId",
     label: "Inviter",
     render: (row: any) => (
-      <CopyableId id={row.inviterId} showShort={row.inviterId.slice(0, 8)} />
+      <CopyableId id={row.inviterId} href={`/profile/${row.inviterId}`} showShort={row.inviterId.slice(0, 8)} />
     ),
   },
   {
     key: "inviteeId",
     label: "Invitee",
     render: (row: any) => (
-      <CopyableId id={row.inviteeId} showShort={row.inviteeId.slice(0, 8)} />
+      <CopyableId id={row.inviteeId} href={`/profile/${row.inviteeId}`} showShort={row.inviteeId.slice(0, 8)} />
     ),
   },
   {
