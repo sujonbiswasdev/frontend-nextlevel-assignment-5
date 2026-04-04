@@ -1,3 +1,4 @@
+export const revalidate=60
 import { fetchEvents } from "@/actions/event.actions";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import EventContent from "@/components/module/event/EventsContent";
@@ -14,7 +15,7 @@ const EventsPage = async ({
   let eventsResponse;
   try {
     const search = await searchParams;
-    eventsResponse = await fetchEvents(search, { revalidate: 2 });
+    eventsResponse = await fetchEvents(search);
   } catch (err) {
     console.error("Events fetch error:", err);
     eventsResponse = { data: { UPCOMING: [] }, pagination: { total: 0, page: 1, limit: 10, totalpage: 1 } };

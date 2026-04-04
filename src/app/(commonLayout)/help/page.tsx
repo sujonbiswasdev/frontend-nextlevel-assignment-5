@@ -2,18 +2,6 @@
 import React, { useState } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-
-
-const categories = [
-  { title: "Getting Started", desc: "Learn how to use the platform", icon: "🚀" },
-  { title: "Event Management", desc: "Create & manage events", icon: "📅" },
-  { title: "Payments", desc: "Fees, refunds & payments", icon: "💳" },
-  { title: "Account", desc: "Profile & security settings", icon: "👤" },
-  { title: "Invitations", desc: "Manage invites & approvals", icon: "📩" },
-  { title: "Reviews", desc: "Ratings & feedback system", icon: "⭐" },
-];
-
 const faqs = [
   {
     q: "How do I create an event?",
@@ -37,6 +25,20 @@ const HelpCenter = () => {
     const router=useRouter()
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+
+
+
+
+const categories = [
+  { title: "Getting Started", desc: "Learn how to use the platform", icon: "🚀" },
+  { title: "Event Management", desc: "Create & manage events", icon: "📅" },
+  { title: "Payments", desc: "Fees, refunds & payments", icon: "💳" },
+  { title: "Account", desc: "Profile & security settings", icon: "👤" },
+  { title: "Invitations", desc: "Manage invites & approvals", icon: "📩" },
+  { title: "Reviews", desc: "Ratings & feedback system", icon: "⭐" },
+];
+const categoryFilter=categories.filter((item)=>item.title.includes(search) || item.desc.includes(search))
+
 
   return (
     <div className="bg-neutral-100 min-h-screen">
@@ -70,7 +72,7 @@ const HelpCenter = () => {
         </h2>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((cat, i) => (
+          {categoryFilter.map((cat, i) => (
             <div
               key={i}
               className="bg-white p-6 rounded-2xl shadow border border-neutral-200 hover:shadow-lg hover:border-blue-600 hover:-translate-y-1 transition cursor-pointer"

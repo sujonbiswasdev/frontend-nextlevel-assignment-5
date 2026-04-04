@@ -1,33 +1,27 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import {useState } from "react";
 import Image from "next/image";
-import { Calendar, MapPin, Share2, Heart, Star, ArrowRight, ChevronLeft } from "lucide-react";
+import { Calendar, MapPin, Share2, Heart, Star, ChevronLeft } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { IBaseEvent, IEventPricing, IEventTypeEnum, TResponseEvent } from "@/types/event.types";
+import {TResponseEvent } from "@/types/event.types";
 import { IBaseUser } from "@/types/user.types";
-import { IgetReviewData, TResponseReviewData } from "@/types/review.types";
+import { IgetReviewData } from "@/types/review.types";
 
 import { createParticipant } from "@/actions/participant.actions";
-import { getEventAction } from "@/utils/event.actions";
 import ReviewForm from "../reviews/CreateReview";
 import ReviewItem from "../reviews/ReviewItem";
 import { useRouter } from "next/navigation";
-import { initiatePayLater, initiatePayment } from "@/actions/payment.actions";
+import { initiatePayLater } from "@/actions/payment.actions";
 import { Button } from "@/components/ui/button";
 
 const EventDetailsPage = ({eventData}: {eventData:TResponseEvent<{reviews:IgetReviewData[],organizer:IBaseUser}> }) => {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const router=useRouter()
-  const [buttondata,setbuttondata]=useState("")
-  console.log(eventData,'s')
-
-
 
   const handleAddParticipant = async (id: string) => {
     const toastId = toast.loading("Registering attendance...");
-
     try {
       const res = await createParticipant(id);
       toast.dismiss(toastId);
@@ -46,25 +40,6 @@ const EventDetailsPage = ({eventData}: {eventData:TResponseEvent<{reviews:IgetRe
     }
   };
 
-  // handlePayNow ata diya function daw
-
-  const handlePayNow = async (eventId: string) => {
-    const toastId = toast.loading("Processing payment...");
-    try {
-      const res = await createParticipant(eventId);
-      toast.dismiss(toastId);
-      if (res.success && res.data?.paymentUrl) {
-        router.push(res.data.paymentUrl);
-        toast.success(res.message || "Redirecting to payment.");
-      } else {
-        toast.error(res.message || "Payment could not be initiated.");
-      }
-    } catch (err) {
-      toast.dismiss(toastId);
-      toast.error("Payment processing failed.");
-      console.error(err);
-    }
-  };
 
   const handlePayLater = async (eventId: string) => {
     const toastId = toast.loading("Processing Pay Later request...");
@@ -84,27 +59,9 @@ const EventDetailsPage = ({eventData}: {eventData:TResponseEvent<{reviews:IgetRe
     }
   };
 
-
+  
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* NAVBAR */}
-      <nav className="sticky top-0 z-40 bg-white/70 backdrop-blur border-b">
-        <div className="max-w-[1480px] mx-auto px-6 h-20 flex items-center justify-between">
-          <button className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-indigo-600">
-            <ChevronLeft size={18} />
-            Back to Events
-          </button>
-          <div className="flex gap-3">
-            <button className="p-2 border rounded-full hover:bg-slate-100">
-              <Share2 size={16} />
-            </button>
-            <button className="p-2 border rounded-full hover:bg-slate-100">
-              <Heart size={16} />
-            </button>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen mt-11 bg-slate-50">
       {/* MAIN */}
       <main className="max-w-[1480px] mx-auto px-6 py-14">
         <div className="grid lg:grid-cols-12 gap-12">
@@ -119,6 +76,7 @@ const EventDetailsPage = ({eventData}: {eventData:TResponseEvent<{reviews:IgetRe
                   src={eventData.image}
                   alt={eventData.title}
                   width={1200}
+                  priority
                   height={700}
                   className="w-full h-[420px] object-cover"
                 />
@@ -200,20 +158,38 @@ const EventDetailsPage = ({eventData}: {eventData:TResponseEvent<{reviews:IgetRe
           <div className="lg:col-span-4">
             <div className="sticky top-24">
               <div className="bg-white border rounded-2xl shadow-xl p-7">
-                <div className="mb-6">
-                  <p className="text-xs text-slate-400 font-semibold uppercase">Price</p>
+                <div className="mb-6 flex justify-between flex-wrap items-center">
+                 <div>
+                 <p className="text-xs text-slate-400 font-semibold uppercase">Price</p>
                   <h3 className="text-3xl font-bold">
                     {eventData.fee === 0 ? "Free" : `$${eventData.fee}`}
                   </h3>
+                 </div>
+                 <div>
+                 <p className="text-xs text-slate-400 font-semibold uppercase">visibility</p>
+                  <h3 className="text-xl font-bold">
+                  {eventData.visibility}
+                  </h3>
+                 </div>
                 </div>
 
-                <div className="space-y-3 text-sm text-slate-600 mb-6">
+              <div className="">
+              <div className="space-y-3 text-sm text-slate-600 mb-6">
                   <p>Category: {eventData.categories}</p>
                   <p>Status: {eventData.status}</p>
+                  <div className="space-y-3 text-sm text-slate-600 mb-6">
+                  <p>priceType: {eventData.priceType}</p>
                 </div>
-               <div>
-                {eventData.visibility==="PUBLIC" && eventData.priceType==="FREE"?<button onClick={()=>handleAddParticipant(eventData.id)}>join</button>:eventData.visibility=="PUBLIC" && eventData.priceType=="PAID"?<button onClick={()=>handleAddParticipant(eventData.id)}>pay & join</button>:eventData.visibility=="PRIVATE" && eventData.priceType=="FREE"?<button>request & join</button>:<button>pay & join</button>}
+                </div>
+              </div>
+              <div className="flex justify-between flex-wrap">
+              <div className="">
+                {eventData.visibility==="PUBLIC" && eventData.priceType==="FREE"?<Button onClick={()=>handleAddParticipant(eventData.id)}>join</Button>:eventData.visibility=="PUBLIC" && eventData.priceType=="PAID"?<Button onClick={()=>handleAddParticipant(eventData.id)}>pay & join</Button>:eventData.visibility=="PRIVATE" && eventData.priceType=="FREE"?<Button onClick={()=>handleAddParticipant(eventData.id)}>request & join</Button>:<Button onClick={()=>handleAddParticipant(eventData.id)}>pay & request</Button>}
                </div>
+               <div>
+                <Button onClick={()=>handlePayLater(eventData.id)}>pay Later & request</Button>
+               </div>
+              </div>
               </div>
             </div>
           </div>

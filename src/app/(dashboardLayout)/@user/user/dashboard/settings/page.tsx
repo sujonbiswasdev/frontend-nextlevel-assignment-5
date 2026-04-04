@@ -13,7 +13,6 @@ const SettingPage = async() => {
       <div className='py-10'>
       <div className='mb-4'>
       <ProfileModal notification={<NavbarNotifications/>} user={userinfo.data as IBaseUser}/>
-
       </div>
       <div>
       <ChangePasswordForm/>
