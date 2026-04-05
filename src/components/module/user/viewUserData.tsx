@@ -1,10 +1,9 @@
 import CopyableId from '@/components/shared/CopyId';
 import { IBaseEvent } from '@/types/event.types';
 import { IgetReviewData } from '@/types/review.types';
-import { IBaseUser, TResponseUserData } from '@/types/user.types';
+import { TResponseUserData } from '@/types/user.types';
 import React from 'react';
 
-// Professional status badge styling
 const USER_STATUS_STYLES: Record<string, { bg: string; text: string; border: string; label: string }> = {
   ACTIVE:    { bg: "bg-green-100",  text: "text-green-800",  border: "border-green-300",  label: "Active" },
   INACTIVE:  { bg: "bg-gray-100",   text: "text-gray-500",   border: "border-gray-300",   label: "Inactive" },
@@ -12,19 +11,20 @@ const USER_STATUS_STYLES: Record<string, { bg: string; text: string; border: str
   DELETED:   { bg: "bg-red-100",    text: "text-red-700",    border: "border-red-300",    label: "Deleted" },
 };
 
-const ViewUserData = ({
-  viewMode,
-  viewData,
-}: {
+type ViewUserDataProps = {
   viewMode: boolean;
-  viewData?: TResponseUserData<{ reviews: IgetReviewData[], event: IBaseEvent[],accounts:{password:string}[] }>;
-}) => {
-  if (!viewMode || !viewData) {
-    return null;
-  }
-  
+  viewData?: TResponseUserData<{
+    reviews: IgetReviewData[];
+    event: IBaseEvent[];
+    accounts: { password: string }[];
+  }>;
+};
+
+const ViewUserData: React.FC<ViewUserDataProps> = ({ viewMode, viewData }) => {
+  if (!viewMode || !viewData) return null;
+
   const statusStyle =
-    USER_STATUS_STYLES[viewData.status as keyof typeof USER_STATUS_STYLES] || {
+    USER_STATUS_STYLES[viewData.status as keyof typeof USER_STATUS_STYLES] ?? {
       bg: "bg-gray-100",
       text: "text-gray-500",
       border: "border-gray-200",
@@ -33,9 +33,9 @@ const ViewUserData = ({
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-white shadow-2xl rounded-3xl border border-slate-200 overflow-hidden">
-      {/* Top Section: Avatar, Name, Email, Status */}
+      {/* Top Section */}
       <div className="flex flex-col md:flex-row items-center md:items-start px-6 py-8 gap-8 bg-gradient-to-r from-blue-50 via-indigo-50 to-transparent">
-        {/* Avatar area */}
+        {/* Avatar */}
         <div className="flex-shrink-0 flex justify-center items-center w-32 h-32 rounded-full shadow-lg bg-white border-4 border-indigo-200">
           {viewData.image ? (
             <img
@@ -112,14 +112,14 @@ const ViewUserData = ({
             {Array.isArray(viewData.event) ? viewData.event.length : 0}
           </span>
         </div>
-        {/* Reviews (shown as "X reviews") */}
+        {/* Total Reviews */}
         <div className="flex flex-col gap-1">
           <span className="text-slate-500 text-sm font-medium mb-1">Total Reviews</span>
           <span className="font-mono text-base text-indigo-700 bg-indigo-50 rounded-lg px-3 py-2 border border-indigo-100">
             {viewData.totalReview ?? 0}
           </span>
         </div>
-        {/* Email Verified (redundant, still display for clarity) */}
+        {/* Email Verified */}
         <div className="flex flex-col gap-1">
           <span className="text-slate-500 text-sm font-medium mb-1">Email Verified</span>
           <span className={`font-mono text-base rounded-lg px-3 py-2 border ${viewData.emailVerified
@@ -129,23 +129,29 @@ const ViewUserData = ({
             {viewData.emailVerified ? "Yes" : "No"}
           </span>
         </div>
-        {/* Created At as ISO date */}
+        {/* Created At */}
         <div className="flex flex-col gap-1">
           <span className="text-slate-500 text-sm font-medium mb-1">Created At</span>
           <span className="font-mono text-base text-gray-700 bg-gray-50 rounded-lg px-3 py-2 border border-slate-100">
             {viewData.createdAt ? new Date(viewData.createdAt).toLocaleDateString() : "N/A"}
           </span>
         </div>
-
+        {/* Password(s) */}
         <div className="flex flex-col gap-1">
-          <span className="text-slate-500 text-sm font-medium mb-1">password</span>
-          <span className="font-mono text-base text-gray-700 bg-gray-50 rounded-lg px-3 py-2 border border-slate-100">
-            {viewData.accounts.map((item)=>{
-              return <>
-              <CopyableId  href={`${item.password}`} id={viewData.id}/>
-              </>
-            })}
-          </span>
+          <span className="text-slate-500 text-sm font-medium mb-1">Password(s)</span>
+          <div className="space-y-1">
+            {(Array.isArray(viewData.accounts) && viewData.accounts.length > 0) ? (
+              viewData.accounts.map((item, idx) => (
+                <div key={idx}>
+                  <CopyableId href={item.password} id={viewData.id} />
+                </div>
+              ))
+            ) : (
+              <span className="font-mono text-base text-gray-400 bg-gray-50 rounded-lg px-3 py-2 border border-slate-100 block">
+                —
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

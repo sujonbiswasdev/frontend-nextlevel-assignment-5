@@ -32,8 +32,13 @@ export default async function Home() {
     <div className="flex flex-col">
       sdfsdf
       {!isfeatured || !isfeatured.success || !isfeatured.data?<NotFoundItem  content="hero section data not found"/>:<HeroSlider data={isfeatured.data as IBaseEvent[]} />}
+<<<<<<< HEAD
       <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />
       <CallToAction role={role as string} />
+=======
+      <UpcommingEvent />
+      <CallToAction />
+>>>>>>> 24b7ee9 (stats data)
       <ErrorBoundary fallback={<ErrorFallback title="Failed to load events list." />}>
         {!paidAndFreeEvents || !paidAndFreeEvents.data || !paidAndFreeEvents.success?<><ErrorBoundary fallback={<ErrorFallback title={paidAndFreeEvents?.message || "No events data returned from server."} />}>
           <NotFoundItem
