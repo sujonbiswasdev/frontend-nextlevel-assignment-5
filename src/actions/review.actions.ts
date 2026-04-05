@@ -28,5 +28,5 @@ export const moderateReview = async (
   data: any,
   options?: any
 ) => {
-  return await reviewService.moderateReview(reviewId, data, options);
+  return await reviewService.moderateReview(reviewId, data);
 };

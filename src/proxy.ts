@@ -12,10 +12,7 @@ export const proxy = async (request: NextRequest) => {
     const accessToken = request.cookies.get("accessToken")?.value;
 
     if (!accessToken) {
-      return NextResponse.json(
-        { message: "You are not logged in, please log in first." },
-        { status: 401 }
-      );
+      return NextResponse.redirect(new URL("/login?You_are_not_logged_in,_please_log_in_first.", request.url));
     }
 
     const tokenVerify = jwtUtils.verifyToken(

@@ -22,9 +22,7 @@ const ViewUserData = ({
   if (!viewMode || !viewData) {
     return null;
   }
-
-  console.log(viewData,'viwddddddd')
-
+  
   const statusStyle =
     USER_STATUS_STYLES[viewData.status as keyof typeof USER_STATUS_STYLES] || {
       bg: "bg-gray-100",

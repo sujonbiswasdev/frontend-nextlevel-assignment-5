@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export default function ImageSkeleton({
@@ -21,6 +22,9 @@ export default function ImageSkeleton({
       <img
         src={src}
         alt={alt}
+        width={320}
+        height={500}
+        loading="lazy"
         onLoad={() => setLoading(false)}
         className={`w-full h-full object-cover transition duration-500 ${
           loading ? "opacity-0" : "opacity-100"

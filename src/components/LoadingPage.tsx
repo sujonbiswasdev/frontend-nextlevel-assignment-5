@@ -1,6 +1,6 @@
 import React from "react";
 
-const LoadingContentPage = () => {
+const LoadingContentPage = ({data}:{data:string}) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:from-gray-950 dark:via-slate-900 dark:to-gray-950">
       <div className="relative mb-10">
@@ -43,7 +43,7 @@ const LoadingContentPage = () => {
         </svg>
       </div>
       <h2 className="text-2xl font-semibold tracking-tight text-blue-800 dark:text-blue-300 mb-2 animate-fade-in">
-        Welcome to Your Dashboard
+        Welcome to Your {data}
       </h2>
       <p className="text-lg text-slate-700 dark:text-slate-200 mb-1 animate-fade-in-slow">
         Hang tight while we’re loading your data.

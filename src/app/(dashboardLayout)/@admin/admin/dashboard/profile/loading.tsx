@@ -3,7 +3,7 @@ import LoadingContentPage from '@/components/LoadingPage'
 const LoadingPage = () => {
   return (
     <div>
-        <LoadingContentPage/>
+        <LoadingContentPage data='profile page'/>
     </div>
   )
 }

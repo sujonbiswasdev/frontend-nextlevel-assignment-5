@@ -4,7 +4,7 @@ import React from 'react'
 const LoadignPage = () => {
   return (
     <div>
-         <LoadingContentPage/>
+         <LoadingContentPage data='create invitations page'/>
     </div>
   )
 }

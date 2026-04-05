@@ -19,7 +19,6 @@ import {
 import UpdateEvent from "./UpdateEvent";
 import { deleteEvent } from "@/actions/event.actions";
 import CopyableId from "@/components/shared/CopyId";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MyEventsTableProps {
   Events: TGroupedEvents;
@@ -226,78 +225,65 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
   ];
 
   return (
-    <div className="max-w-[1480px] mx-auto px-4 py-8">
-      {/* Filter panel */}
-      <section className="w-full mb-10 px-2">
-
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white/80 dark:bg-gray-900/80 shadow-lg rounded-2xl p-6 md:p-8 border border-blue-100 dark:border-blue-900/40 transition-all">
-          <div className="flex-1">
-            <FilterPanel
-              fields={fields}
-              onReset={() => {
-                setForm({
-                  is_featured: false,
-                  date: "",
-                  categories: "",
-                  priceType: "",
-                  status: "",
-                  visibility: "",
-                  fee: 1,
-                  search: "",
-                  createdAt: "",
-                });
-                reset();
-                if (role === "USER") {
-                  router.push("/user/dashboard/my-events");
-                }
-                else if(role==="ADMIN"){
-                  router.push("/admin/dashboard/events");
-                }
-                 else {
-                  router.push("/events");
-                }
-              }}
-            />
-          </div>
-        </div>
+    <div className="mx-auto w-full max-w-7xl py-6 sm:py-8">
+      {/* Filter — same width as table (single centered column) */}
+      <section className="mb-8 w-full">
+        <FilterPanel
+          fields={fields}
+          onReset={() => {
+            setForm({
+              is_featured: false,
+              date: "",
+              categories: "",
+              priceType: "",
+              status: "",
+              visibility: "",
+              fee: 1,
+              search: "",
+              createdAt: "",
+            });
+            reset();
+            if (role === "USER") {
+              router.push("/user/dashboard/my-events");
+            } else if (role === "ADMIN") {
+              router.push("/admin/dashboard/events");
+            } else {
+              router.push("/events");
+            }
+          }}
+        />
       </section>
 
-      {/* Table container with max height and scroll */}
+      {/* Table card — aligned with filter width */}
       <div
-        className="w-full"
-        style={{
-          maxHeight: "60vh",
-          overflowY: "auto",
-          overflowX: "auto",
-          borderRadius: "1rem",
-          background: "white",
-        }}
+        className="w-full overflow-x-auto overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950"
+        style={{ maxHeight: "60vh" }}
       >
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <p className="p-8 text-center text-muted-foreground">Loading...</p>
         ) : (
-          <div>
-             <div className="flex justify-end mb-4">
-               <button
-                 className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition"
-                 onClick={() => {
-                   // Example action: navigate to create event
-                   if (role === "USER") {
-                     router.push("/user/dashboard/create-event");
-                   } else if (role === "ADMIN") {
-                     router.push("/admin/dashboard/events/create");
-                   }
-                 }}
-               >
-                 + Add Event
-               </button>
-             </div>
-             <ReusableTable
-            columns={columns as any}
-            data={tableEvents}
-            actions={actions }
-            emptyMessage="No events found"
-          />
+          <div className="p-4 sm:p-5">
+            <div className="mb-4 flex w-full justify-center">
+              <button
+                type="button"
+                className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                onClick={() => {
+                  if (role === "USER") {
+                    router.push("/user/dashboard/create-event");
+                  } else if (role === "ADMIN") {
+                    router.push("/admin/dashboard/events/create");
+                  }
+                }}
+              >
+                + Add Event
+              </button>
+            </div>
+            <ReusableTable
+              columns={columns as any}
+              data={tableEvents}
+              actions={actions}
+              emptyMessage="No events found"
+            />
           </div>
         )}
       </div>

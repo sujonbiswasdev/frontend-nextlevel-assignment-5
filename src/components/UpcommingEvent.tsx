@@ -4,37 +4,17 @@ import { Button } from './ui/button';
 import { fetchEvents } from '@/actions/event.actions';
 import EventCard from './module/event/EventCard';
 import EventCardSkeleton from './module/event/evenCardSkeleton';
+import { IBaseEvent, TResponseEvent } from '@/types/event.types';
+import { IBaseUser } from '@/types/user.types';
+import { IgetReviewData } from '@/types/review.types';
 
 const CARDS_PER_SLIDE = 4;
 
-const UpcommingEvent = () => {
-  const [upcommingEvent, setUpcomingEvent] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+const UpcommingEvent = ({events}:{events:(TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]}) => {
+  const [upcommingEvent, setUpcomingEvent] = useState<any[]>(events);
+  const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchData = async () => {
-      try {
-        const eventsRes = await fetchEvents({}, { revalidate: 2 });
-        if (mounted) {
-          setUpcomingEvent(eventsRes.data?.UPCOMING || []);
-          setLoading(false);
-        }
-      } catch (error) {
-        if (mounted) {
-          setUpcomingEvent([]);
-          setLoading(false);
-        }
-      }
-    };
-    fetchData();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
   useEffect(() => {
     // Only auto-slide if there are more events than cards per slide
     if (upcommingEvent.length > CARDS_PER_SLIDE) {
@@ -51,6 +31,8 @@ const UpcommingEvent = () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [upcommingEvent.length]);
+
+  
 
   const handleNext = () => {
     setCurrentIndex(prev =>
@@ -69,8 +51,7 @@ const UpcommingEvent = () => {
   };
 
   // Determine the events to show in the current "slide"
-  const visibleEvents = upcommingEvent.slice(currentIndex, currentIndex + CARDS_PER_SLIDE);
-
+  const visibleEvents = upcommingEvent.slice(currentIndex, currentIndex + CARDS_PER_SLIDE).slice(0,9);
   // Calculate if an extra 'empty card' is needed for even width when not completely filled
   const emptySlots = CARDS_PER_SLIDE - visibleEvents.length;
 
@@ -110,15 +91,19 @@ const UpcommingEvent = () => {
               minHeight: 310, // Decreased height for tighter look
             }}
           >
-            {loading
+         {loading
               ? Array.from({ length: CARDS_PER_SLIDE }).map((_, i) => (
                   <EventCardSkeleton key={i} />
                 ))
-              : visibleEvents.map((event) => (
-                  <EventCard key={event.id} {...event} />
-                ))}
+              : 
+              
+              visibleEvents.map((event) => {
+                return <EventCard key={event.id} {...event} />
+              })}
+                
+
             {/* Fill remaining columns with empty divs for even width */}
-            {!loading && emptySlots > 0 &&
+           {!loading && emptySlots > 0 &&
               Array.from({ length: emptySlots }).map((_, idx) => (
                 <div key={`empty-${idx}`} className="invisible" aria-hidden="true"></div>
               ))

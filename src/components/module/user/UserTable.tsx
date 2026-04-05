@@ -34,7 +34,6 @@ export default function UserContentPage({
   const router = useRouter();
   const { updateFilters, reset } = useFilter();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -165,6 +164,7 @@ export default function UserContentPage({
 
   const columns = createUserColumns();
 
+
   return (
     <div className="w-full px-2 sm:px-4 md:px-8 max-w-6xl mx-auto">
       <div className="mb-6 bg-white dark:bg-gray-950 p-4 sm:p-6 rounded-xl shadow border border-gray-100 dark:border-gray-800">
@@ -203,7 +203,7 @@ export default function UserContentPage({
               {viewMode ? "Participant Details" : "Edit Participant"}
             </DialogTitle>
             <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-0 text-center">
-              {/* {viewMode ? "Review participant information below." : "Update status or details as needed."} */}
+              {viewMode ? "Review participant information below." : "Update status or details as needed."}
             </p>
           </DialogHeader>
 
@@ -219,7 +219,7 @@ export default function UserContentPage({
 
           
 
-          <div style={{ maxHeight: '70vh', overflowY: 'auto' }} className="py-6 px-4 sm:px-8">
+          <div style={{ maxHeight:'70vh',overflowY:'auto' }} className="py-6 px-4 sm:px-8">
             {viewData && viewMode==true? ( <ViewUserData viewData={viewData} viewMode={viewMode} />):null}
           </div>
         </DialogContent>

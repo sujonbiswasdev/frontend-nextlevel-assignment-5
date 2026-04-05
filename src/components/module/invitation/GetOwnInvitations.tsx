@@ -154,6 +154,7 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
     {
       type: "date",
       name: "createdAt",
+      label:"createdAt",
       value: form.createdAt || "",
       onChange: (val) => handleChange("createdAt", val),
     },

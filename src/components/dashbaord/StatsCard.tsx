@@ -30,12 +30,12 @@ export const StatsCard: React.FC<StatCardProps> = ({
       : getIconComponent("ArrowDownRight");
 
   return (
-    <div className={`group relative overflow-hidden rounded-2xl border border-gray-200/50 bg-gradient-to-br ${bgGradient} p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}>
+    <div className={`group relative flex h-full min-h-[148px] overflow-hidden rounded-2xl border border-gray-200/50 bg-gradient-to-br ${bgGradient} p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}>
       
       {/* Glow/Highlight */}
       <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition duration-700 bg-gradient-to-r from-indigo-200/20 via-transparent to-purple-200/20 blur-2xl" />
 
-      <div className="relative flex flex-col space-y-3">
+      <div className="relative flex flex-1 flex-col space-y-3">
         {/* Title + Icon */}
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-600 tracking-wide">{title}</h3>

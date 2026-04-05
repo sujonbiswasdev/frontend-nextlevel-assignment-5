@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 
-const CallToAction = () => {
+const CallToAction = ({role}:{role:string}) => {
   return (
     <section className="relative py-16 md:py-24 bg-gradient-to-br from-indigo-900 via-blue-900 to-cyan-900 overflow-hidden">
       {/* Ambient background shapes */}
@@ -33,24 +33,24 @@ const CallToAction = () => {
             <span className="block mt-1 text-slate-50/80 text-sm md:text-base">No complex setup, secure payments, beautiful invites, and actionable analytics.</span>
           </p>
           <div className="flex flex-col sm:flex-row gap-3 md:gap-5 justify-center w-full mt-3 md:mt-5">
-            <Link href="/signup"  >
+            <Link href={role=="ADMIN"?"/admin/dashboard/events/create":"/user/dashboard/create-events"}  >
          
                 <Button
                   size="lg"
                   className="w-full sm:w-auto bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-600 hover:from-cyan-400 hover:via-teal-500 hover:to-blue-700 text-white text-base md:text-lg font-semibold px-7 py-3 rounded-xl shadow-lg hover:scale-105 transition-all duration-150 border-none"
                 >
-                  <span className="mr-2 md:mr-3">🚀</span> Get Started Free
+                  <span className="mr-2 md:mr-3">🚀</span> create event
                 </Button>
          
             </Link>
-            <Link href="/login"  >
+            <Link href="/events"  >
             
                 <Button
                   size="lg"
                   variant="outline"
                   className="w-full sm:w-auto border-2 border-cyan-300 text-black hover:text-white hover:bg-cyan-700/90 hover:border-cyan-400 transition-colors duration-150 px-7 py-3 rounded-xl shadow"
                 >
-                  <span className="mr-2 md:mr-3">🔑</span> Dashboard Login
+                  <span className="mr-2 md:mr-3">🔑</span> join events
                 </Button>
            
             </Link>

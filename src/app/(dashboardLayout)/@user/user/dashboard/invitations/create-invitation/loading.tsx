@@ -3,7 +3,7 @@ import React from 'react'
 
 const LoadignPage = () => {
   return (
-    <div> <LoadingContentPage/></div>
+    <div> <LoadingContentPage data='create invitation page'/></div>
   )
 }
 

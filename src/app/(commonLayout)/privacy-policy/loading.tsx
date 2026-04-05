@@ -4,7 +4,7 @@ import React from 'react'
 const LoadingPage = () => {
   return (
     <div>
-       <LoadingContentPage/>
+       <LoadingContentPage data='privacy policy page'/>
     </div>
   )
 }

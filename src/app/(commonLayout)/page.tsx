@@ -1,5 +1,5 @@
 import { getSessionAction } from "@/actions/auth.actions";
-import { fetchPaidAndFreeEvents, getFeaturedEvent } from "@/actions/event.actions";
+import { fetchEvents, fetchPaidAndFreeEvents, getFeaturedEvent } from "@/actions/event.actions";
 import CallToAction from "@/components/CallToAction";
 import EventsList from "@/components/Category";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -7,9 +7,15 @@ import ErrorFallback from "@/components/ErrorFallback";
 import HeroSlider from "@/components/hero-slider";
 import UpcommingEvent from "@/components/UpcommingEvent";
 import NotFoundItem from "@/components/NotFoundItem";
-import { IBaseEvent } from "@/types/event.types";
+import { IBaseEvent, TResponseEvent } from "@/types/event.types";
+import { IBaseUser } from "@/types/user.types";
+import { IgetReviewData } from "@/types/review.types";
 
 export default async function Home() {
+  const userinfo=await getSessionAction()
+  const role=userinfo.data?.role
+  const eventsRes = await fetchEvents({}, { revalidate: 10 });
+  const events=eventsRes.data?.UPCOMING.filter((item)=>(item.visibility=="PUBLIC") && item)
 
    let paidAndFreeEvents = await fetchPaidAndFreeEvents();
    let isfeatured=await getFeaturedEvent()
@@ -26,8 +32,8 @@ export default async function Home() {
     <div className="flex flex-col">
       sdfsdf
       {!isfeatured || !isfeatured.success || !isfeatured.data?<NotFoundItem  content="hero section data not found"/>:<HeroSlider data={isfeatured.data as IBaseEvent[]} />}
-      <UpcommingEvent />
-      <CallToAction />
+      <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />
+      <CallToAction role={role as string} />
       <ErrorBoundary fallback={<ErrorFallback title="Failed to load events list." />}>
         {!paidAndFreeEvents || !paidAndFreeEvents.data || !paidAndFreeEvents.success?<><ErrorBoundary fallback={<ErrorFallback title={paidAndFreeEvents?.message || "No events data returned from server."} />}>
           <NotFoundItem

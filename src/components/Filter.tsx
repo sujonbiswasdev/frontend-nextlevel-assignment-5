@@ -12,10 +12,9 @@ export const FilterPanel = ({
   onReset?: () => void;
 }) => {
   return (
-    <section className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8 rounded-[28px] border border-white/20 dark:border-white/10 backdrop-blur-2xl bg-white/60 dark:bg-gray-900/60 shadow-[0_10px_40px_rgba(0,0,0,0.15)] transition-all duration-300">
-      
+    <section className="relative isolate w-full overflow-hidden p-4 sm:p-6 md:p-8 rounded-[28px] border border-white/20 dark:border-white/10 backdrop-blur-2xl bg-white/60 dark:bg-gray-900/60 shadow-[0_10px_40px_rgba(0,0,0,0.15)] transition-all duration-300">
       {/* Glow Background */}
-      <div className="absolute inset-0 -z-10 blur-3xl opacity-30 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"></div>
+      <div className="pointer-events-none absolute inset-0 -z-10 blur-3xl opacity-30 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" aria-hidden />
 
       <form
         className="
@@ -199,7 +198,7 @@ export const FilterPanel = ({
 
       {/* Reset Button */}
       {onReset && (
-        <div className="flex justify-end mt-8">
+        <div className="mt-8 flex justify-center">
           <button
             onClick={onReset}
             type="button"

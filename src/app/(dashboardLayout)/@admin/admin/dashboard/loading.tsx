@@ -3,7 +3,7 @@ import LoadingContentPage from '@/components/LoadingPage'
 const LoadignPage = () => {
   return (
     <div>
-      <LoadingContentPage/>
+      <LoadingContentPage data='admin dashboard page'/>
     </div>
   )
 }

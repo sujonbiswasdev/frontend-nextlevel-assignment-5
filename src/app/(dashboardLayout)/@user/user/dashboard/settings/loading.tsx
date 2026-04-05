@@ -3,7 +3,7 @@ import React from 'react'
 
 const LoadingPage = () => {
   return (
-    <div> <LoadingContentPage/></div>
+    <div> <LoadingContentPage data="settings page"/></div>
   )
 }
 

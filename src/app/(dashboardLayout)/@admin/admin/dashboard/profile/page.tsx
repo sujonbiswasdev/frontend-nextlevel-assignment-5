@@ -4,8 +4,10 @@ import ErrorFallback from '@/components/ErrorFallback'
 import { IBaseUser } from '@/types/user.types'
 import ProfileUserInfo from '@/components/module/user/ProfileCardContent'
 import React from 'react'
+import { getUserNotificationsAction } from '@/actions/notification'
 
 const ProfilePage = async() => {
+  const notification=await getUserNotificationsAction()
     const userinfo=await getSessionAction()
     if (!userinfo || !userinfo.data || !userinfo.success) {
       return (
@@ -27,7 +29,7 @@ const ProfilePage = async() => {
           }
         >
             <div>
-            <ProfileUserInfo user={userinfo.data as IBaseUser}/>
+            <ProfileUserInfo user={userinfo.data as IBaseUser} notification={notification.data}/>
             </div>
           {/* Your profile page content goes here */}
         </ErrorBoundary>

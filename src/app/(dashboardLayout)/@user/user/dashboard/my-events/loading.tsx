@@ -3,7 +3,7 @@ import React from 'react'
 
 const LoadingEvents = () => {
   return (
-    <div> <LoadingContentPage/></div>
+    <div> <LoadingContentPage data='my events page'/></div>
   )
 }
 

@@ -16,6 +16,8 @@ import { TNotification } from "@/types/notification.type";
 import { IBaseUser } from "@/types/user.types";
 import { IBaseEvent } from "@/types/event.types";
 import { TInvitation } from "@/types/invitation.types";
+import { createParticipant } from "@/actions/participant.actions";
+import { useRouter } from "next/navigation";
 
 type TNotif = TNotification<{
   user: IBaseUser;
@@ -26,6 +28,25 @@ type TNotif = TNotification<{
 export function NavbarNotifications() {
   const [notifications, setNotifications] = useState<TNotif[]>([]);
   const [responding, setResponding] = useState<string | null>(null);
+  const router=useRouter()
+
+  const handleAddParticipant = async (id: string) => {
+    const toastId = toast.loading("Registering attendance...");
+    try {
+      const res = await createParticipant(id);
+      toast.dismiss(toastId);
+      if (res.success) {
+        toast.success("You have been added as a participant!");
+          router.push(res.data.paymentUrl)
+      } else {
+        toast.error(res.message || "Failed to add participant.");
+      }
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error("Failed to add participant.");
+      console.error(err);
+    }
+  };
 
   const fetchNotifications = async () => {
     try {
@@ -152,9 +173,7 @@ export function NavbarNotifications() {
                     </div>
 
                     <div>{n.message}</div>
-
-                    {invitation?.status === "PENDING" && (
-                      <div className="flex gap-2 mt-2">
+                    {event?.priceType==="PAID"?<Button onClick={()=>handleAddParticipant(event.id)}>pay & Accept</Button>:invitation?.status==="PENDING"&&<div className="flex gap-2 mt-2">
                         <Button
                           onClick={() =>
                             handleNotificationAction({
@@ -176,8 +195,7 @@ export function NavbarNotifications() {
                         >
                           Decline
                         </Button>
-                      </div>
-                    )}
+                      </div>}
                   </div>
                 </div>
               );

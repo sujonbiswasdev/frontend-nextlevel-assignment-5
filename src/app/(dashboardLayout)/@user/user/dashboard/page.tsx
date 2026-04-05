@@ -1,3 +1,4 @@
+import { getSessionAction } from "@/actions/auth.actions"
 import { getStatsAction } from "@/actions/stats.actions"
 import DashboardContent from "@/components/dashbaord/DashboardContent"
 import ErrorBoundary from "@/components/ErrorBoundary"
@@ -6,12 +7,14 @@ import { DashboardData, MonthlyRevenue } from "@/types/stats.types"
 
 export default async function DashboardPage() {
   const statsData=await getStatsAction()
+  const userinfo=await getSessionAction()
+  const role=userinfo.data?.role
   return (
-    <div className="p-6">
+    <div className="w-full">
      <ErrorBoundary fallback={<ErrorFallback title="Dashboard Error" message="An error occurred while loading your dashboard. Please refresh the page or try again later." />}>
        {statsData ? (
          <div>
-          <DashboardContent stats={statsData.data as DashboardData<{ monthlyRevenue: any[]; eventStatus: any; pieChartData: any[]; barChartData: any[] }>} />
+           <DashboardContent role={role as string} eventVisivility={statsData.EventVisivillity} stats={statsData.data as DashboardData<{ monthlyRevenue: any[]; eventStatus: any; pieChartData: any[]; barChartData: any[] }>} />
 
          </div>
        ) : (

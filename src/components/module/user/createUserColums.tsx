@@ -9,6 +9,20 @@ export const createUserColumns = () => [
     ),
   },
   {
+    key: "image",
+    label: "Profile Image",
+    render: (row: any) =>
+      row.image ? (
+        <img
+          src={row.image}
+          alt={row.name || "Profile"}
+          className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+        />
+      ) : (
+        <span className="text-gray-400 text-xs">--</span>
+      ),
+  },
+  {
     key: "name",
     label: "Name",
     render: (row: any) => (
@@ -93,18 +107,5 @@ export const createUserColumns = () => [
       </span>
     ),
   },
-  {
-    key: "bgimage",
-    label: "Profile Image",
-    render: (row: any) =>
-      row.bgimage ? (
-        <img
-          src={row.bgimage}
-          alt={row.name || "Profile"}
-          className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
-        />
-      ) : (
-        <span className="text-gray-400 text-xs">--</span>
-      ),
-  },
+  
 ];

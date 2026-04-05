@@ -1,10 +1,6 @@
-
-import React from 'react'
-import Curve from './Curve'
-import { StatsCounts } from '../DashboardContent'
-import { Users } from 'lucide-react'
-import { monthlyRevenue } from '../DashboardBarChart'
-import { MonthlyRevenue } from '@/types/stats.types'
+import React from "react";
+import Curve from "./Curve";
+import { MonthlyRevenue } from "@/types/stats.types";
 import PieChart from './PieChart'
 const CurveChart = ({stats}:{stats:MonthlyRevenue[]}) => {
   return (
@@ -78,17 +74,25 @@ const EarningRate: React.FC<EarningRateProps> = ({
   );
 };
 
-const Earnings =({stats,earningRate}:{stats:MonthlyRevenue[],earningRate:number})=>{
-    return(
-        <div className='grid lg:grid-cols-3 grid-cols-1 px-4 pb-4 lg:gap-x-4 gap-y-4'>
-            <div className='bg-primary2 rounded-md min-w-full'>
-                <EarningRate earningRate={earningRate} earningRateLastMonth={stats[11].revenue}/>
-            </div>
-            <div className='col-span-2 bg-primary2 rounded-md h-full '>
-                <CurveChart stats={stats as MonthlyRevenue[]} />
-            </div>
-
-        </div>
-    )
-}
+const Earnings = ({
+  stats,
+  earningRate,
+}: {
+  stats: MonthlyRevenue[];
+  earningRate: number;
+}) => {
+  return (
+    <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+      <div className="min-w-0 rounded-md bg-primary2">
+        <EarningRate
+          earningRate={earningRate}
+          earningRateLastMonth={stats[11]?.revenue ?? 0}
+        />
+      </div>
+      <div className="min-w-0 rounded-md bg-primary2 lg:col-span-2">
+        <CurveChart stats={stats as MonthlyRevenue[]} />
+      </div>
+    </div>
+  );
+};
 export default Earnings

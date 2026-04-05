@@ -4,7 +4,7 @@ import React from 'react'
 const Loading = () => {
   return (
     <div>
-       <LoadingContentPage/>
+       <LoadingContentPage data='single categories page'/>
     </div>
   )
 }

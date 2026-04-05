@@ -8,7 +8,7 @@ import GithubIcon from "../icons/github";
 
 const footerLinks = {
   company: [
-    { label: "Contact", href: "/contact" },
+    { label: "Contact", href: "https://api.whatsapp.com/send/?phone=01804935939" },
   ],
   events: [
     { label: "Browse Events", href: "/events" },
