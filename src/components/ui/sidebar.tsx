@@ -143,7 +143,7 @@ function SidebarProvider({
           } as React.CSSProperties
         }
         className={cn(
-          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
+          "group/sidebar-wrapper flex min-h-svh w-full items-stretch justify-start has-data-[variant=inset]:bg-sidebar",
           className
         )}
         {...props}
@@ -317,7 +317,12 @@ function Sidebar({
         data-slot="sidebar-container"
         data-side={side}
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-[var(--sidebar-width)] transition-[left,right,width] duration-200 ease-linear data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex",
+          // Align fixed sidebar to centered dashboard shell (layout sets --dashboard-shell-max); fallback 100vw = flush left when unset
+          "fixed inset-y-0 z-10 hidden h-svh w-[var(--sidebar-width)] transition-[left,right,width] duration-200 ease-linear md:flex",
+          "data-[side=left]:left-[max(0px,calc((100vw-min(100vw,var(--dashboard-shell-max,100vw)))/2))]",
+          "data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(max(0px,(100vw-min(100vw,var(--dashboard-shell-max,100vw)))/2)-var(--sidebar-width))]",
+          "data-[side=right]:right-[max(0px,calc((100vw-min(100vw,var(--dashboard-shell-max,100vw)))/2))]",
+          "data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(max(0px,(100vw-min(100vw,var(--dashboard-shell-max,100vw)))/2)-var(--sidebar-width))]",
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
             : "group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)] group-data-[side=left]:border-r group-data-[side=right]:border-l",

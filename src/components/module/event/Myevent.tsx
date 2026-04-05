@@ -225,7 +225,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
   ];
 
   return (
-    <div className="mx-auto w-full max-w-7xl py-6 sm:py-8">
+    <div className="w-full py-6 sm:py-8">
       {/* Filter — same width as table (single centered column) */}
       <section className="mb-8 w-full">
         <FilterPanel
@@ -323,7 +323,9 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
         </DialogContent>
       </Dialog>
 
-      <PaginationPage pagination={pagination as any} />
+      <div className="flex justify-center py-4">
+        <PaginationPage pagination={pagination as any} />
+      </div>
     </div>
   );
 }

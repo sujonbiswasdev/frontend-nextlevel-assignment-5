@@ -238,9 +238,9 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
   ];
 
   return (
-    <div className="max-w-[1480px] mx-auto px-4 py-8">
+    <div className="w-full py-6 sm:py-8">
       {/* Filter panel */}
-      <section className="w-full mb-10 px-2">
+      <section className="mb-8 w-full">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-gradient-to-tr from-sky-50 via-white to-indigo-50 dark:bg-gradient-to-tr dark:from-gray-900 dark:to-slate-900 shadow-lg rounded-2xl p-6 md:p-8 border border-sky-200 dark:border-blue-900/40 transition-all">
           <div className="flex-1">
             <FilterPanel
@@ -331,8 +331,9 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
         </DialogContent>
       </Dialog>
 
-      {/* Pagination */}
-      <PaginationPage pagination={pagination as TPagination} />
+      <div className="flex justify-center py-4">
+        <PaginationPage pagination={pagination as TPagination} />
+      </div>
     </div>
   );
 }

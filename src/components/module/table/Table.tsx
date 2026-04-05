@@ -34,9 +34,8 @@ export function ReusableTable<T extends { id: string }>({
   className,
 }: ReusableTableProps<T>) {
   return (
-    <section className={cn('w-full flex justify-center px-4 sm:px-6 lg:px-8 py-6', className)}>
-      <div className="w-full max-w-[1480px]">
-        <div className="w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+    <section className={cn('w-full', className)}>
+      <div className="w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
           <div className="w-full overflow-x-auto">
             <div className="min-h-[420px]">
               <table className="w-full min-w-[700px] border-collapse">
@@ -108,7 +107,6 @@ export function ReusableTable<T extends { id: string }>({
             </div>
           </div>
         </div>
-      </div>
     </section>
   );
 }

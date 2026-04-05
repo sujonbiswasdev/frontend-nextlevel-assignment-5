@@ -165,15 +165,12 @@ export default function ParticipantContent({
   ];
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-8 max-w-6xl mx-auto">
-       <div className="w-full flex justify-end mt-2 mb-2">
+    <div className="w-full">
+       <div className="mb-3 flex w-full justify-center sm:mb-4">
          <button
+           type="button"
            onClick={() => router.push("/user/dashboard/event-request-join")}
-           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 focus:bg-indigo-800 text-white text-base font-semibold shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
-           style={{
-             minWidth: "190px",
-             letterSpacing: "0.01rem",
-           }}
+           className="inline-flex min-w-[190px] items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-base font-semibold text-white shadow-md transition-all duration-200 hover:bg-indigo-700 focus:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-700"
          >
            <svg
              className="w-5 h-5"
@@ -274,7 +271,7 @@ export default function ParticipantContent({
         </DialogContent>
       </Dialog>
 
-      <div className="py-4 flex justify-end">
+      <div className="flex justify-center py-4">
         <PaginationPage pagination={pagination} />
       </div>
     </div>

@@ -171,8 +171,8 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
 
   return (
     <>
-      <section className="py-3 px-2 md:px-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+      <section className="w-full py-3 sm:py-4">
+        <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-2xl font-bold tracking-tight text-gray-800">
             Your Invitations
           </h2>
@@ -259,8 +259,8 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
 </DialogContent>
       </Dialog>
 
-      <div>
-        <PaginationPage pagination={pagination}/>
+      <div className="flex justify-center py-4">
+        <PaginationPage pagination={pagination} />
       </div>
       </section>
     </>

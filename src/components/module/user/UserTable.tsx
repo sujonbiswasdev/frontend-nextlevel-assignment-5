@@ -166,7 +166,7 @@ export default function UserContentPage({
 
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-8 max-w-6xl mx-auto">
+    <div className="w-full">
       <div className="mb-6 bg-white dark:bg-gray-950 p-4 sm:p-6 rounded-xl shadow border border-gray-100 dark:border-gray-800">
         <FilterPanel
           fields={fields as TFilterField[]}
@@ -225,8 +225,8 @@ export default function UserContentPage({
         </DialogContent>
       </Dialog>
 
-      <div>
-        <PaginationPage pagination={pagination as TPagination}/>
+      <div className="flex justify-center py-4">
+        <PaginationPage pagination={pagination as TPagination} />
       </div>
     </div>
   );
