@@ -32,7 +32,6 @@ export type monthlyRevenue = {
 }
 
 export function DashboardBarChart({stats}: {stats: monthlyRevenue[]}) {
-  console.log(stats,'statsdtas')
   return (
     <Card>
       <CardHeader>

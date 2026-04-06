@@ -88,7 +88,6 @@ getAllUsers: async (params?: any, options?: { cache?: RequestCache; revalidate?:
       } 
     });
     const data = await res.json();
-    console.log(data.data.data,'desdfsdfdsfsdf')
     if (!res.ok) {
       const error = data as ApiErrorResponse;
       return { success: false, message: error.message || "Failed to retrieve users" };

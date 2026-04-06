@@ -61,7 +61,6 @@ const EventService = {
     if (image) {
       formData.append("file", image);
     }
-    console.log(formData,'this')
     try {
       const response = await fetch(`${API_BASE_URL}/event`, {
         credentials:"include",

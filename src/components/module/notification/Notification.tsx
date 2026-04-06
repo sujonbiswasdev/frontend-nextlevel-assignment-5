@@ -18,6 +18,7 @@ import { IBaseEvent } from "@/types/event.types";
 import { TInvitation } from "@/types/invitation.types";
 import { createParticipant } from "@/actions/participant.actions";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type TNotif = TNotification<{
   user: IBaseUser;
@@ -28,17 +29,31 @@ type TNotif = TNotification<{
 export function NavbarNotifications() {
   const [notifications, setNotifications] = useState<TNotif[]>([]);
   const [responding, setResponding] = useState<string | null>(null);
-  const router=useRouter()
-
-  const handleAddParticipant = async (id: string) => {
+  const router = useRouter();
+  const handleAddParticipant = async (
+    eventId: string,
+    invitationId: string
+  ) => {
     const toastId = toast.loading("Registering attendance...");
+
     try {
-      const res = await createParticipant(id);
-      toast.dismiss(toastId);
+      const res = await createParticipant(eventId);
+
       if (res.success) {
+        await handleNotificationAction({
+          id: invitationId,
+          status: "ACCEPTED",
+        });
+
+        toast.dismiss(toastId);
         toast.success("You have been added as a participant!");
-          router.push(res.data.paymentUrl)
+        if (res.data?.paymentUrl) {
+          router.push(res.data.paymentUrl);
+        } else {
+          router.push(`/events/${eventId}`);
+        }
       } else {
+        toast.dismiss(toastId);
         toast.error(res.message || "Failed to add participant.");
       }
     } catch (err) {
@@ -53,17 +68,16 @@ export function NavbarNotifications() {
       const res = await getUserNotificationsAction();
       const safeData = Array.isArray(res?.data) ? res.data : [];
 
-      // Adapt the type to TNotif by ensuring each notification has the required 'invitation' property.
       setNotifications(
         safeData.filter(
           (n): n is TNotif =>
-            !!n && typeof n === "object" &&
+            !!n &&
+            typeof n === "object" &&
             (n as any).invitation !== undefined
         )
       );
     } catch (err) {
-      console.log("Fetch error:", err);
-      setNotifications([]); // fallback
+      setNotifications([]);
     }
   };
 
@@ -88,9 +102,8 @@ export function NavbarNotifications() {
       if (res?.success) {
         toast.dismiss(loadingToastId);
 
-        // ✅ Safe update
-        const safeData = Array.isArray(res?.data) ? res.data : [];
-        setNotifications(safeData);
+        // ✅ FIXED: refresh correctly
+        await fetchNotifications();
 
         toast.success(
           res?.message || "Invitation status updated successfully.",
@@ -103,7 +116,7 @@ export function NavbarNotifications() {
           autoClose: 4000,
         });
 
-        await fetchNotifications(); // fallback refresh
+        await fetchNotifications();
       }
     } catch (error: any) {
       toast.dismiss(loadingToastId);
@@ -113,12 +126,11 @@ export function NavbarNotifications() {
     }
   };
 
-  // ✅ clean count
   const count = notifications?.length ?? 0;
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger  className="relative outline-none rounded-full">
+      <DropdownMenuTrigger className="relative outline-none rounded-full">
         <span className="relative flex items-center justify-center w-7 h-7">
           <Bell size={16} strokeWidth={2.1} className="text-gray-700" />
 
@@ -146,7 +158,9 @@ export function NavbarNotifications() {
           ) : (
             notifications.map((n) => {
               const user = (n as any).user as IBaseUser | undefined;
-              const event = (n as any).event as IBaseEvent | undefined;
+              const event = (n as any).invitation.event as
+                | IBaseEvent
+                | undefined;
               const invitation = (n as any).invitation as
                 | TInvitation
                 | undefined;
@@ -168,34 +182,59 @@ export function NavbarNotifications() {
                   </div>
 
                   <div className="flex-1 text-xs">
-                    <div className="font-medium">
+                    <div className="font-medium flex items-center gap-2">
                       {user?.name || "Someone"}
+                      <Link
+                        href={`/events/${event?.id}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        click
+                      </Link>
                     </div>
 
                     <div>{n.message}</div>
-                    {event?.priceType==="PAID"?<Button onClick={()=>handleAddParticipant(event.id)}>pay & Accept</Button>:invitation?.status==="PENDING"&&<div className="flex gap-2 mt-2">
-                        <Button
-                          onClick={() =>
-                            handleNotificationAction({
-                              id: invitation.id,
-                              status: "ACCEPTED",
-                            })
-                          }
-                        >
-                          Accept
-                        </Button>
 
-                        <Button
-                          onClick={() =>
-                            handleNotificationAction({
-                              id: invitation.id,
-                              status: "DECLINED",
-                            })
-                          }
-                        >
-                          Decline
-                        </Button>
-                      </div>}
+                    {event?.priceType === "PAID" ? (
+                      <Button
+                        disabled={responding === invitation?.id}
+                        onClick={() =>
+                          handleAddParticipant(
+                            event.id,
+                            invitation?.id as string
+                          )
+                        }
+                      >
+                        pay & Accept
+                      </Button>
+                    ) : (
+                      invitation?.status === "PENDING" && (
+                        <div className="flex gap-2 mt-2">
+                          <Button
+                            disabled={responding === invitation?.id}
+                            onClick={() =>
+                              handleNotificationAction({
+                                id: invitation.id,
+                                status: "ACCEPTED",
+                              })
+                            }
+                          >
+                            Accept
+                          </Button>
+
+                          <Button
+                            disabled={responding === invitation?.id}
+                            onClick={() =>
+                              handleNotificationAction({
+                                id: invitation.id,
+                                status: "DECLINED",
+                              })
+                            }
+                          >
+                            Decline
+                          </Button>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
               );

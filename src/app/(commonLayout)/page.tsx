@@ -10,8 +10,10 @@ import NotFoundItem from "@/components/NotFoundItem";
 import { IBaseEvent, TResponseEvent } from "@/types/event.types";
 import { IBaseUser } from "@/types/user.types";
 import { IgetReviewData } from "@/types/review.types";
+import { getUserNotificationsAction } from "@/actions/notification";
 
 export default async function Home() {
+  const res = await getUserNotificationsAction();
   const userinfo = await getSessionAction();
   const role = userinfo.data?.role;
   const eventsRes = await fetchEvents();

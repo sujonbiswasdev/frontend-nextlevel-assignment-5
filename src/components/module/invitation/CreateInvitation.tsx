@@ -83,7 +83,6 @@ export default function CreateInvitationForm() {
   const [message, setMessage] = useState("");
 
   const handleSubmit = async () => {
-    console.log(eventId,'eventid')
     if (!eventId.trim()) {
       toast.error("Please enter an Event ID");
       return;
@@ -108,7 +107,7 @@ export default function CreateInvitationForm() {
         setInviteeIds([]);
         setMessage("");
         setEventId("");
-        router.refresh();
+        window.location.reload()
       } else {
         toast.error(res.message || "Failed to send invitation", { theme: "dark" });
       }

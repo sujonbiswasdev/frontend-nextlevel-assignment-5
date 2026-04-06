@@ -19,7 +19,6 @@ const ParticipantPage = async({
   const search=await searchParams
  
   const participants= await getParticipants(search);
-  console.log(participants,'ts')
   return (
     <div>
       <React.Suspense fallback={<div>Loading participants...</div>}>

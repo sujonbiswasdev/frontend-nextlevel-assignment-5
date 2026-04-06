@@ -4,7 +4,7 @@ import React from 'react'
 const LoadingPage = () => {
   return (
     <div>
-      <LoadingContentPage data='home page'/>
+      <LoadingContentPage data='global loading page'/>
     </div>
   )
 }

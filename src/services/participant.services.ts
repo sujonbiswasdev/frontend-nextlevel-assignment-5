@@ -26,7 +26,6 @@ const ParticipantService = {
       });
       revalidateTag("participant", "max");
       const data = await response.json();
-      console.log(data,'dskfjddfsfs')
       if (!response.ok) {
         return {
           success: false,
@@ -76,7 +75,6 @@ const ParticipantService = {
 
        });
       const data = await res.json() ;
-      console.log(data,'data')
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {

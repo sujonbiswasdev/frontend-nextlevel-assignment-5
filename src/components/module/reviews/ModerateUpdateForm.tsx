@@ -39,7 +39,6 @@ const ModerateUpdateForm = ({ id, onSuccess }: Props) => {
         toast.error(res.message || "Failed to update review status");
       }
     } catch (err: any) {
-      console.log(err.error)
       toast.dismiss();
       toast.error(err.message || "Something went wrong");
     } finally {

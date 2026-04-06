@@ -31,7 +31,6 @@ export function UpdateParticipantForm({
       paymentStatus: "UNPAID",},
     validators: { onSubmit: UpdateParticipantSchema as any },
     onSubmit: async ({ value }) => {
-      console.log(value, 'va');
       const toastId = toast.loading("Saving participant update... Please wait.");
       try {
         const res = await updateParticipant(id, value as UpdateParticipantInput);

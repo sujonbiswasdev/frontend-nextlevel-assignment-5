@@ -71,7 +71,15 @@ export const CreateEventSchema = z.object({
   image: z.any(),
   visibility: EventTypeEnum.default("PUBLIC"),
   priceType: PricingTypeEnum.default('FREE'),
-  fee: z.coerce.number().optional(),
+  fee: z
+  .preprocess((val) => {
+    if (val === "" || val === null) return undefined;
+    return Number(val);
+  }, z
+    .number()
+    .min(60, { message: "Fee must be at least 60 taka" })
+    .optional()
+  ),
   status: EventStatusEnum.default("UPCOMING"),
   is_featured: z.boolean().optional().default(false),
 })

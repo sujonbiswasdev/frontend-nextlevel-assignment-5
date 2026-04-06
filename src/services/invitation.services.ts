@@ -75,7 +75,6 @@ const InvitationService = {
 
       const res = await fetch(url.toString(), config);
       const data = await res.json();
-      console.log(data,'data')
       if (!res.ok) {
         return {
           success: false,

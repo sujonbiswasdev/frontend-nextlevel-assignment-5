@@ -20,7 +20,6 @@ export const proxy = async (request: NextRequest) => {
       accessToken,
       process.env.ACCESS_TOKEN_SECRET as string
     );
-    console.log(tokenVerify,'ss')
     if (!tokenVerify.success) {
       return NextResponse.redirect(new URL("/login?Invalid_or_expired_access_token", request.url));
     }
@@ -33,7 +32,6 @@ export const proxy = async (request: NextRequest) => {
       return NextResponse.redirect(new URL("/login?Your_account_is_blocked.please contact support", request.url));
     }
     const role = user.role as TUserRole;
-    console.log(role,'s')
     if (pathname.startsWith("/admin")) {
       if (role !== "ADMIN") {
         return NextResponse.redirect(new URL("/login?Access_denied_Admins_only", request.url));
@@ -76,5 +74,5 @@ export const proxy = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/admin/:path*", "/user/:path*", "/dashboard/:path*","/payment/:path*"],
+  matcher: ["/admin/:path*", "/user/:path*", "/dashboard/:path*"],
 };

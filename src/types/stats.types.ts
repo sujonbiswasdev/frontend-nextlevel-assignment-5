@@ -42,7 +42,7 @@ export interface IPriceType {
 
 
 export interface DashboardData {
-  count: ICounts;
+  counts: ICounts;
   priceType: IPriceType;
   totalRevenue: number;
   monthlyRevenue: MonthlyRevenue[];

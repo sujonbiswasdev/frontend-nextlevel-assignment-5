@@ -93,7 +93,6 @@ export function SigninForm() {
     try {
       router.push("http://localhost:5000/api/v1/auth/login/google")
       const res = await loginWithGoogleAction();
-      console.log(res,'res')
       toast.dismiss(toastId);
 
       if (!res.success) {

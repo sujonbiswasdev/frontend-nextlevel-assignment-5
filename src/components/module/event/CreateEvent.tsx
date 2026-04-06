@@ -50,7 +50,6 @@ export function CreateEvent() {
       onSubmit: CreateEventSchema as any,
     },
     onSubmit: async ({ value }) => {
-      console.log(value, "valuedata");
       const toastId = toast.loading("Creating event, please wait...");
       try {
         const result = await createEvent(value as any);

@@ -48,8 +48,6 @@ const EventsList: React.FC<EventsListProps> = ({ events }) => {
     }
   }, [selectedFilter, events]);
 
-  console.log(eventData, "pledfsdf");
-
   const totalPages = Math.ceil(Number(totalitems) / Number(events.pagination.limit));
   const total=Number(totalitems)
   const pagination={

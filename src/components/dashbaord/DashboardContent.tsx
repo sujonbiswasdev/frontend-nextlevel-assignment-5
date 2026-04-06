@@ -235,7 +235,6 @@ const DashboardContent = ({
 }) => {
   const sectionTitle =
     role === "ADMIN" ? "Admin Dashboard Overview" : "Your Dashboard Overview";
-
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="max-w-[1380px] mx-auto w-full px-4 sm:px-6 lg:px-8 pt-2">
@@ -249,7 +248,7 @@ const DashboardContent = ({
         </div>
       </div>
       <FreeAndPublic statsCount={stats.priceType as IPriceType} />
-      <StatsCounts statsCount={stats.count as ICounts} />
+      <StatsCounts statsCount={stats.counts as ICounts} />
       <VisibilityPublicPrivate statsCount={eventVisivility} />
       <EventStatusCounts eventStatus={stats.eventStatus} />
       <Earnings
