@@ -4,6 +4,7 @@ import EventDetailsPage from '@/components/module/event/EventDetailsContent';
 import { IBaseEvent, TResponseEvent } from '@/types/event.types';
 import { IgetReviewData } from '@/types/review.types';
 import { IBaseUser } from '@/types/user.types';
+import NotFoundItem from '@/components/NotFoundItem';
 
 // Simple ErrorBoundary component for async server components
 function ErrorBoundary({ error }: { error: Error }) {
@@ -35,7 +36,7 @@ function ErrorBoundary({ error }: { error: Error }) {
 const EventDetailsPageWrapper = async ({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params:Promise<{id:string}>
 }) => {
   try {
     const { id } = await params;
@@ -45,7 +46,11 @@ const EventDetailsPageWrapper = async ({
     const eventData = await fetchSingleEventById(id);
 
     if (!eventData || !eventData.data) {
-      throw new Error("Event not found.");
+      return (
+        <div>
+          <NotFoundItem content="Sorry, this event could not be found or does not exist." />
+        </div>
+      );
     }
 
     const singleEventData = eventData.data as TResponseEvent<{reviews:IgetReviewData[],organizer:IBaseUser}>;

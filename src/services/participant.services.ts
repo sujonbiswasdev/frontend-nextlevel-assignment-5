@@ -48,7 +48,7 @@ const ParticipantService = {
   participantRetrieve: async (params?: any, options?: ServiceOptionds) => {
     try {
         const cookieStore = await cookies();
-      const url = new URL(`${API_BASE_URL}/participants`);
+      const url = new URL(`${API_BASE_URL}/participants?${params}`);
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
           if (value !== undefined && value !== null && value !== "") {
@@ -101,7 +101,7 @@ const ParticipantService = {
   getParticipantsByEvent: async (params?: any, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
-      const url = new URL(`${API_BASE_URL}/participant/request/event`);
+      const url = new URL(`${API_BASE_URL}/participant/request/event?${params}`);
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
           if (value !== undefined && value !== null && value !== "") {

@@ -5,13 +5,11 @@ import ErrorFallback from '@/components/ErrorFallback'
 import EventsTable from '@/components/module/event/Myevent';
 import { TGroupedEvents, TPagination } from '@/types/event.types';
 import React from 'react'
-
 const EventsPage = async({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
-  const params = await searchParams;
   const userinfo = await getSessionAction();
   const role = userinfo.data?.role;
   if (!userinfo || !userinfo.data) {
@@ -37,7 +35,7 @@ const EventsPage = async({
   let eventsResponse;
   try {
     const search = await searchParams;
-    eventsResponse = await fetchEvents(search);
+    eventsResponse = await fetchEvents(search,{revalidate:60});
   } catch (err) {
     console.error("Events fetch error:", err);
     eventsResponse = { data: { UPCOMING: [] }, pagination: { total: 0, page: 1, limit: 10, totalpage: 1 } };

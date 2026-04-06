@@ -4,7 +4,7 @@ export type Month =
   | "Jan" | "Feb" | "Mar" | "Apr" | "May" | "Jun" 
   | "Jul" | "Aug" | "Sep" | "Oct" | "Nov" | "Dec";
 
-export interface Counts {
+export interface ICounts {
   participatedEvents: number;
   invitations: number;
   payments: number;
@@ -16,7 +16,7 @@ export interface MonthlyRevenue {
   revenue: number;
 }
 
-export interface EventStatus {
+export interface IEventStatus {
   upcoming: number;
   completed: number;
   cancelled: number;
@@ -30,24 +30,21 @@ export interface ChartData {
   value: number;
 }
 
-export interface EventVisivillity {
+export interface IEventVisivillity {
   public: number;
   private: number;
 }
 
-export interface PriceType {
+export interface IPriceType {
   free: number;
   paid: number;
 }
 
 
-export interface DashboardData<T> {
-  counts: Counts;
+export interface DashboardData {
+  count: ICounts;
+  priceType: IPriceType;
   totalRevenue: number;
-  eventVisibility: EventVisivillity;
-  priceType: PriceType;
-  monthlyRevenue: T[]; // month + value
-  eventStatus: EventStatus;
-  pieChartData: T[];   // label + value
-  barChartData: T[];   // month + value
+  monthlyRevenue: MonthlyRevenue[];
+  eventStatus: IEventStatus;
 }

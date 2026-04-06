@@ -1,4 +1,3 @@
-import { EventVisivillity } from './../types/stats.types';
 import { ApiErrorResponse } from '@/types/response.type';
 
 import { DashboardData } from "@/types/stats.types";
@@ -32,7 +31,7 @@ export const StatsServices = {
       return { 
         success: true, 
         EventVisivillity:body.data.eventVisivillity,
-        data: body.data as DashboardData<any>,
+        data: body.data as DashboardData,
         message: body.message ?? "Stats fetched successfully.",
       };
     } catch (error: any) {

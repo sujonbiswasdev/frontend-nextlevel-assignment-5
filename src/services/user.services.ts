@@ -63,7 +63,7 @@ getAllUsers: async (params?: any, options?: { cache?: RequestCache; revalidate?:
   try {
 
     const cookieStore = await cookies();
-    const url = new URL(`${API_BASE_URL}/admin/users`);
+    const url = new URL(`${API_BASE_URL}/admin/users?${params}`);
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== "") {

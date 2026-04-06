@@ -31,7 +31,7 @@ const EventService = {
       }
       config.next = { ...config.next, tags: ["events","event"] };
 
-      const res = await fetch(url.toString(), {cache:"no-store"});
+      const res = await fetch(url.toString(), config);
       const data = await res.json();
       const result = data as TGroupedEventsResponse<{reviews:IgetReviewData[],organizer:IBaseUser[]}>;
       if (!res.ok) {
@@ -53,13 +53,21 @@ const EventService = {
   },
   createEvent: async (value: ICreateEvent) => {
     const storeCookies = await cookies();
-    
+    const formData = new FormData();
+
+    const { image, ...rest } = value;
+
+    formData.append("data", JSON.stringify(rest));
+    if (image) {
+      formData.append("file", image);
+    }
+    console.log(formData,'this')
     try {
       const response = await fetch(`${API_BASE_URL}/event`, {
         credentials:"include",
         method: "POST",
-        headers: { "Content-Type": "application/json" ,Cookie: storeCookies.toString()},
-        body: JSON.stringify(value),
+        headers: {Cookie: storeCookies.toString()},
+        body: formData,
       });
       revalidateTag("event",'max')
       const body = await response.json();
@@ -86,6 +94,9 @@ const EventService = {
         credentials: "include",
         method: "GET",
         headers: { "Content-Type": "application/json" },
+        next:{
+          tags:["event","events"]
+        }
       });
       const data = await res.json();
       if (!res.ok) {

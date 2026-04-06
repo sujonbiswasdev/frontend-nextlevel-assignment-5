@@ -13,7 +13,7 @@ import React from 'react'
 const PaymentPage = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const search = await searchParams;
   const userinfo = await getSessionAction();

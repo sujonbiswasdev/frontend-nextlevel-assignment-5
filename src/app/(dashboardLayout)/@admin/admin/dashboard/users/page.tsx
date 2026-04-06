@@ -6,20 +6,27 @@ import { IBaseEvent, TPagination } from '@/types/event.types';
 import { IgetReviewData } from '@/types/review.types';
 import { TResponseUserData } from '@/types/user.types';
 import React from 'react'
-
 const UsersPage =async ({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams:Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   let usersResponse;
   try {
     const search = await searchParams;
-    usersResponse = await getAllUsersAction(search, { cache: "no-store" });
+    usersResponse = await getAllUsersAction(search);
   } catch (err) {
     console.error("Users fetch error:", err);
     usersResponse = { data: [], pagination: { total: 0, page: 1, limit: 10, totalpage: 1 } };
   }
+  // Ensure usersResponse has a "users" field even if original response did not.
+ if(!usersResponse.success || !usersResponse.users){
+ return (
+   <ul>
+     <NotFoundItem content={usersResponse.message ?? "No users found."} emoji="😕" filter="" key="no-users"/>
+   </ul>
+ );
+ }
 
   return (
     <React.Suspense fallback={<span>Loading users...</span>}>

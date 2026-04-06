@@ -1,8 +1,6 @@
-export const revalidate=60
 import { fetchEvents } from "@/actions/event.actions";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import EventContent from "@/components/module/event/EventsContent";
-import { cn } from "@/lib/utils";
 import { TPagination, TResponseEvent } from "@/types/event.types";
 import { IgetReviewData } from "@/types/review.types";
 import React from "react";
@@ -10,7 +8,7 @@ import React from "react";
 const EventsPage = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams:Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   let eventsResponse;
   try {

@@ -76,7 +76,7 @@ const InfoRow = ({
 const PaymentSuccessPage = async ({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) => {
   try {
     const { id } = await params;

@@ -19,7 +19,7 @@ export default function ImageSkeleton({
       )}
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={src}
         alt={alt}
         width={320}

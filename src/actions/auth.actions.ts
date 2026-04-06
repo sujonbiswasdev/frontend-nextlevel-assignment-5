@@ -47,3 +47,8 @@ export async function changePasswordAction(data: { currentPassword: string; newP
     const result = await AuthService.changePassword(data.currentPassword, data.newPassword);
     return result;
 }
+
+export async function loginWithGoogleAction() {
+    const result = await AuthService.loginWithGoogle();
+    return result;
+}

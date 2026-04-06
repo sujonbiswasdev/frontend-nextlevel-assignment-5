@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { authClient } from "@/lib/authClient";
 import { loginZodSchema } from "@/validations/auth.validation";
-import { loginUserAction } from "@/actions/auth.actions";
+import { loginUserAction, loginWithGoogleAction } from "@/actions/auth.actions";
 import { forgotPasswordEmailOtpAction } from "@/actions/auth.actions";
 import { useState } from "react";
 import { FormInput } from "@/components/ui/frominput";
@@ -89,7 +89,24 @@ export function SigninForm() {
   });
 
   const signInWithGoogle = async () => {
-    await authClient.signIn.social({ provider: "google" });
+    const toastId = toast.loading("Signing in with Google...");
+    try {
+      router.push("http://localhost:5000/api/v1/auth/login/google")
+      const res = await loginWithGoogleAction();
+      console.log(res,'res')
+      toast.dismiss(toastId);
+
+      if (!res.success) {
+        toast.error(res.message || "Google login failed", { theme: "dark" });
+        return;
+      }
+      toast.success(res.message || "Signed in with Google!", { theme: "dark" });
+      router.refresh();
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast.dismiss(toastId);
+      toast.error(error?.message || "Something went wrong during Google sign-in.", { theme: "dark" });
+    }
   };
 
   return (

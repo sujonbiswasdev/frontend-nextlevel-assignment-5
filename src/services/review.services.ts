@@ -48,7 +48,7 @@ export const reviewService = {
   getMyReview: async (params?: any, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
-      const url = new URL(`${API_BASE_URL}/my-reviews`);
+      const url = new URL(`${API_BASE_URL}/my-reviews?${params}`);
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
           if (value !== undefined && value !== null && value !== "") {

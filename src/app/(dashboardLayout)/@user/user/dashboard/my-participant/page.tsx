@@ -18,9 +18,7 @@ const ParticipantPage = async({
   const role=userinfo.data?.role
   const search=await searchParams
  
-  const participants= await getParticipants(search,{
-    revalidate: 2
-  });
+  const participants= await getParticipants(search);
   console.log(participants,'ts')
   return (
     <div>

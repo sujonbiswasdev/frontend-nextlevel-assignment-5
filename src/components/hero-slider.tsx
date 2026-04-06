@@ -20,7 +20,7 @@ type HeroSlide = {
 // Default event fallback data
 const DEFAULT_SLIDE: HeroSlide = {
   id: "default-event-id",
-  image: "/event-default-bg.jpg", // You can place this image in public/ folder or use a relevant event default image path
+  image: "https://images.pexels.com/photos/15448073/pexels-photo-15448073.jpeg", // You can place this image in public/ folder or use a relevant event default image path
   title: "Discover Amazing Events",
   description: "Create, join, and manage events effortlessly",
   venue: "Your City",
@@ -66,7 +66,7 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
   }, [slides.length]);
 
   return (
-    <section className="relative w-full h-[90vh] max-h-[600px] overflow-hidden">
+    <section className="relative w-full h-[70vh] min-h-[420px] max-h-[620px] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -84,38 +84,38 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
           />
 
           {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-black/60"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-slate-900/80 via-cyan-900/45 to-emerald-900/40"></div>
 
           {/* Content */}
-          <div className="relative container mx-auto px-2 py-20">
+          <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full px-4 py-1.5 mb-6 animate-fade-in">
-                <Sparkles className="w-4 h-4 text-accent" />
-                <span className="text-sm font-medium text-primary-foreground/90">Featured Event</span>
+              <div className="inline-flex items-center gap-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-200/40 rounded-full px-4 py-1.5 mb-6 animate-fade-in">
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span className="text-sm font-medium text-white/90">Featured Event</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-[1.1] mb-4 animate-slide-in">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-[1.1] mb-4 animate-slide-in">
                 {slide.title || "Event related"}
               </h1>
 
-              <p className="text-lg text-primary-foreground/70 mb-2 font-medium animate-slide-in" style={{ animationDelay: "0.1s" }}>
+              <p className="text-lg text-cyan-50/90 mb-2 font-medium animate-slide-in" style={{ animationDelay: "0.1s" }}>
                 {slide.description || "Explore a variety of exciting events happening near you."}
               </p>
 
-              <p className="text-base text-primary-foreground/60 mb-8 max-w-lg leading-relaxed animate-slide-in" style={{ animationDelay: "0.15s" }}>
+              <p className="text-base text-white/75 mb-8 max-w-lg leading-relaxed animate-slide-in" style={{ animationDelay: "0.15s" }}>
                 {slide.venue && slide.date
                   ? `${new Date(slide.date).toLocaleDateString()} · ${slide.venue}`
                   : "Your all-in-one event management platform. Browse events, join communities, and create unforgettable experiences."}
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 animate-slide-in" style={{ animationDelay: "0.2s" }}>
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 animate-slide-in" style={{ animationDelay: "0.2s" }}>
                 <button
                   onClick={() => router.push('/events')}
-                  className="inline-flex items-center gap-2 px-6 py-2 rounded-full font-semibold text-primary bg-primary-foreground/90 hover:bg-accent/90 transition-colors shadow-xl shadow-accent/10 border border-primary/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2 active:scale-95 active:shadow-inner animate-fade-in duration-200"
+                  className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full font-semibold text-slate-900 bg-white/90 hover:bg-amber-300 transition-colors shadow-xl shadow-cyan-900/20 border border-white/40 focus:outline-none focus:ring-2 focus:ring-amber-300/60 focus:ring-offset-2 active:scale-95 active:shadow-inner animate-fade-in duration-200"
                   style={{
                     backdropFilter: "blur(10px)",
                     WebkitBackdropFilter: "blur(10px)",
-                    boxShadow: "0 4px 24px 0 rgba(99,102,241,.15), 0 1.5px 4px 0 rgba(0,0,0,.05)"
+                    boxShadow: "0 4px 24px 0 rgba(16,185,129,.22), 0 1.5px 4px 0 rgba(0,0,0,.1)"
                   }}
                   aria-label="Browse All Events"
                 >
@@ -124,12 +124,16 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
                   </svg>
                   Browse All Events
                 </button>
-                <Button style={{
+                <Button
+                  style={{
                     backdropFilter: "blur(10px)",
                     WebkitBackdropFilter: "blur(10px)",
                     boxShadow: "0 4px 24px 0 rgba(99,102,241,.15), 0 1.5px 4px 0 rgba(0,0,0,.05)"
-                  }} onClick={()=>router.push(`/events/${slide.id ?? ""}`)} className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-semibold text-primary bg-primary-foreground/90 hover:bg-accent/90 transition-colors shadow-xl shadow-accent/10 border border-primary/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2 active:scale-95 active:shadow-inner animate-fade-in duration-200`}>
-                  join 
+                  }}
+                  onClick={() => router.push(`/events/${slide.id ?? ""}`)}
+                  className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full font-semibold text-white bg-linear-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 transition-colors shadow-xl shadow-cyan-900/20 border border-cyan-200/40 focus:outline-none focus:ring-2 focus:ring-cyan-200/60 focus:ring-offset-2 active:scale-95 active:shadow-inner animate-fade-in duration-200"
+                >
+                  join
                 </Button>
               </div>
             </div>
@@ -144,7 +148,7 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
             key={index}
             onClick={() => setCurrent(index)}
             className={`w-3 h-3 rounded-full transition ${
-              current === index ? "bg-white scale-125" : "bg-white/50"
+              current === index ? "bg-amber-300 scale-125" : "bg-white/50"
             }`}
           />
         ))}

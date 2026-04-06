@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
-import { z } from "zod";
 
 import { useForm } from "@tanstack/react-form";
 import { passwordSchema } from "@/validations/auth.validation";
@@ -85,36 +84,121 @@ function VerifyOtp({
 
     try {
       if (type === "email-verification") {
-      const toastID = toast.loading("Verifying...", { theme: "dark" });
-      const res = await verifyEmailAction({ email, otp });
-      if (res.success) {
-        toast.dismiss(toastID)
-        setResending(false);
-        toast.success(res.message || "Email verified successfully!", { theme: "dark" });
-        router.push("/login");
-      } else {
-        toast.dismiss(toastID);
-        toast.error(res.message || "Verification failed", { theme: "dark" });
-      }
+        const toastID = toast.loading("Verifying...", { theme: "dark" });
+        try {
+          const res = await verifyEmailAction({ email, otp });
+          if (res.success) {
+            toast.dismiss(toastID);
+            setResending(false);
+            toast.success(
+              res.message || "Email verified successfully!",
+              { theme: "dark" }
+            );
+            router.push("/login");
+          } else {
+            toast.dismiss(toastID);
+
+            // Show user-friendly OTP invalid message
+            if (
+              res.message &&
+              (res.message.toLowerCase().includes("invalid") ||
+                res.message.toLowerCase().includes("incorrect"))
+            ) {
+              toast.error(
+                "The verification code you entered is incorrect or expired. Please check your email and try again.",
+                { theme: "dark" }
+              );
+            } else {
+              toast.error(
+                res.message || "Verification failed. Please check the code and try again.",
+                { theme: "dark" }
+              );
+            }
+          }
+        } catch (err: any) {
+          toast.dismiss();
+          // If response has an explicit invalid OTP indication, show detailed message
+          const rawMsg =
+            err?.response?.data?.message ||
+            err?.body?.message ||
+            err?.message ||
+            "";
+          if (
+            rawMsg &&
+            (rawMsg.toLowerCase().includes("invalid") ||
+              rawMsg.toLowerCase().includes("incorrect"))
+          ) {
+            toast.error(
+              "The verification code you entered is incorrect or expired. Please check your email and try again.",
+              { theme: "dark" }
+            );
+          } else {
+            toast.error(
+              rawMsg || "Verification failed. Please try again.",
+              { theme: "dark" }
+            );
+          }
+        }
       }
 
       if (type === "forget-password") {
-      const toastID = toast.loading("Resetting password...", { theme: "dark" });
-      const res = await resetPasswordAction({
-        email,
-        otp,
-        newPassword: form.state.values.password,
-      });
-      if (res.success) {
-        toast.dismiss(toastID)
-        setSuccess(true);
-        setResending(false);
-        toast.success(res.message || "Password reset successfully!", { theme: "dark" });
-        router.push("/login");
-      } else {
-        toast.dismiss(toastID);
-        toast.error(res.message || "Password reset failed", { theme: "dark" });
-      }
+        const toastID = toast.loading("Resetting password...", { theme: "dark" });
+        try {
+          const res = await resetPasswordAction({
+            email,
+            otp,
+            newPassword: form.state.values.password,
+          });
+          if (res.success) {
+            toast.dismiss(toastID);
+            setSuccess(true);
+            setResending(false);
+            toast.success(
+              res.message || "Password reset successfully!",
+              { theme: "dark" }
+            );
+            router.push("/login");
+          } else {
+            toast.dismiss(toastID);
+            if (
+              res.message &&
+              (res.message.toLowerCase().includes("invalid") ||
+                res.message.toLowerCase().includes("incorrect"))
+            ) {
+              toast.error(
+                "The OTP you entered is incorrect or expired. Please check your email and try again.",
+                { theme: "dark" }
+              );
+            } else {
+              toast.error(
+                res.message || "Password reset failed. Please check the code and try again.",
+                { theme: "dark" }
+              );
+            }
+          }
+        } catch (err: any) {
+          toast.dismiss();
+          const rawMsg =
+            err?.response?.data?.message ||
+            err?.body?.message ||
+            err?.message ||
+            "";
+          if (
+            rawMsg &&
+            (rawMsg.toLowerCase().includes("invalid") ||
+              rawMsg.toLowerCase().includes("incorrect"))
+          ) {
+            toast.error(
+              "The OTP you entered is incorrect or expired. Please check your email and try again.",
+              { theme: "dark" }
+            );
+          } else {
+            toast.error(
+              rawMsg || "Password reset failed. Please try again.",
+              { theme: "dark" }
+            );
+          }
+        }
       }
     } catch {
       toast.error("Something went wrong", { theme: "dark" });
@@ -124,54 +208,63 @@ function VerifyOtp({
   };
 
   const handleEmailVerification = async () => {
-
+    // Fix: Use the correct resend endpoints, don't try to verify OTP for "email-verification" on resend,
+    // instead call resendVerificationCodeAction for email-verification and forgotPasswordEmailOtpAction for forget-password.
     try {
-      if (type === "email-verification") {
       setResending(true);
-      try {
-        const toastID = toast.loading("Verifying...", { theme: "dark" });
-        const res = await verifyEmailAction({ email, otp });
-        if (res.success) {
-          alert("The OTP is valid for only 4 minutes. Please check your email.");
-          toast.dismiss(toastID)
-          toast.success(res.message || "Email verified successfully!", { theme: "dark" });
-          setSuccess(true);
-          setResending(false);
-          router.push("/login");
-        } else {
-          toast.dismiss(toastID)
-          toast.error(res.message || "Verification failed", { theme: "dark" });
+      if (type === "email-verification") {
+        const toastID = toast.loading("Resending verification code...", { theme: "dark" });
+        try {
+          // Call the correct resend API for email-verification
+          const res = await resendVerificationCodeAction({ email });
+          if (res.success) {
+            alert("The OTP is valid for only 4 minutes. Please check your email.");
+            toast.dismiss(toastID);
+            toast.success(res.message || "Verification code resent successfully!", { theme: "dark" });
+            setSuccess(true);
+          } else {
+            toast.dismiss(toastID);
+            toast.error(res.message || "Failed to resend verification code", { theme: "dark" });
+          }
+        } catch (error: any) {
+          toast.dismiss();
+          // Try to extract error code/message for known API errors:
+          const errorMessage =
+            (error && error.body && error.body.message) ||
+            error?.message ||
+            "Something went wrong during code resend";
+          toast.error(errorMessage, { theme: "dark" });
         }
-      } catch (error) {
-        toast.error("Something went wrong during verification", { theme: "dark" });
-      }
-   
+        setResending(false);
       }
 
       if (type === "forget-password") {
-     const toastID= toast.loading("Resending OTP...", { theme: "dark" });
-      setResending(true);
-      try {
-        const res = await forgotPasswordEmailOtpAction({ email });
-        if (res.success) {
-          alert("The OTP is valid for only 4 minutes. Please check your email.");
-          toast.dismiss(toastID)
-
-          toast.success(res.message || "OTP resent successfully!", { theme: "dark" });
-          setSuccess(true);
-          setResending(false);
-          return
-        } else {
-          toast.dismiss(toastID)
-          toast.error(res.message || "Failed to resend OTP", { theme: "dark" });
-          
+        const toastID = toast.loading("Resending OTP...", { theme: "dark" });
+        try {
+          // Call the correct resend API for forgot password flow
+          const res = await forgotPasswordEmailOtpAction({ email });
+          if (res.success) {
+            alert("The OTP is valid for only 4 minutes. Please check your email.");
+            toast.dismiss(toastID);
+            toast.success(res.message || "OTP resent successfully!", { theme: "dark" });
+            setSuccess(true);
+          } else {
+            toast.dismiss(toastID);
+            toast.error(res.message || "Failed to resend OTP", { theme: "dark" });
+          }
+        } catch (error: any) {
+          toast.dismiss();
+          const errorMessage =
+            (error && error.body && error.body.message) ||
+            error?.message ||
+            "Something went wrong during OTP resend";
+          toast.error(errorMessage, { theme: "dark" });
         }
-      } catch (error) {
-        toast.error("Something went wrong during OTP resend", { theme: "dark" });
-      }
+        setResending(false);
       }
     } catch {
       toast.error("Something went wrong", { theme: "dark" });
+      setResending(false);
     }
   };
 

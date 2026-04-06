@@ -4,7 +4,7 @@ import SingleProfile from '@/components/SingleProfile'
 import { IBaseUser } from '@/types/user.types'
 import React from 'react'
 
-const SingleProfilePage = async({ params }: { params: Promise<{ id: string }> }) => {
+const SingleProfilePage = async({ params }: { params:Promise<{ id: string }>}) => {
 
     const id = await params
     const userprofile = await getUserByIdAction(id.id)

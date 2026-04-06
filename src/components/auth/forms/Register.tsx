@@ -27,8 +27,10 @@ import { UserCreateInput } from "@/types/auth.types";
 import { createUserSchema } from "@/validations/auth.validation";
 import { FormInput } from "@/components/ui/frominput";
 import Link from "next/link";
+import { useState } from "react";
 
 export function SignupForm() {
+  const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -36,7 +38,7 @@ export function SignupForm() {
       email: "",
       password: "",
       phone: "",
-      image: "",
+      image: null as File | null,
     },
     validators: {
       onSubmit: createUserSchema as any,
@@ -45,6 +47,7 @@ export function SignupForm() {
       const toastId = toast.loading("user creating.........");
       try {
         const result = await registerUserAction(value as UserCreateInput);
+        setPreview(null)
         if (!result.success) {
           toast.dismiss(toastId);
           toast.error(result.message || "user registration failed");
@@ -64,19 +67,16 @@ export function SignupForm() {
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
         <div className="mb-3">
-          <Link
-            href="/"
-            className="text-sm text-blue-600 hover:underline"
-          >
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
             ← Back to Home
           </Link>
         </div>
         <CardTitle className="text-center text-2xl font-bold">
           Create a New Account
         </CardTitle>
-          <div className="flex justify-center mt-2">
-            <span className="h-1 w-32 rounded-full bg-gradient-to-r from-blue-400 via-fuchsia-500 to-emerald-400 opacity-70 animate-pulse"></span>
-          </div>
+        <div className="flex justify-center mt-2">
+          <span className="h-1 w-32 rounded-full bg-gradient-to-r from-blue-400 via-fuchsia-500 to-emerald-400 opacity-70 animate-pulse"></span>
+        </div>
       </CardHeader>
       <CardContent>
         <form
@@ -149,13 +149,18 @@ export function SignupForm() {
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FormInput field={field} label="Password" isPassword onBlur={field.handleBlur}
+                    <FormInput
+                      field={field}
+                      label="Password"
+                      isPassword
+                      onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="please enter your password"
                       name={field.name}
                       value={field.state.value}
-                      autoComplete="off"/>
+                      autoComplete="off"
+                    />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
                     )}
@@ -166,29 +171,31 @@ export function SignupForm() {
 
             <form.Field
               name="image"
-              validators={{ onChange: createUserSchema.shape.image as any }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Image</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="please enter your image"
-                      autoComplete="off"
+              children={(field) => (
+                <Field>
+                  <FieldLabel>profile Image *</FieldLabel>
+
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+
+                      if (file) {
+                        field.handleChange(file);
+                        setPreview(URL.createObjectURL(file));
+                      }
+                    }}
+                  />
+
+                  {preview && (
+                    <img
+                      src={preview}
+                      className="h-32 rounded-md object-cover mt-2"
                     />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
+                  )}
+                </Field>
+              )}
             />
             <form.Field
               name="phone"
@@ -219,15 +226,18 @@ export function SignupForm() {
           </FieldGroup>
         </form>
       </CardContent>
-      
+
       <CardFooter className=" flex flex-col space-y-3 justify-center items-center">
-      <Link
-            href="/login"
-            className="inline-block text-sm text-blue-600 hover:underline"
-          >
-            Already have an account? Login
-          </Link>
-        <Field orientation="horizontal" className="flex items-center justify-center">
+        <Link
+          href="/login"
+          className="inline-block text-sm text-blue-600 hover:underline"
+        >
+          Already have an account? Login
+        </Link>
+        <Field
+          orientation="horizontal"
+          className="flex items-center justify-center"
+        >
           <Button type="button" variant="outline" onClick={() => form.reset()}>
             Reset
           </Button>

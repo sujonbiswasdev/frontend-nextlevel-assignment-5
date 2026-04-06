@@ -87,7 +87,7 @@ export const PaymentService={
     getAllPayments: async (params?: Record<string, any>) => {
     try {
         const cookieStore = await cookies();
-        const url = new URL(`${API_BASE_URL}/payments`);
+        const url = new URL(`${API_BASE_URL}/payments?${params}`);
         if (params) {
             Object.keys(params).forEach((key) => {
                 if (params[key] !== undefined && params[key] !== null) {

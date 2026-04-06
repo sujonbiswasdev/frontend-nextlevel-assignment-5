@@ -75,11 +75,11 @@ const EarningRate: React.FC<EarningRateProps> = ({
 };
 
 const Earnings = ({
-  stats,
   earningRate,
+  stats
 }: {
-  stats: MonthlyRevenue[];
   earningRate: number;
+  stats:MonthlyRevenue[]
 }) => {
   return (
     <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">

@@ -13,9 +13,7 @@ const RequestEventJoin = async({
   }) => {
 
   const search = await searchParams;
-  const participantsByEvent = await getParticipantsByEvent(search, {
-    revalidate: 2
-  });
+  const participantsByEvent = await getParticipantsByEvent(search);
   return (
     <React.Suspense fallback={<div>Loading event participant requests...</div>}>
       <ErrorBoundary fallback={<div>Something went wrong loading event join requests.</div>}>

@@ -21,24 +21,8 @@ export const createUserSchema = z.object({
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
     "Password must be at least 8 characters long, contain uppercase, lowercase, number and special character"),
   phone: z.string().optional(),
-  image: z
-  .string()
-  .url("Invalid image URL")
-  .refine(
-    (url) => {
-      try {
-        const parsed = new URL(url);
-        return allowedDomains.includes(parsed.hostname);
-      } catch {
-        return false;
-      }
-    },
-    {
-      message: "Only Cloudinary and Pexels images allowed",
-    },
-  )
-  .optional(),
-}).strict();
+  image: z.any()
+});
 
 export const loginZodSchema = z.object({
   email : z.email("Invalid email address"),

@@ -52,7 +52,7 @@ const InvitationService = {
   GetAllinvitaions: async (params?: any, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
-      const url = new URL(`${API_BASE_URL}/invitation/user`);
+      const url = new URL(`${API_BASE_URL}/invitation/user?${params}`);
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
           if (value !== undefined && value !== null && value !== "") {

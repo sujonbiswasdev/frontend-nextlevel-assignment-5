@@ -11,6 +11,7 @@ export const proxy = async (request: NextRequest) => {
 
     const accessToken = request.cookies.get("accessToken")?.value;
 
+
     if (!accessToken) {
       return NextResponse.redirect(new URL("/login?You_are_not_logged_in,_please_log_in_first.", request.url));
     }
@@ -19,19 +20,20 @@ export const proxy = async (request: NextRequest) => {
       accessToken,
       process.env.ACCESS_TOKEN_SECRET as string
     );
-
+    console.log(tokenVerify,'ss')
     if (!tokenVerify.success) {
       return NextResponse.redirect(new URL("/login?Invalid_or_expired_access_token", request.url));
     }
     const userSession = await getSessionAction();
-    if (!userSession?.success || !userSession?.data) {
+    if (!userSession?.success || !userSession?.data ||!tokenVerify) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    const user = userSession.data;
+    const user = userSession.data || tokenVerify.data;
     if (user.status === "BLOCKED") {
       return NextResponse.redirect(new URL("/login?Your_account_is_blocked.please contact support", request.url));
     }
     const role = user.role as TUserRole;
+    console.log(role,'s')
     if (pathname.startsWith("/admin")) {
       if (role !== "ADMIN") {
         return NextResponse.redirect(new URL("/login?Access_denied_Admins_only", request.url));

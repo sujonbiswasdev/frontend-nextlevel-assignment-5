@@ -27,8 +27,10 @@ import { createEvent } from "@/actions/event.actions";
 import { FormInput } from "@/components/ui/frominput";
 import { Input } from "@/components/ui/input";
 import { EventArr } from "@/types/event.types";
+import { useState } from "react";
 
 export function CreateEvent() {
+  const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -37,10 +39,10 @@ export function CreateEvent() {
       date: "",
       time: "",
       venue: "",
-      image: "",
+      image: null as File | null,
       visibility: "PUBLIC",
       priceType: "FREE",
-      status:'',
+      status: "",
       categories: "", // Or set to a default category as needed, e.g. eventcategoryArr[0]
       fee: null,
     },
@@ -48,18 +50,21 @@ export function CreateEvent() {
       onSubmit: CreateEventSchema as any,
     },
     onSubmit: async ({ value }) => {
+      console.log(value, "valuedata");
       const toastId = toast.loading("Creating event, please wait...");
       try {
         const result = await createEvent(value as any);
+        setPreview(null)
         toast.dismiss(toastId);
         if (result.success !== true) {
           toast.error(
-            result.message ? result.message : "Event creation failed"
+            result.message ? result.message : "Event creation failed",
           );
           return;
         }
+        router.refresh()
         toast.success("Event created successfully!");
-        form.reset()
+        form.reset();
       } catch (error: any) {
         toast.dismiss(toastId);
         toast.error(
@@ -92,7 +97,7 @@ export function CreateEvent() {
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>
-                      Title <span style={{ color: 'red' }}>*</span>
+                      Title <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Input
                       id={field.name}
@@ -119,9 +124,8 @@ export function CreateEvent() {
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    
                     <FieldLabel htmlFor={field.name}>
-                      Description <span style={{ color: 'red' }}>*</span>
+                      Description <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Input
                       id={field.name}
@@ -147,8 +151,10 @@ export function CreateEvent() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field data-invalid={isInvalid}>                    
-                    <FieldLabel htmlFor={field.name}>Date <span style={{ color: 'red' }}>*</span></FieldLabel>
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Date <span style={{ color: "red" }}>*</span>
+                    </FieldLabel>
                     <Input
                       id={field.name}
                       name={field.name}
@@ -175,7 +181,9 @@ export function CreateEvent() {
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Time <span style={{ color: 'red' }}>*</span></FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      Time <span style={{ color: "red" }}>*</span>
+                    </FieldLabel>
                     <Input
                       id={field.name}
                       name={field.name}
@@ -202,7 +210,9 @@ export function CreateEvent() {
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Venue <span style={{ color: 'red' }}>*</span></FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      Venue <span style={{ color: "red" }}>*</span>
+                    </FieldLabel>
                     <Input
                       id={field.name}
                       name={field.name}
@@ -220,41 +230,49 @@ export function CreateEvent() {
                 );
               }}
             />
+
             <form.Field
               name="image"
-              validators={{ onChange: CreateEventSchema.shape.image }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Image URL <span style={{ color: 'red' }}>*</span></FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Paste the event image URL"
-                      autoComplete="off"
+              children={(field) => (
+                <Field>
+                  <FieldLabel>Event Image *</FieldLabel>
+
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+
+                      if (file) {
+                        field.handleChange(file);
+                        setPreview(URL.createObjectURL(file));
+                      }
+                    }}
+                  />
+
+                  {preview && (
+                    <img
+                      src={preview}
+                      className="h-32 rounded-md object-cover mt-2"
                     />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
+                  )}
+                </Field>
+              )}
             />
+
             <form.Field
               name="visibility"
-              validators={{ onChange: CreateEventSchema.shape.visibility as any }}
+              validators={{
+                onChange: CreateEventSchema.shape.visibility as any,
+              }}
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Visibility <span style={{ color: 'red' }}>*</span></FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      Visibility <span style={{ color: "red" }}>*</span>
+                    </FieldLabel>
                     <select
                       id={field.name}
                       name={field.name}
@@ -267,28 +285,30 @@ export function CreateEvent() {
                       <option value="" disabled>
                         Please select option
                       </option>
-                      {["PUBLIC", "PRIVATE"].map(option => (
+                      {["PUBLIC", "PRIVATE"].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
                     </select>
-                    {isInvalid && (
-                      <div>Please select a visibility option.</div>
-                    )}
+                    {isInvalid && <div>Please select a visibility option.</div>}
                   </Field>
                 );
               }}
             />
             <form.Field
               name="priceType"
-              validators={{ onChange: CreateEventSchema.shape.priceType as any}}
+              validators={{
+                onChange: CreateEventSchema.shape.priceType as any,
+              }}
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Price Type <span style={{ color: 'red' }}>*</span></FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      Price Type <span style={{ color: "red" }}>*</span>
+                    </FieldLabel>
                     <select
                       id={field.name}
                       name={field.name}
@@ -301,20 +321,20 @@ export function CreateEvent() {
                       <option value="" disabled>
                         Please select price type
                       </option>
-                      {EventArr.EVENT_Pricing_ARR.map(option => (
+                      {EventArr.EVENT_Pricing_ARR.map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
                     </select>
                     {isInvalid && (
-                    <div>
-                      {isInvalid && (
-                        <div className="text-red-500 text-sm mt-1 font-medium">
-                          Please select a valid price type.
-                        </div>
-                      )}
-                    </div>
+                      <div>
+                        {isInvalid && (
+                          <div className="text-red-500 text-sm mt-1 font-medium">
+                            Please select a valid price type.
+                          </div>
+                        )}
+                      </div>
                     )}
                   </Field>
                 );
@@ -328,7 +348,9 @@ export function CreateEvent() {
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Categories <span style={{ color: 'red' }}>*</span></FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      Categories <span style={{ color: "red" }}>*</span>
+                    </FieldLabel>
                     <select
                       id={field.name}
                       name={field.name}
@@ -341,31 +363,32 @@ export function CreateEvent() {
                       <option value="" disabled>
                         Please select category
                       </option>
-                      {EventArr.EVENT_CATEGORY_ARR.map(option => (
+                      {EventArr.EVENT_CATEGORY_ARR.map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
                     </select>
-                  {isInvalid && (
-                    <div className="text-red-500 text-sm mt-1 font-medium">
-                      Please select a valid category.
-                    </div>
-                  )}
-                   
+                    {isInvalid && (
+                      <div className="text-red-500 text-sm mt-1 font-medium">
+                        Please select a valid category.
+                      </div>
+                    )}
                   </Field>
                 );
               }}
             />
             <form.Field
               name="status"
-              validators={{ onChange: CreateEventSchema.shape.status as any}}
+              validators={{ onChange: CreateEventSchema.shape.status as any }}
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Status <span style={{ color: 'red' }}>*</span></FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      Status <span style={{ color: "red" }}>*</span>
+                    </FieldLabel>
                     <select
                       id={field.name}
                       name={field.name}
@@ -378,18 +401,17 @@ export function CreateEvent() {
                       <option value="" disabled>
                         Please select status
                       </option>
-                      {EventArr.EVENT_Status_ARR.map(option => (
+                      {EventArr.EVENT_Status_ARR.map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
                     </select>
-                  {isInvalid && (
-                    <div className="text-red-500 text-sm mt-1 font-medium">
-                      Please select a valid status.
-                    </div>
-                  )}
-                    
+                    {isInvalid && (
+                      <div className="text-red-500 text-sm mt-1 font-medium">
+                        Please select a valid status.
+                      </div>
+                    )}
                   </Field>
                 );
               }}
@@ -406,7 +428,10 @@ export function CreateEvent() {
                       id={field.name}
                       name={field.name}
                       type="number"
-                      value={field.state.value ?? ""}
+                      value={
+                        field.state.value ??
+                        ("" as number | string | undefined | any)
+                      }
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}

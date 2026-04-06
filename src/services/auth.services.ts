@@ -13,10 +13,17 @@ if (!API_BASE_URL) {
 
 const AuthService = {
     register: async (value: UserCreateInput) => {
+        const formData = new FormData();
+
+        const { image, ...rest } = value;
+    
+        formData.append("data", JSON.stringify(rest));
+        if (image) {
+          formData.append("file", image);
+        }
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify(value)
+            body: formData
         });
         const body = await response.json();
         const result = body as ApiResponse<UserCreateInputWithTokens>
@@ -305,6 +312,47 @@ const AuthService = {
                 success: result.success,
                 message: result.message || "Password changed successfully!",
                 data: result.data,
+            };
+        } catch (error: any) {
+            return { success: false, message: error.message || "Server error" };
+        }
+    },
+    loginWithGoogle: async () => {
+        try {
+            const storeCookies = await cookies();
+            const response = await fetch(`${API_BASE_URL}/auth/login/google`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: storeCookies.toString(),
+                },
+                cache: "no-store",
+            });
+            const body = await response.json();
+            console.log(body,'bodydata')
+            if (!response.ok) {
+                const error = body as ApiErrorResponse;
+                return {
+                    success: error.success || false,
+                    message: error.message || "Google login failed",
+                };
+            }
+
+            // Optionally set tokens if received
+            if (body.data?.accessToken) {
+                await setTokenInCookies("accessToken", body.data.accessToken);
+            }
+            if (body.data?.refreshToken) {
+                await setTokenInCookies("refreshToken", body.data.refreshToken);
+            }
+            if (body.data?.token) {
+                await setTokenInCookies("better-auth.session_token", body.data.token, 24 * 60 * 60);
+            }
+
+            return {
+                success: true,
+                message: body.message || "Google login successful!",
+                data: body.data,
             };
         } catch (error: any) {
             return { success: false, message: error.message || "Server error" };

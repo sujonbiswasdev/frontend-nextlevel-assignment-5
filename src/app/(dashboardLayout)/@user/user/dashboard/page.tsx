@@ -3,7 +3,7 @@ import { getStatsAction } from "@/actions/stats.actions"
 import DashboardContent from "@/components/dashbaord/DashboardContent"
 import ErrorBoundary from "@/components/ErrorBoundary"
 import ErrorFallback from "@/components/ErrorFallback"
-import { DashboardData, MonthlyRevenue } from "@/types/stats.types"
+import { DashboardData } from "@/types/stats.types"
 
 export default async function DashboardPage() {
   const statsData=await getStatsAction()
@@ -14,7 +14,7 @@ export default async function DashboardPage() {
      <ErrorBoundary fallback={<ErrorFallback title="Dashboard Error" message="An error occurred while loading your dashboard. Please refresh the page or try again later." />}>
        {statsData ? (
          <div>
-           <DashboardContent role={role as string} eventVisivility={statsData.EventVisivillity} stats={statsData.data as DashboardData<{ monthlyRevenue: any[]; eventStatus: any; pieChartData: any[]; barChartData: any[] }>} />
+           <DashboardContent role={role as string} eventVisivility={statsData.EventVisivillity} stats={statsData.data as DashboardData} />
 
          </div>
        ) : (

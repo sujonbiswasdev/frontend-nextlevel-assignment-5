@@ -9,7 +9,7 @@ import React from 'react'
 const InvitationsPage = async({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams:Promise<{ [key: string]: string | string[] | undefined }>
 }) => {
   const search=await searchParams
   const invitationsPromise =await GetAllinvitaionsAction(search);
