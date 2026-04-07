@@ -90,10 +90,10 @@ export function SigninForm() {
   
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted py-6 px-2 sm:px-0">
+    <div className="flex items-center justify-center min-h-screen bg-muted py-1 px-2 sm:px-0">
       <Card className="w-full max-w-md shadow-lg border-0 bg-white dark:bg-gray-900 transition-all sm:rounded-2xl">
         <CardHeader className="text-center">
-          <div className="flex flex-col gap-2 mb-3">
+          <div className="flex flex-col gap-1 mb-0.5">
             <Link
               href="/"
               className="inline-block text-sm text-blue-600 hover:underline"
@@ -101,7 +101,7 @@ export function SigninForm() {
               ← Back to Home
             </Link>
           </div>
-          <CardTitle className="text-2xl font-semibold mb-1">
+          <CardTitle className="text-2xl font-semibold mb-0.5">
             Welcome Back
           </CardTitle>
           <CardDescription className="text-base text-muted-foreground">
@@ -115,7 +115,7 @@ export function SigninForm() {
               e.preventDefault();
               form.handleSubmit();
             }}
-            className="space-y-6"
+            className="Z"
           >
             <FieldGroup>
               {/* Email Field */}
@@ -126,8 +126,8 @@ export function SigninForm() {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
-                    <Field data-invalid={isInvalid} className="mb-4">
-                      <FieldLabel htmlFor={field.name} className="mb-2 text-sm font-medium">
+                    <Field data-invalid={isInvalid} className="">
+                      <FieldLabel htmlFor={field.name} className=" text-sm font-medium">
                         Email
                       </FieldLabel>
                       <Input
@@ -148,7 +148,7 @@ export function SigninForm() {
                       {isInvalid && (
                         <FieldError
                           errors={field.state.meta.errors}
-                          className="mt-1"
+                          className="mt-0.5"
                         />
                       )}
                     </Field>
@@ -161,43 +161,47 @@ export function SigninForm() {
                 name="password"
                 validators={{ onChange: loginZodSchema.shape.password }}
                 children={(field) => {
+                  const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
+                    <Field data-invalid={isInvalid} className="">
+                    <div className="flex items-center justify-between ">
+                      <FieldLabel htmlFor={field.name} className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                        Password
+                      </FieldLabel>
+                      <button
+                        type="button"
+                        className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+                        onClick={async () => {
+                          if (!email) {
+                            toast.error("Please enter your email first.", {
+                              theme: "dark",
+                            });
+                            return;
+                          }
+                          const res = await handleForgetPassword(email);
+                          if (res?.success) {
+                            const encodedEmail = encodeURIComponent(email);
+                            router.push(`/reset-password?email=${encodedEmail}`);
+                          }
+                        }}
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
                     <FormInput
                       field={field}
-                      label="Password"
                       isPassword
-                      className="mb-1"
-                    />
+                      className=""
+                    />  </Field>
                   );
                 }}
               />
             </FieldGroup>
-
-            <div className="flex justify-end mt-1">
-              <button
-                type="button"
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer transition"
-                onClick={async () => {
-                  if (!email) {
-                    toast.error("Please enter your email first.", {
-                      theme: "dark",
-                    });
-                    return;
-                  }
-                  const res = await handleForgetPassword(email);
-                  if (res?.success) {
-                    const encodedEmail = encodeURIComponent(email);
-                    router.push(`/reset-password?email=${encodedEmail}`);
-                  }
-                }}
-              >
-                Forgot password?
-              </button>
-            </div>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col gap-2 items-center pt-2">
-          <div className="text-sm text-center w-full mb-1">
+        <CardFooter className="flex flex-col gap-1 items-center">
+          <div className="text-sm text-center w-full mb-0.5">
             Don't have an account?{" "}
             <a
               className="text-blue-500 dark:text-blue-400 hover:underline cursor-pointer transition"
@@ -206,7 +210,7 @@ export function SigninForm() {
               Sign up
             </a>
           </div>
-          <div className="flex w-full gap-2 mt-1">
+          <div className="flex w-full gap-1 mt-0.5">
             <Button
               type="button"
               variant="outline"

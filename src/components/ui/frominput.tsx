@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   field: any;
-  label: string;
+  label?: string;
   isPassword?: boolean;
 }
 
@@ -41,7 +41,7 @@ export const FormInput: React.FC<FormInputProps> = ({
             field.handleChange(e.target.value);
             rest.onChange?.(e); // 👈 important for parent
           }}
-          placeholder={`Enter your ${label.toLowerCase()}`}
+          placeholder={`Enter your ${label?.toLowerCase()}`}
           autoComplete="off"
           {...rest}
         />
