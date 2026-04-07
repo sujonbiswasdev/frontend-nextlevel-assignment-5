@@ -246,6 +246,7 @@ const AuthService = {
         } catch (error: any) {
             return { success: false, message: error.message || "Server error" };
         }
+    
     },
     logout: async () => {
         try {
@@ -329,7 +330,6 @@ const AuthService = {
                 cache: "no-store",
             });
             const body = await response.json();
-
             if (!response.ok) {
                 const error = body as ApiErrorResponse;
                 return {

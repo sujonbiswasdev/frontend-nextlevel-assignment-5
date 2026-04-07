@@ -87,26 +87,7 @@ export function SigninForm() {
       }
     },
   });
-
-  const signInWithGoogle = async () => {
-    const toastId = toast.loading("Signing in with Google...");
-    try {
-      router.push("http://localhost:5000/api/v1/auth/login/google")
-      const res = await loginWithGoogleAction();
-      toast.dismiss(toastId);
-
-      if (!res.success) {
-        toast.error(res.message || "Google login failed", { theme: "dark" });
-        return;
-      }
-      toast.success(res.message || "Signed in with Google!", { theme: "dark" });
-      router.refresh();
-      router.push("/dashboard");
-    } catch (error: any) {
-      toast.dismiss(toastId);
-      toast.error(error?.message || "Something went wrong during Google sign-in.", { theme: "dark" });
-    }
-  };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted py-6 px-2 sm:px-0">
@@ -214,39 +195,6 @@ export function SigninForm() {
               </button>
             </div>
           </form>
-          <Button
-            onClick={signInWithGoogle}
-            variant="outline"
-            type="button"
-            className="w-full mt-5 flex items-center justify-center gap-2"
-          >
-            <svg
-              className="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-            >
-              <g>
-                <path
-                  d="M21.35 11.1H12.18v2.93h5.22a4.47 4.47 0 0 1-1.95 2.92v2.38h3.14c1.84-1.69 2.91-4.19 2.91-7.1 0-.65-.07-1.29-.2-1.89z"
-                  fill="#4285F4"
-                />
-                <path
-                  d="M12.18 22c2.62 0 4.82-.87 6.43-2.36l-3.14-2.38c-.87.57-1.98.92-3.29.92a5.72 5.72 0 0 1-5.43-3.94H3.47v2.46A10.04 10.04 0 0 0 12.18 22z"
-                  fill="#34A853"
-                />
-                <path
-                  d="M6.75 14.24a5.48 5.48 0 0 1 0-3.47V8.31H3.47a10.02 10.02 0 0 0 0 7.38l3.28-2.45z"
-                  fill="#FBBC05"
-                />
-                <path
-                  d="M12.18 6.89c1.44 0 2.73.5 3.75 1.48l2.8-2.81A9.93 9.93 0 0 0 12.18 2a10.04 10.04 0 0 0-8.71 5.31l3.28 2.46a5.72 5.72 0 0 1 5.43-3.94z"
-                  fill="#EA4335"
-                />
-              </g>
-            </svg>
-            Continue with Google
-          </Button>
         </CardContent>
         <CardFooter className="flex flex-col gap-2 items-center pt-2">
           <div className="text-sm text-center w-full mb-1">

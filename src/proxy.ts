@@ -6,16 +6,18 @@ export type TUserRole = "USER" | "ADMIN";
 
 export const proxy = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
-
   try {
+    const isPaymentSuccessRoute =
+      pathname.startsWith("/payment/") ||
+      pathname.includes("/payment/:*");
 
+    if (isPaymentSuccessRoute) {
+      return NextResponse.next();
+    }
     const accessToken = request.cookies.get("accessToken")?.value;
-
-
     if (!accessToken) {
       return NextResponse.redirect(new URL("/login?You_are_not_logged_in,_please_log_in_first.", request.url));
     }
-
     const tokenVerify = jwtUtils.verifyToken(
       accessToken,
       process.env.ACCESS_TOKEN_SECRET as string

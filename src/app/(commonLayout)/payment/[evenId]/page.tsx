@@ -75,13 +75,30 @@ const InfoRow = ({
 // Async page-level error boundary logic
 const PaymentSuccessPage = async ({
   params,
+  searchParams,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ evenId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) => {
   try {
-    const { id } = await params;
-    const participant = await getOwnParticipantPayment(id);
+    const { evenId } = await params;
+    const resolvedSearchParams = searchParams ? await searchParams : undefined;
+    const participantId =
+      (resolvedSearchParams?.participantId as string | undefined) ?? "-";
+    const paymentId =
+      (resolvedSearchParams?.paymentId as string | undefined) ?? "-";
 
+    const participant = await getOwnParticipantPayment(evenId);
+    const participantList = Array.isArray(participant?.data) ? participant.data : [];
+    const hasPaymentData = participantList.length > 0;
+    const isServiceSuccess = Boolean(participant?.success);
+    const hasPaidRecord = participantList.some(
+      (item: any) =>
+        String(item?.payment?.status || "").toUpperCase() === "PAID" ||
+        String(item?.paymentStatus || "").toUpperCase() === "PAID",
+    );
+    const isSuccessView = isServiceSuccess && hasPaymentData && hasPaidRecord;
+    console.log(participant,'participant data')
     // Professional, clean layout with clear information hierarchy
     return (
       <main className="min-h-screen flex items-center justify-center bg-neutral-100">
@@ -99,14 +116,23 @@ const PaymentSuccessPage = async ({
           </div>
           <div className="relative z-10 bg-white rounded-2xl shadow-lg border border-gray-100 px-8 py-12 md:px-12 flex flex-col items-center">
             <div className="flex flex-col items-center gap-1 mb-5">
-              <span className="rounded-full bg-green-50 p-3 mb-1 shadow-sm">
-                <CheckCircle2 className="text-green-500" size={44} />
+              <span
+                className={`rounded-full p-3 mb-1 shadow-sm ${
+                  isSuccessView ? "bg-green-50" : "bg-red-50"
+                }`}
+              >
+                <CheckCircle2
+                  className={isSuccessView ? "text-green-500" : "text-red-500"}
+                  size={44}
+                />
               </span>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
-                Payment Successful
+                {isSuccessView ? "Payment Successful" : "Payment Failed"}
               </h1>
               <p className="text-sm text-gray-500 text-center max-w-sm">
-                Thank you for your payment. Your registration has been confirmed. All details are below.
+                {isSuccessView
+                  ? "Thank you for your payment. Your registration has been confirmed. All details are below."
+                  : participant?.message || "We could not verify this payment in our records. Please try again or contact support."}
               </p>
             </div>
             <div className="w-full">
@@ -114,8 +140,8 @@ const PaymentSuccessPage = async ({
               <h2 className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-2">
                 Registration Summary
               </h2>
-              {participant.data && participant.data.length > 0 ? (
-                participant.data.map((item: any, i: number) => (
+              {isSuccessView ? (
+                participantList.map((item: any, i: number) => (
                   <div
                     key={item?.payment?.transactionId || i}
                     className="bg-neutral-50 rounded-xl p-5 border border-gray-100 shadow-inner mb-4"
@@ -153,7 +179,7 @@ const PaymentSuccessPage = async ({
                       label="Status"
                       value={
                         <span
-                          className={`inline-block px-2 py-[1px] rounded-md text-xs font-semibold ${
+                          className={`inline-block px-2 py-px rounded-md text-xs font-semibold ${
                             item?.paymentStatus === "paid" || item?.payment?.status === "paid"
                               ? "bg-green-100 text-green-700"
                               : item?.paymentStatus === "pending"
@@ -181,7 +207,40 @@ const PaymentSuccessPage = async ({
                   </div>
                 ))
               ) : (
-                <div className="text-center text-red-500 my-8">No payment details found.</div>
+                <div className="my-8 space-y-4">
+                  <div className="text-center space-y-1">
+                    <p className="text-sm font-semibold text-red-700">Payment Verification Failed</p>
+                    <p className="text-xs text-gray-500 max-w-sm mx-auto">
+                      No payment record was found for this event right now.
+                    </p>
+                  </div>
+
+                  <div className="bg-neutral-50 rounded-xl p-5 border border-gray-100 shadow-inner">
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                      <p className="text-xs font-medium text-gray-400 uppercase tracking-widest">
+                        Tracking Reference
+                      </p>
+                      <span className="text-xs font-semibold text-red-700 bg-red-100 px-2 py-1 rounded-md">
+                        FAILED
+                      </span>
+                    </div>
+
+                    <details className="group">
+                      <summary className="cursor-pointer text-sm font-medium text-indigo-700 select-none">
+                        Show IDs
+                      </summary>
+                      <div className="mt-4 space-y-1">
+                        <InfoRow label="Event ID" value={evenId} mono />
+                        <InfoRow label="Participant ID" value={participantId} mono />
+                        <InfoRow label="Payment ID" value={paymentId} mono />
+                      </div>
+                    </details>
+
+                    <p className="mt-4 text-xs text-gray-500">
+                      Please try payment again. If this issue continues, contact support with these IDs.
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
 

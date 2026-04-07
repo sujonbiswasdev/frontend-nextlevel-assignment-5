@@ -156,6 +156,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
       type: "date",
       name: "date",
       value: form.date || "",
+      label:"date",
       onChange: (val) => handleChange("date", val),
     },
     {
@@ -219,6 +220,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
     {
       type: "date",
       name: "createdAt",
+      label:"createdAt",
       value: form.createdAt || "",
       onChange: (val) => handleChange("createdAt", val),
     },
