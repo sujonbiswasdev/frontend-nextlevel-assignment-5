@@ -11,16 +11,17 @@ import React from "react";
 import { StatsCard } from "./StatsCard";
 import Earnings from "./chart/EarningChart";
 
-// StatsCounts: shows counts for participated events, invitations, and payments
 export const StatsCounts = ({
   statsCount,
+  role,
 }: {
   statsCount: ICounts;
+  role: string;
 }) => {
   const total =
     (statsCount.participatedEvents || 0) +
-    (statsCount.invitations || 0) +
-    (statsCount.payments || 0) || 1;
+      (statsCount.invitations || 0) +
+      (statsCount.payments || 0) || 1;
   return (
     <div className="max-w-[1380px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -60,18 +61,16 @@ export const StatsCounts = ({
           ).toFixed(0)}
           trend="up"
         />
-        <StatsCard
-          title="Users"
-          value={statsCount.user ? statsCount.user.toString() : "0"}
-          bgGradient="from-violet-500 to-fuchsia-400"
-          iconName="User"
-          key="users"
-          percentage={(
-            ((statsCount.user || 0) / total) *
-            100
-          ).toFixed(0)}
-          trend="up"
-        />
+        {role === "ADMIN" && (
+          <StatsCard
+            title="Users"
+            value={statsCount.user?.toString() ?? "0"}
+            bgGradient="from-violet-500 to-fuchsia-400"
+            iconName="Users"
+            key="users"
+            trend="up"
+          />
+        )}
       </div>
     </div>
   );
@@ -248,7 +247,7 @@ const DashboardContent = ({
         </div>
       </div>
       <FreeAndPublic statsCount={stats.priceType as IPriceType} />
-      <StatsCounts statsCount={stats.counts as ICounts} />
+      <StatsCounts role={role} statsCount={stats.counts as ICounts} />
       <VisibilityPublicPrivate statsCount={eventVisivility} />
       <EventStatusCounts eventStatus={stats.eventStatus} />
       <Earnings

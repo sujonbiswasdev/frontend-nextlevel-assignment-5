@@ -115,10 +115,11 @@ export default function EventContent({
 
         {/* EVENTS GRID */}
 
-        <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
+        <div className="relative dark:bg-gray-950">
         {isPending && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm">
-            <LoadingContentPage data="events data filtering..."/>
+             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2"></div>
+             <p className="text-sm font-medium">Filtering data...</p>
           </div>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 mt-6">

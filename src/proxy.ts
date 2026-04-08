@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAction } from "./actions/auth.actions";
-import { jwtUtils } from "./lib/jwtUtils";
 
 export type TUserRole = "USER" | "ADMIN";
 
@@ -15,7 +14,7 @@ export const proxy = async (request: NextRequest) => {
       return NextResponse.next();
     }
     const SessionToken = request.cookies.get("better-auth.session_token")?.value;
-    
+
     if (!SessionToken) {
       return NextResponse.redirect(new URL("/login?You_are_not_logged_in,_please_log_in_first.", request.url));
     }
