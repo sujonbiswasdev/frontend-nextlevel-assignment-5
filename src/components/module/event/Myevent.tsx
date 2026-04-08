@@ -9,16 +9,12 @@ import { ReusableTable } from "../table/Table";
 import { FilterPanel } from "@/components/Filter";
 import { EventArr, IBaseEvent, TGroupedEvents, TPagination } from "@/types/event.types";
 import { TFilterField } from "@/types/filter.types";
-import { useFilter } from "@/components/ReusableFilter";
 import PaginationPage from "./Pagination";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import UpdateEvent from "./UpdateEvent";
 import { deleteEvent } from "@/actions/event.actions";
 import CopyableId from "@/components/shared/CopyId";
+import { useFilter } from "@/components/ReusableFilter";
 
 interface MyEventsTableProps {
   Events: TGroupedEvents;
@@ -30,13 +26,12 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
   const router = useRouter();
   const [selectedStatus, setSelectedStatus] = useState<keyof TGroupedEvents>("UPCOMING");
   const [tableEvents, setTableEvents] = useState<IBaseEvent[]>([]);
-  const [loading] = useState(false);
+  
+  const { updateFilters, reset, isPending } = useFilter();
 
-  // Dialog states for event update
   const [open, setOpen] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
-  // Filters form state
   const [form, setForm] = useState({
     is_featured: false,
     date: "",
@@ -48,41 +43,28 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
     search: "",
     createdAt: "",
   });
+  const handleChange = useCallback((key: keyof typeof form, value: string | number | boolean) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  }, []);
 
-  const { updateFilters, reset } = useFilter();
+  const handleApply = () => {
+    updateFilters(form);
+  };
 
-  // Handle filter changes
-  const handleChange = useCallback(
-    (key: keyof typeof form, value: string | number) => {
-      if (key === "is_featured") {
-        const boolValue = value === "true";
-        const updated = { ...form, [key]: boolValue };
-        setForm(updated);
-        updateFilters(updated);
-      } else {
-        const updated = { ...form, [key]: value };
-        setForm(updated);
-        updateFilters(updated);
-      }
-    },
-    [form, updateFilters]
-  );
+  const handleReset = () => {
+    const defaultForm = {
+      is_featured: false, date: "", categories: "", priceType: "",
+      status: "", visibility: "", fee: 2000, search: "", createdAt: "",
+    };
+    setForm(defaultForm);
+    reset();
+  };
 
-  // Update tableEvents whenever selectedStatus or Events changes
   useEffect(() => {
     setTableEvents(Events[selectedStatus] ?? []);
   }, [selectedStatus, Events]);
-
-  // Table columns
   const columns = [
-
-    {
-      key: "id",
-      label: "ID",
-      render: (e: IBaseEvent) => {
-       return <CopyableId id={e.id} href={`/events/${e.id}`} />
-      }
-    },
+    { key: "id", label: "ID", render: (e: IBaseEvent) => <CopyableId id={e.id} href={`/events/${e.id}`} /> },
     { key: "title", label: "Title" },
     { key: "description", label: "Description", render: (e: IBaseEvent) => e.description.slice(0, 40) + "..." },
     { key: "date", label: "Date", render: (e: IBaseEvent) => new Date(e.date).toLocaleDateString() },
@@ -90,244 +72,86 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
     { key: "visibility", label: "Visibility" },
     { key: "status", label: "Status" },
   ];
-  
 
-  // Delete event logic (fixed - moved confirmation logic inside)
+  const actions = [
+    { icon: Eye, label: "View", onClick: (event: IBaseEvent) => router.push(`/events/${event.id}`), className: "text-green-500" },
+    { icon: Pencil, label: "Edit", onClick: (event: IBaseEvent) => { setSelectedEventId(event.id); setOpen(true); }, className: "text-blue-500" },
+    { icon: Trash2, label: "Delete", onClick: (event: IBaseEvent) => handleDeleteEvent(event.id), className: "text-red-500" },
+  ];
+
   const handleDeleteEvent = useCallback(async (eventId: string) => {
-    try {
-      if (!window.confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
-        return;
-      }
-      const toastId = toast.loading("Deleting event. Please wait...");
-      const resp = await deleteEvent(eventId);
-      toast.dismiss(toastId);
-      if (resp.success) {
-        setTableEvents((prev: IBaseEvent[]) => prev.filter((event) => event.id !== eventId));
-        toast.success(resp.message || "Event deleted successfully");
-      } else {
-        toast.error(resp.message || "Failed to delete event");
-      }
-    } catch (error: any) {
-      toast.dismiss();
-      toast.error(
-        "Something went wrong while deleting the event." +
-          (error?.message ? ` (${error.message})` : "")
-      );
+    if (!window.confirm("Are you sure?")) return;
+    const toastId = toast.loading("Deleting...");
+    const resp = await deleteEvent(eventId);
+    toast.dismiss(toastId);
+    if (resp.success) {
+      setTableEvents(prev => prev.filter(e => e.id !== eventId));
+      toast.success("Deleted!");
     }
   }, []);
 
-  // Actions for USER role
-  const actions = [
-    {
-      icon: Eye,
-      label: "View",
-      onClick: (event: IBaseEvent) => router.push(`/events/${event.id}`),
-      className: "text-green-500",
-    },
-    {
-      icon: Pencil,
-      label: "Edit",
-      onClick: (event: IBaseEvent) => {
-        setSelectedEventId(event.id);
-        setOpen(true);
-      },
-      className: "text-blue-500",
-    },
-    {
-      icon: Trash2,
-      label: "Delete",
-      onClick: (event: IBaseEvent) => {
-        handleDeleteEvent(event.id);
-      },
-      className: "text-red-500",
-    },
-  ];
-
-  // Filter fields
   const fields: TFilterField[] = [
-    {
-      type: "text",
-      name: "search",
-      value: form.search || "",
-      placeholder: "Search title, description, categories, or venue",
-      onChange: (val) => handleChange("search", val),
-    },
-    {
-      type: "date",
-      name: "date",
-      value: form.date || "",
-      label:"date",
-      onChange: (val) => handleChange("date", val),
-    },
-    {
-      type: "select",
-      name: "categories",
-      label: "Categories",
-      value: form.categories,
-      onChange: (val) => handleChange("categories", val),
-      options: EventArr.EVENT_CATEGORY_ARR.map((v) => ({ label: v, value: v })),
-    },
-    {
-      type: "select",
-      name: "priceType",
-      label: "Price Type",
-      value: form.priceType,
-      onChange: (val) => handleChange("priceType", val),
-      options: [
-        { label: "Free", value: "FREE" },
-        { label: "Paid", value: "PAID" },
-      ],
-    },
-    {
-      type: "range",
-      name: "fee",
-      label: "Price (up to)",
-      value: form.fee,
-      min: 0,
-      max: 2000,
-      onChange: (val) => handleChange("fee", Number(val)),
-    },
-    {
-      type: "select",
-      name: "status",
-      label: "Status",
-      value: form.status,
-      onChange: (val) => handleChange("status", val),
-      options: EventArr.EVENT_Status_ARR.map((v) => ({ label: v, value: v })),
-    },
-    {
-      type: "select",
-      name: "visibility",
-      label: "Visibility",
-      value: form.visibility,
-      onChange: (val) => handleChange("visibility", val),
-      options: [
-        { label: "Public", value: "PUBLIC" },
-        { label: "Private", value: "PRIVATE" },
-      ],
-    },
-    {
-      type: "select",
-      name: "is_featured",
-      label: "Is Featured",
-      value: form.is_featured ? "true" : "",
-      onChange: (val: string) => handleChange("is_featured", val),
-      options: [
-        { label: "Yes", value: "true" },
-        { label: "No", value: "" },
-      ],
-    },
-    {
-      type: "date",
-      name: "createdAt",
-      label:"createdAt",
-      value: form.createdAt || "",
-      onChange: (val) => handleChange("createdAt", val),
-    },
+    { type: "text", name: "search", value: form.search, placeholder: "Search...", onChange: (val) => handleChange("search", val) },
+    { type: "date", name: "date", value: form.date, label: "Date", onChange: (val) => handleChange("date", val) },
+    { type: "select", name: "categories", label: "Categories", value: form.categories, onChange: (val) => handleChange("categories", val), options: EventArr.EVENT_CATEGORY_ARR.map(v => ({ label: v, value: v })) },
+    { type: "select", name: "priceType", label: "Price Type", value: form.priceType, onChange: (val) => handleChange("priceType", val), options: [{ label: "Free", value: "FREE" }, { label: "Paid", value: "PAID" }] },
+    { type: "range", name: "fee", label: "Price", value: form.fee, min: 0, max: 2000, onChange: (val) => handleChange("fee", Number(val)) },
+    { type: "select", name: "status", label: "Status", value: form.status, onChange: (val) => handleChange("status", val), options: EventArr.EVENT_Status_ARR.map(v => ({ label: v, value: v })) },
+    { type: "select", name: "visibility", label: "Visibility", value: form.visibility, onChange: (val) => handleChange("visibility", val), options: [{ label: "Public", value: "PUBLIC" }, { label: "Private", value: "PRIVATE" }] },
   ];
 
   return (
     <div className="w-full py-6 sm:py-8">
-      {/* Filter — same width as table (single centered column) */}
       <section className="mb-8 w-full">
         <FilterPanel
           fields={fields}
-          onReset={() => {
-            setForm({
-              is_featured: false,
-              date: "",
-              categories: "",
-              priceType: "",
-              status: "",
-              visibility: "",
-              fee: 0,
-              search: "",
-              createdAt: "",
-            });
-            reset();
-            if (role === "USER") {
-              router.push("/user/dashboard/my-events");
-            } else if (role === "ADMIN") {
-              router.push("/admin/dashboard/events");
-            } else {
-              router.push("/events");
-            }
-          }}
+          onApply={handleApply}
+          onReset={handleReset}
+          isPending={isPending}
         />
       </section>
 
-      {/* Table card — aligned with filter width */}
-      <div
-        className="w-full overflow-x-auto overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950"
-        style={{ maxHeight: "60vh" }}
-      >
-        {loading ? (
-          <p className="p-8 text-center text-muted-foreground">Loading...</p>
-        ) : (
-          <div className="p-4 sm:p-5">
-            <div className="mb-4 flex w-full justify-center">
-              <button
-                type="button"
-                className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-                onClick={() => {
-                  if (role === "USER") {
-                    router.push("/user/dashboard/create-event");
-                  } else if (role === "ADMIN") {
-                    router.push("/admin/dashboard/events/create");
-                  }
-                }}
-              >
-                + Add Event
-              </button>
-            </div>
-            <ReusableTable
-              columns={columns as any}
-              data={tableEvents}
-              actions={actions}
-              emptyMessage="No events found"
-            />
+      <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
+        {isPending && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2"></div>
+            <p className="text-sm font-medium">Filtering data...</p>
           </div>
         )}
+        <div className="p-4 sm:p-5" style={{ maxHeight: "60vh", overflow: "auto" }}>
+          <div className="mb-4 flex w-full justify-center">
+            <button
+              className="bg-blue-600 px-4 py-2 text-sm font-semibold text-white rounded-lg"
+              onClick={() => router.push(role === "ADMIN" ? "/admin/dashboard/events/create" : "/user/dashboard/create-event")}
+            >
+              + Add Event
+            </button>
+          </div>
+          <ReusableTable columns={columns as any} data={tableEvents} actions={actions} emptyMessage="No events found" />
+        </div>
       </div>
 
-      {/* Edit Event Dialog */}
-      <Dialog
-        open={open}
-        onOpenChange={(val) => {
-          setOpen(val);
-          if (!val) setSelectedEventId(null);
-        }}
-      >
-        <DialogContent
-          className="max-w-md max-h-[90vh] overflow-y-auto"
-          style={{
-            maxHeight: "90vh",
-            overflowY: "auto",
-          }}
-        >
+      {/* Pagination & Dialog - আগের মতোই */}
+      <div className="flex justify-center py-4">
+        <PaginationPage pagination={pagination as any} />
+      </div>
+
+      <Dialog open={open} onOpenChange={(val) => { setOpen(val); if (!val) setSelectedEventId(null); }}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader />
           {selectedEventId && (
             <UpdateEvent
               id={selectedEventId}
               role={role}
               onSuccess={(updated) => {
-                setTableEvents((prev: IBaseEvent[]) =>
-                  prev.map((item) =>
-                    item.id === updated.id ? updated : item
-                  )
-                );
+                setTableEvents(prev => prev.map(item => item.id === updated.id ? updated : item));
                 setOpen(false);
-                setSelectedEventId(null);
-                toast.success("Event updated successfully!");
+                toast.success("Updated!");
               }}
             />
           )}
         </DialogContent>
       </Dialog>
-
-      <div className="flex justify-center py-4">
-        <PaginationPage pagination={pagination as any} />
-      </div>
     </div>
   );
 }

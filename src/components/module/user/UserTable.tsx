@@ -32,7 +32,7 @@ export default function UserContentPage({
   const [viewMode, setViewMode] = useState(false);
   const [viewData, setViewData] = useState<any>(null);
   const router = useRouter();
-  const { updateFilters, reset } = useFilter();
+  const { updateFilters, reset ,isPending} = useFilter();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
@@ -49,13 +49,30 @@ export default function UserContentPage({
     setTableData(users ?? []);
   }, [users]);
 
-  const handleChange = (key: string, value: any) => {
-    const updated = { ...form, [key]: value };
-    setForm(updated);
-    updateFilters(updated);
+  const handleChange = useCallback((key: keyof typeof form, value: string | number | boolean) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const handleApply = () => {
+    updateFilters(form);
   };
 
-  const fields = [
+
+  const handleReset = () => {
+    const defaultForm = {
+      name: "",
+      email: "",
+      role: "",
+      status: "",
+      phone: "",
+      image: "",
+      isActive: false,
+      emailVerified: false,
+    };
+    setForm(defaultForm);
+    reset();
+  };
+  const fields:TFilterField[] = [
     {
       type: "text",
       name: "name",
@@ -105,8 +122,8 @@ export default function UserContentPage({
       type: "select",
       name: "emailVerified",
       label: "Email Verified",
-      value: form.emailVerified,
-      onChange: (val: string) => handleChange("emailVerified", val),
+      value: String(form.emailVerified),
+      onChange: (val: string) => handleChange("emailVerified", val === "true"),
       options: [
         { label: "No", value: "false" },
         { label: "Yes", value: "true" },
@@ -168,26 +185,35 @@ export default function UserContentPage({
   return (
     <div className="w-full">
       <div className="mb-6 bg-white dark:bg-gray-950 p-4 sm:p-6 rounded-xl shadow border border-gray-100 dark:border-gray-800">
+      <section className="mb-8 w-full">
         <FilterPanel
-          fields={fields as TFilterField[]}
-          onReset={() => {
-            setForm({
-              name: "",
-              email: "",
-              role: "",
-              status: "",
-              phone: "",
-              image: "",
-              isActive: false,
-              emailVerified: false,
-            });
-            reset();
-          }}
+          fields={fields}
+          onApply={handleApply}
+          onReset={handleReset}
+          isPending={isPending}
         />
+      </section>
       </div>
 
+      <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
+       {isPending && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2"></div>
+            <p className="text-sm font-medium">Filtering data...</p>
+          </div>
+        )}
+
       <div className="mb-6 overflow-x-auto rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
-        <ReusableTable columns={columns as any} data={tableData} actions={actions as any} />
+        
+
+        {tableData && Array.isArray(tableData) && tableData.length > 0 ? (
+          <ReusableTable columns={columns as any} data={tableData} actions={actions} />
+        ) : (
+          <div className="p-8 text-center text-gray-400 dark:text-gray-500 text-base select-none">
+            No users data found.
+          </div>
+        )}
+      </div>
       </div>
 
       <Dialog

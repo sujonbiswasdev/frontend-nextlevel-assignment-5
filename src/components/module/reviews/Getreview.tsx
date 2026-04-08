@@ -83,16 +83,30 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     }
   };
 
-  const { updateFilters, reset } = useFilter();
+  const { updateFilters, reset ,isPending} = useFilter();
 
   const handleChange = useCallback(
     (key: keyof typeof form, value: string | number) => {
       const updated = { ...form, [key]: value };
       setForm(updated);
-      updateFilters(updated);
     },
-    [form, updateFilters]
+    []
   );
+
+  const handleApply = () => {
+    updateFilters(form);
+  };
+
+
+  const handleReset = () => {
+    const defaultForm = {
+      rating: 0,
+    search: "",
+    status: "",
+    };
+    setForm(defaultForm);
+    reset();
+  };
 
   useEffect(() => {
     let filtered = [...originalReviewsRef.current];
@@ -246,16 +260,10 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-gradient-to-tr from-sky-50 via-white to-indigo-50 dark:bg-gradient-to-tr dark:from-gray-900 dark:to-slate-900 shadow-lg rounded-2xl p-6 md:p-8 border border-sky-200 dark:border-blue-900/40 transition-all">
           <div className="flex-1">
             <FilterPanel
-              fields={fields}
-              onReset={() => {
-                setForm({ search: "", rating: 0, status: "" });
-                reset();
-                if (role === "ADMIN") {
-                  router.push("/admin/dashboard/reviews");
-                } else if (role === "USER") {
-                  router.push("/user/dashboard/my-reviews");
-                }
-              }}
+               fields={fields}
+               onApply={handleApply}
+               onReset={handleReset}
+               isPending={isPending}
             />
           </div>
         </div>
@@ -272,6 +280,14 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
           background: "linear-gradient(135deg, #f0f9ff 0%, #fcf6fd 100%)"
         }}
       >
+
+<div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
+       {isPending && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2"></div>
+            <p className="text-sm font-medium">Filtering data...</p>
+          </div>
+        )}
         {loading ? (
           <p className="text-center text-lg text-cyan-500 font-semibold py-8">Loading...</p>
         ) : (
@@ -282,6 +298,7 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
             emptyMessage="No reviews found"
           />
         )}
+      </div>
       </div>
 
       {/* Edit Review Dialog */}

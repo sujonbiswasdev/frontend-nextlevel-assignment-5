@@ -5,6 +5,7 @@ export type TFilterField =
       type: "text" | "email" | "password" | "search" | "url" | "tel";
       name: string;
       placeholder?: string;
+      label?:string;
       value: string;
       onChange: (val: string) => void;
     }

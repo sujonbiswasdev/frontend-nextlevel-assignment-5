@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Eye, Pencil, Trash2, Plus } from "lucide-react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "react-toastify";
+
+import { ReusableTable } from "../table/Table";
 import { FilterPanel } from "@/components/Filter";
 import { useFilter } from "@/components/ReusableFilter";
 import { TFilterField } from "@/types/filter.types";
-import { ReusableTable } from "../table/Table";
-import { InvitationArr, TInvitation, TResponseInvitation } from "@/types/invitation.types";
+import { InvitationArr, TResponseInvitation } from "@/types/invitation.types";
 import { createInvitationColumns } from "./column/invitation.column";
 import { deleteInvitationAction } from "@/actions/invitation.actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -18,16 +19,22 @@ import PaginationPage from "../event/Pagination";
 import { IBaseUser } from "@/types/user.types";
 import ViewInvitationData from "./ViewData";
 
-export default function GetInvitations({ invitations,pagination ,user}: { invitations: TResponseInvitation[],pagination:TPagination,user?:IBaseUser }) {
+interface GetInvitationsProps {
+  invitations: TResponseInvitation[];
+  pagination: TPagination;
+  user?: IBaseUser;
+}
+
+export default function GetInvitations({ invitations, pagination, user }: GetInvitationsProps) {
   const router = useRouter();
   const [tableData, setTableData] = useState<TResponseInvitation[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  const { updateFilters, reset, isPending } = useFilter();
 
-  // Modal open/close and selection
   const [open, setOpen] = useState(false);
   const [selectedInvitationId, setSelectedInvitationId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState(false);
-const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,invitee:IBaseUser}> | null>(null);
+  const [viewData, setViewData] = useState<TResponseInvitation<{ event: IBaseEvent, invitee: IBaseUser }> | null>(null);
 
   const [form, setForm] = useState({
     eventId: "",
@@ -38,18 +45,30 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
     createdAt: "",
   });
 
-  const { updateFilters, reset } = useFilter();
+  const handleChange = useCallback((key: keyof typeof form, value: string | number | boolean) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const handleApply = () => {
+    updateFilters(form);
+  };
+
+  const handleReset = () => {
+    const defaultForm = {
+      eventId: "",
+      inviterId: "",
+      inviteeId: "",
+      status: "",
+      message: "",
+      createdAt: "",
+    };
+    setForm(defaultForm);
+    reset();
+  };
 
   useEffect(() => {
     setTableData(invitations ?? []);
-    setLoading(false);
   }, [invitations]);
-
-  const handleChange = (key: string, value: string) => {
-    const updated = { ...form, [key]: value };
-    setForm(updated);
-    updateFilters(updated);
-  };
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this invitation? This action cannot be undone.")) {
@@ -60,28 +79,13 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
       const res = await deleteInvitationAction(id);
       toast.dismiss(toastId);
       if (res?.success) {
-        toast.update(toastId, {
-          render: res.message || "Invitation deleted successfully.",
-          type: "success",
-          isLoading: false,
-          autoClose: 3000,
-        });
+        toast.success(res.message || "Invitation deleted successfully.");
         setTableData((prev) => prev.filter((item) => item.id !== id));
       } else {
-        toast.update(toastId, {
-          render: res?.message || "Failed to delete invitation.",
-          type: "error",
-          isLoading: false,
-          autoClose: 3000,
-        });
+        toast.error(res?.message || "Failed to delete invitation.");
       }
     } catch (err: any) {
-      toast.update(toastId, {
-        render: err?.message || "Server error",
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-      });
+      toast.error(err?.message || "Server error");
     }
   };
 
@@ -91,10 +95,10 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
     {
       icon: Eye,
       label: "View",
-      onClick: (item: TResponseInvitation<{event:IBaseEvent,invitee:IBaseUser}>) => {
+      onClick: (item: TResponseInvitation<{ event: IBaseEvent, invitee: IBaseUser }>) => {
         setViewData(item);
-    setViewMode(true);
-    setOpen(true);
+        setViewMode(true);
+        setOpen(true);
       },
       className: "text-green-500",
     },
@@ -103,8 +107,8 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
       label: "Edit",
       onClick: (item: TResponseInvitation) => {
         setSelectedInvitationId(item.id);
-    setViewMode(false);
-    setOpen(true);
+        setViewMode(false);
+        setOpen(true);
       },
       className: "text-blue-500",
     },
@@ -154,115 +158,97 @@ const [viewData, setViewData] = useState<TResponseInvitation<{event:IBaseEvent,i
     {
       type: "date",
       name: "createdAt",
-      label:"createdAt",
+      label: "createdAt",
       value: form.createdAt || "",
       onChange: (val) => handleChange("createdAt", val),
     },
   ];
 
   const handleAddInvitation = () => {
-    // Add role based navigation for create-invitation page
-    if (user?.role === "ADMIN") {
-      router.push('/admin/dashboard/invitations/create-invitation');
-    } else {
-      router.push('/user/dashboard/invitations/create-invitation');
-    }
+    const path = user?.role === "ADMIN" 
+      ? '/admin/dashboard/invitations/create-invitation' 
+      : '/user/dashboard/invitations/create-invitation';
+    router.push(path);
   };
 
   return (
-    <>
-      <section className="w-full py-3 sm:py-4">
-        <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-800">
-            Your Invitations
-          </h2>
-          <button
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition text-base font-medium shadow"
-            onClick={handleAddInvitation}
-          >
-            <Plus size={20} />
-            <span>Add Invitation</span>
-          </button>
-        </div>
-        <div className="mb-4 bg-gray-50 p-4 rounded-lg shadow">
-          <FilterPanel
-            fields={fields}
-            onReset={() => {
-              setForm({
-                eventId: "",
-                inviterId: "",
-                inviteeId: "",
-                status: "",
-                message: "",
-                createdAt: "",
-              });
-              reset();
-            }}
+    <div className="w-full py-6 sm:py-8">
+      <section className="mb-8 w-full">
+        <FilterPanel
+          fields={fields}
+          onApply={handleApply}
+          onReset={handleReset}
+          isPending={isPending}
+        />
+      </section>
+
+      <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
+        {isPending && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2"></div>
+            <p className="text-sm font-medium">Filtering data...</p>
+          </div>
+        )}
+        
+        <div className="p-4 sm:p-5" style={{ maxHeight: "60vh", overflow: "auto" }}>
+          <div className="mb-4 flex w-full justify-center">
+            <button
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition text-sm font-semibold shadow"
+              onClick={handleAddInvitation}
+            >
+              <Plus size={18} />
+              <span>Add Invitation</span>
+            </button>
+          </div>
+          
+          <ReusableTable
+            columns={columns as any}
+            data={tableData as any}
+            actions={actions}
+            emptyMessage="No invitation found"
           />
         </div>
-        <div
-          className="w-full bg-white rounded-xl shadow border border-gray-100"
-          style={{
-            maxHeight: "60vh",
-            overflowY: "auto",
-            overflowX: "auto"
-          }}
-        >
-          {loading ? (
-            <div className="flex justify-center items-center h-40">
-              <p className="text-gray-500 text-lg font-medium">Loading...</p>
-            </div>
-          ) : (
-            <ReusableTable
-              columns={columns as any}
-              data={tableData as TResponseInvitation<{ event: IBaseEvent; invitee: IBaseUser; }>[]}
-              actions={actions}
-              emptyMessage="No invitation found"
-            />
-          )}
-        </div>
-        {/* The following dialog is a placeholder for edit functionality */}
-        <Dialog
-        open={open}
-        onOpenChange={(val) => {
-          setOpen(val);
-          if (!val) { setSelectedInvitationId(null);
-            setViewData(null);
-            setViewMode(false);};
-        }}
-      >
-        <DialogContent className="max-w-md">
-  <DialogHeader>
-    <DialogTitle className="text-center p-4 font-semibold">
-      {viewMode ? "View Invitation" : "Edit Invitation"}
-    </DialogTitle>
-  </DialogHeader>
-
-
-  <ViewInvitationData viewData={viewData} viewMode={viewMode}/>
-
-  {/* EDIT MODE */}
-  {!viewMode && selectedInvitationId && (
-    <UpdateInvitationForm
-      id={selectedInvitationId}
-      onSuccess={(updated) => {
-        setTableData((prev: any) =>
-          prev.map((item: any) =>
-            item.id === updated.id ? updated : item
-          )
-        );
-        setOpen(false);
-        setSelectedInvitationId(null);
-      }}
-    />
-  )}
-</DialogContent>
-      </Dialog>
+      </div>
 
       <div className="flex justify-center py-4">
         <PaginationPage pagination={pagination} />
       </div>
-      </section>
-    </>
+
+      <Dialog
+        open={open}
+        onOpenChange={(val) => {
+          setOpen(val);
+          if (!val) {
+            setSelectedInvitationId(null);
+            setViewData(null);
+            setViewMode(false);
+          }
+        }}
+      >
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center p-4 font-semibold text-gray-800">
+              {viewMode ? "View Invitation" : "Edit Invitation"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <ViewInvitationData viewData={viewData} viewMode={viewMode} />
+
+          {!viewMode && selectedInvitationId && (
+            <UpdateInvitationForm
+              id={selectedInvitationId}
+              onSuccess={(updated) => {
+                setTableData((prev) =>
+                  prev.map((item) => (item.id === updated.id ? updated : item))
+                );
+                setOpen(false);
+                setSelectedInvitationId(null);
+                toast.success("Updated!");
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

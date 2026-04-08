@@ -11,6 +11,7 @@ import { getIconComponent } from '@/lib/iconMapper';
 import { logoutAction } from "@/actions/auth.actions";
 import { toast } from "react-toastify";
 import { NavbarNotifications } from '../module/notification/Notification';
+import Image from 'next/image';
 
 interface NavbarProps { user: IBaseUser | null }
 
@@ -58,14 +59,28 @@ export default function Navbar({ user }: NavbarProps) {
       <div className="w-full mx-auto px-6 h-16 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-md group-hover:scale-105 transition">
-            <span className="text-white font-bold text-lg">P</span>
+        <Link href="/" className="flex items-center gap-3 group" aria-label="Planora Home">
+          <div className="flex items-center h-10 w-10 relative">
+            <div className="bg-white rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center w-10 h-10 overflow-hidden p-1">
+              <Image
+                src="/logo.png"
+                alt="Planora logo"
+                fill
+                className="object-cover w-full h-full rounded-full"
+                priority
+              />
+        
+            </div>
+      
+      
+      
+      
           </div>
-          <span className="text-xl font-bold tracking-tight text-foreground">
+          <span className="hidden sm:inline font-bold text-lg text-primary group-hover:text-primary/80 transition-colors duration-200">
             Planora
           </span>
         </Link>
+  
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-2">

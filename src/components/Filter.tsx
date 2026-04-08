@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Search } from "lucide-react";
+import React, { useState } from "react";
+import { Search, Filter, RotateCcw } from "lucide-react";
 import { TFilterField } from "@/types/filter.types";
 import {
   Select,
@@ -14,13 +14,42 @@ import {
 export const FilterPanel = ({
   fields,
   onReset,
+  onApply,
+  isPending
 }: {
   fields: TFilterField[];
   onReset?: () => void;
+  onApply?: () => void;
+  isPending?: boolean;
 }) => {
+  const [isApplySpinning, setIsApplySpinning] = useState(false);
+  const [isResetSpinning, setIsResetSpinning] = useState(false);
+
+
+  const handleApplyClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!onApply) return;
+    setIsApplySpinning(true);
+    try {
+      await Promise.resolve(onApply());
+    } finally {
+      setIsApplySpinning(false);
+    }
+  };
+
+  const handleResetClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!onReset) return;
+    setIsResetSpinning(true);
+    try {
+      await Promise.resolve(onReset());
+    } finally {
+      setIsResetSpinning(false);
+    }
+  };
+
   return (
-    <section className="relative isolate w-full overflow-hidden p-4 sm:p-6 md:p-8 rounded-[28px] border border-white/20 dark:border-white/10 backdrop-blur-2xl bg-white/60 dark:bg-gray-900/60 shadow-[0_10px_40px_rgba(0,0,0,0.15)] transition-all duration-300">
-      {/* Glow Background */}
+    <section className="relative isolate w-full overflow-hidden p-4 sm:p-6 md:p-8 rounded-[28px] border border-white/20 dark:border-white/10 backdrop-blur-2xl bg-white/60 dark:bg-gray-900/60 shadow-lg transition-all duration-300">
       <div className="pointer-events-none absolute inset-0 -z-10 blur-3xl opacity-30 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" aria-hidden />
 
       <form
@@ -29,6 +58,7 @@ export const FilterPanel = ({
           gap-4 md:gap-6
         "
         autoComplete="off"
+        onSubmit={(e) => { e.preventDefault(); onApply?.(); }}
       >
         {fields.map((field) => {
           const base =
@@ -210,19 +240,30 @@ export const FilterPanel = ({
         })}
       </form>
 
-      {/* Reset Button */}
-      {onReset && (
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={onReset}
-            type="button"
-            className="relative px-6 py-2.5 rounded-xl text-white font-semibold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
-          >
-            <span className="relative z-10">Reset Filters</span>
-            <span className="absolute inset-0 rounded-xl blur opacity-40 bg-gradient-to-r from-blue-400 to-pink-400"></span>
-          </button>
-        </div>
-      )}
+      <div className="mt-8 flex justify-center gap-4">
+        <button
+          onClick={onApply}
+          disabled={isPending}
+          className="flex items-center gap-2 px-8 py-2.5 rounded-xl text-white font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 transition-all"
+        >
+          {isApplySpinning && isPending && onApply
+            ? <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            : <Filter className="w-4 h-4" />}
+          Apply Filters
+        </button>
+
+        <button
+          onClick={handleResetClick}
+          disabled={isPending}
+          className="flex items-center gap-2 px-8 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 font-semibold bg-white/50 dark:bg-gray-800/50 border disabled:opacity-50 border-white/30 hover:bg-white/80 transition-all hover:scale-95"
+        >
+          {isResetSpinning && isPending && onReset
+            ? <div className="h-5 w-5 border-2 border-white/30 border-t-green-900 rounded-full animate-spin" />
+            : <RotateCcw className="w-4 h-4" />}
+          Reset
+        </button>
+   
+      </div>
     </section>
   );
 };

@@ -1,4 +1,3 @@
-// hooks/useFilter.ts
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -11,27 +10,28 @@ export const useFilter = () => {
   const [isPending, startTransition] = useTransition();
 
   const updateFilters = (data: Record<string, any>) => {
-    try {
-      const newParams = new URLSearchParams(params.toString());
+    const newParams = new URLSearchParams(params.toString());
 
-      Object.entries(data).forEach(([key, value]) => {
-        if (!value || value === "" || value==undefined) {
-          newParams.delete(key);
-        } else {
-          newParams.set(key, String(value));
-        }
-      });
+    Object.entries(data).forEach(([key, value]) => {
+      if (value === "" || value === undefined || value === null || value === false) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, String(value));
+      }
+    });
 
-      startTransition(() => {
-        router.push(`${pathname}?${newParams.toString()}`);
-      });
-    } catch (e) {
-      console.error("Filter crash prevented", e);
-    }
+    // নতুন ফিল্টার দিলে পেজ ১ থেকে শুরু হবে
+    newParams.delete("page");
+
+    startTransition(() => {
+      router.push(`${pathname}?${newParams.toString()}`, { scroll: false });
+    });
   };
 
   const reset = () => {
-    router.push(pathname);
+    startTransition(() => {
+      router.push(pathname, { scroll: false });
+    });
   };
 
   return { updateFilters, reset, isPending };

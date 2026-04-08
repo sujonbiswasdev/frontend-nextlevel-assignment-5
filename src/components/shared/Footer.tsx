@@ -4,6 +4,7 @@ import React from "react";
 import FacebookFillIcon from "../icons/facebook";
 import YoutubeFillIcon from "../icons/youtube";
 import GithubIcon from "../icons/github";
+import Image from "next/image";
 
 
 const footerLinks = {
@@ -39,13 +40,19 @@ const Footer = () => {
           {/* Logo + Description */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              {/* Logo */}
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                E
-              </div>
-              <h2 className="text-xl font-bold text-white">
-                Planora
-              </h2>
+              <Link href={"/"}>
+              <Image
+                src="/logo.png"
+                alt="Planora Logo"
+                width={48}
+                height={48}
+                className="object-contain rounded-lg shadow-lg border border-gray-800 bg-white p-1 transition-transform duration-200 hover:scale-105"
+                priority
+              />
+        
+              </Link>
+              <p>planora</p>
+              
             </div>
 
             <p className="text-sm text-gray-400 leading-relaxed mb-5">

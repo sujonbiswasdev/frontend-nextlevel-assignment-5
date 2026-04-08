@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -23,6 +23,7 @@ import PaginationPage from "../event/Pagination";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "react-toastify";
 import { deleteParticipantAction } from "@/actions/participant.actions";
+import { TFilterField } from "@/types/filter.types";
 
 export default function ParticipantContent({
   participants,
@@ -50,19 +51,33 @@ export default function ParticipantContent({
   // Use the participant-specific columns instead of the event columns
   const columns = createParticipantColumns();
 
-  const { updateFilters, reset } = useFilter();
+  const { updateFilters, reset,isPending } = useFilter();
 
   useEffect(() => {
     setTableData(participants ?? []);
   }, [participants]);
 
-  const handleChange = (key: string, value: string) => {
-    const updated = { ...form, [key]: value };
-    setForm(updated);
-    updateFilters(updated);
+  const handleChange = useCallback((key: keyof typeof form, value: string | number | boolean) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+
+  const handleApply = () => {
+    updateFilters(form);
   };
 
-  const fields = [
+
+  const handleReset = () => {
+    const defaultForm = {
+      status: "",
+      paymentStatus: "",
+      joinedAt: ""
+    };
+    setForm(defaultForm);
+    reset();
+  };
+
+  const fields :TFilterField[] = [
     {
       type: "select",
       name: "status",
@@ -188,19 +203,23 @@ export default function ParticipantContent({
          </button>
        </div>
        <div className="mb-6 bg-white dark:bg-gray-950 p-3 sm:p-4 md:p-6 rounded-xl shadow border border-gray-100 dark:border-gray-800 transition-all">
-         <FilterPanel
-           fields={fields as any}
-           onReset={() => {
-             setForm({
-               status: "",
-               paymentStatus: "",
-               joinedAt: ""
-             });
-             reset();
-           }}
-         />
+       <section className="mb-8 w-full">
+        <FilterPanel
+          fields={fields}
+          onApply={handleApply}
+          onReset={handleReset}
+          isPending={isPending}
+        />
+      </section>
        </div>
-
+       
+       <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
+       {isPending && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2"></div>
+            <p className="text-sm font-medium">Filtering data...</p>
+          </div>
+        )}
       <div className="mb-6 overflow-x-auto rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
         {tableData && Array.isArray(tableData) && tableData.length > 0 ? (
           <ReusableTable columns={columns as any} data={tableData} actions={actions} />
@@ -209,6 +228,7 @@ export default function ParticipantContent({
             No participant data found.
           </div>
         )}
+      </div>
       </div>
 
       {/* Changed Modal Design: Make content scrollable, NOT the modal itself */}
