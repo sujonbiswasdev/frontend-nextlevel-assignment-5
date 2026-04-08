@@ -43,8 +43,10 @@ import Link from "next/link";
 import { FormInput } from "../ui/frominput";
 
 function VerifyOtp({
+  email:emailaddress,
   type,
 }: {
+  email?:string |undefined,
   type: "email-verification" | "forget-password";
 }) {
   const router = useRouter();
@@ -70,7 +72,9 @@ function VerifyOtp({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email) {
+    const emailVerifiy=email || emailaddress
+
+    if (!emailVerifiy) {
       toast.error("Email is required", { theme: "dark" });
       return;
     }
@@ -86,7 +90,8 @@ function VerifyOtp({
       if (type === "email-verification") {
         const toastID = toast.loading("Verifying...", { theme: "dark" });
         try {
-          const res = await verifyEmailAction({ email, otp });
+          const res = await verifyEmailAction({ email: email || emailaddress as string, otp });
+     
           if (res.success) {
             toast.dismiss(toastID);
             setResending(false);
@@ -216,7 +221,7 @@ function VerifyOtp({
         const toastID = toast.loading("Resending verification code...", { theme: "dark" });
         try {
           // Call the correct resend API for email-verification
-          const res = await resendVerificationCodeAction({ email });
+          const res = await resendVerificationCodeAction({ email:email || emailaddress as string });
           if (res.success) {
             alert("The OTP is valid for only 10 minutes. Please check your email.");
             toast.dismiss(toastID);
@@ -276,7 +281,7 @@ function VerifyOtp({
           <CardDescription>
             Code sent to:{" "}
             <span className="font-medium break-all">
-              {email || "your email"}
+              {email || emailaddress || "your email"}
             </span>
           </CardDescription>
         </CardHeader>

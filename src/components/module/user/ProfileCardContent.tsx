@@ -2,7 +2,7 @@
 
 import { IBaseUser, TUpdateUserInput } from "@/types/user.types";
 import { updateUserSchema } from "@/validations/user.validation";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Send, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -12,10 +12,12 @@ import InfoRow from "../../shared/InfoRow";
 import { Status, StatusIndicator, StatusLabel } from "../../ui/status";
 import { deleteuserown, updateUserProfileAction } from "@/actions/user.actions";
 import ShareProfileButton from "./profileshare";
+import VerifyOtp from "@/components/auth/VerifyEmailOtp";
 
 function ProfileModal({ user,notification }: { user: IBaseUser,notification:any }) {
   const router = useRouter();
   const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user })
+  const [isEmailverify,setisEmailverify]=useState(false)
   const [inputvalue, setinputvalue] = useState<Partial<TUpdateUserInput>>({});
   const [editfield, seteditfield] = useState<
     string | boolean | "bgimage" | "name" | "phone" | "isActive"
@@ -380,6 +382,37 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
           </button>
         </div>
       </div>
+      {isEmailverify ? (
+        <div className="pb-6 px-4 sm:px-8">
+          <div className="flex justify-between items-center mb-2">
+            <button
+              onClick={() => setisEmailverify(false)}
+              className="text-sm md:text-base px-2 py-1 rounded hover:bg-gray-100 transition"
+            >
+              Close
+            </button>
+          </div>
+          <div className="w-full max-w-md mx-auto">
+            <VerifyOtp email={user.email} type="email-verification" />
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 py-4 sm:px-6 sm:py-4">
+          <Label className="text-gray-600 text-sm sm:text-base mb-2 sm:mb-0">
+            isEmailverify
+          </Label>
+          <div className="flex gap-1 pr-1">
+            <button
+              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-green-100 transition"
+              onClick={() => setisEmailverify(true)}
+              aria-label="Start email verification"
+            >
+              <Send className="text-green-800 w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+ 
     </div>
   );
 }
