@@ -14,22 +14,15 @@ export const proxy = async (request: NextRequest) => {
     if (isPaymentSuccessRoute) {
       return NextResponse.next();
     }
-    const accessToken = request.cookies.get("accessToken")?.value;
-    if (!accessToken) {
+    const SessionToken = request.cookies.get("better-auth.session_token")?.value;
+    if (!SessionToken) {
       return NextResponse.redirect(new URL("/login?You_are_not_logged_in,_please_log_in_first.", request.url));
     }
-    const tokenVerify = jwtUtils.verifyToken(
-      accessToken,
-      process.env.ACCESS_TOKEN_SECRET as string
-    );
-    if (!tokenVerify.success) {
-      return NextResponse.redirect(new URL("/login?Invalid_or_expired_access_token", request.url));
-    }
     const userSession = await getSessionAction();
-    if (!userSession?.success || !userSession?.data ||!tokenVerify) {
+    if (!userSession?.success || !userSession?.data) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    const user = userSession.data || tokenVerify.data;
+    const user = userSession.data;
     if (user.status === "BLOCKED") {
       return NextResponse.redirect(new URL("/login?Your_account_is_blocked.please contact support", request.url));
     }

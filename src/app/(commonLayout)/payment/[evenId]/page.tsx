@@ -99,7 +99,6 @@ const PaymentSuccessPage = async ({
     );
     const isSuccessView = isServiceSuccess && hasPaymentData && hasPaidRecord;
     console.log(participant,'participant data')
-    // Professional, clean layout with clear information hierarchy
     return (
       <main className="min-h-screen flex items-center justify-center bg-neutral-100">
         <section className="w-full max-w-xl relative">

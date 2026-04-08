@@ -218,7 +218,7 @@ function VerifyOtp({
           // Call the correct resend API for email-verification
           const res = await resendVerificationCodeAction({ email });
           if (res.success) {
-            alert("The OTP is valid for only 4 minutes. Please check your email.");
+            alert("The OTP is valid for only 10 minutes. Please check your email.");
             toast.dismiss(toastID);
             toast.success(res.message || "Verification code resent successfully!", { theme: "dark" });
             setSuccess(true);
@@ -244,7 +244,7 @@ function VerifyOtp({
           // Call the correct resend API for forgot password flow
           const res = await forgotPasswordEmailOtpAction({ email });
           if (res.success) {
-            alert("The OTP is valid for only 4 minutes. Please check your email.");
+            alert("The OTP is valid for only 10 minutes. Please check your email.");
             toast.dismiss(toastID);
             toast.success(res.message || "OTP resent successfully!", { theme: "dark" });
             setSuccess(true);

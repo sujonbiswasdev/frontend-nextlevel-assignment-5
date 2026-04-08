@@ -26,10 +26,18 @@ import { forgotPasswordEmailOtpAction } from "@/actions/auth.actions";
 import { useState } from "react";
 import { FormInput } from "@/components/ui/frominput";
 import Link from "next/link";
+import { createAuthClient } from "better-auth/react";
 
 export function SigninForm() {
   const router = useRouter();
   const [email, setemail] = useState("");
+
+  const authClient = createAuthClient();
+const signIn = async () => {
+  const data = await authClient.signIn.social({
+    provider: "google",
+  });
+};
 
   const handleForgetPassword = async (email: string) => {
     if (!email) {
@@ -46,7 +54,7 @@ export function SigninForm() {
         toast.success(res.message || "Password reset OTP sent!", {
           theme: "dark",
         });
-        alert("You have only 4 minutes to validate the OTP sent to your email.");
+        alert("You have only 10 minutes to validate the OTP sent to your email.");
         return { success: true };
       } else {
         toast.error(res.message || "Failed to send OTP.", { theme: "dark" });
@@ -199,6 +207,35 @@ export function SigninForm() {
               />
             </FieldGroup>
           </form>
+
+        <div className="flex flex-col items-center mt-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+            onClick={async () => {
+              signIn()
+            }}
+          >
+            <svg
+              className="h-5 w-5"
+              aria-hidden="true"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <g>
+                <path fill="#EA4335" d="M12 10.8v3.6h5.1c-.225 1.2-1.35 3.525-5.1 3.525-3.075 0-5.625-2.55-5.625-5.625s2.55-5.625 5.625-5.625c1.755 0 2.94.75 3.615 1.425l2.46-2.4C16.62 4.05 14.55 3 12 3a8.996 8.996 0 000 18c5.175 0 8.55-3.675 8.55-8.85 0-.6-.075-1.05-.165-1.5H12z"/>
+                <path fill="#34A853" d="M12 21c2.43 0 4.47-.81 5.94-2.19l-2.88-2.34c-.81.54-1.86.87-3.06.87-2.355 0-4.35-1.59-5.07-3.72H3.06v2.34A8.97 8.97 0 0012 21z"/>
+                <path fill="#FBBC05" d="M6.93 13.62A5.38 5.38 0 016.6 12c0-.57.09-1.13.25-1.62v-2.34H3.06A9.02 9.02 0 003 12c0 1.41.33 2.76.93 3.96l2.88-2.34z"/>
+                <path fill="#4285F4" d="M12 6.75c1.305 0 2.47.45 3.39 1.32l2.55-2.55C16.47 3.87 14.43 3 12 3 9.24 3 6.81 4.53 5.19 6.66l2.94 2.34C8.37 8.19 10.05 6.75 12 6.75z"/>
+                <path fill="none" d="M3 3h18v18H3z"/>
+              </g>
+            </svg>
+            Sign in with Google
+          </Button>
+        </div>
+
+
         </CardContent>
         <CardFooter className="flex flex-col gap-1 items-center">
           <div className="text-sm text-center w-full mb-0.5">
