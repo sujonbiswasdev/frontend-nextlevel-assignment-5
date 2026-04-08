@@ -17,13 +17,17 @@ function SingleProfile({user}:{user:IBaseUser}) {
         className="relative h-48 w-full flex items-end p-4 bg-cover bg-center"
         style={{ backgroundImage: `url(${singleuser.bgimage || defaultProfile})` }}
       >
-        <Image
-          src={singleuser.image || defaultProfile}
-          alt="profile"
-          width={100}
-          height={100}
-          className="rounded-full border-2 border-white shadow-lg"
-        />
+        <div className="flex items-end" style={{ minHeight: 180 }}>
+          <Image
+            src={singleuser.image || defaultProfile}
+            alt="profile"
+            width={100}
+            height={100}
+            className="rounded-full border-2 border-white shadow-lg"
+            style={{ minHeight: 100, minWidth: 100, objectFit: 'cover' }}
+          />
+        </div>
+  
       </div>
 
       {/* Details */}

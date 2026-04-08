@@ -9,6 +9,13 @@ import { useFilter } from "@/components/ReusableFilter";
 import EventFilterUI from "./EventFilterInput";
 import { Search } from "lucide-react";
 import PaginationPage from "./Pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EventContentProps {
   events: TResponseEvent<{ reviews: any[] }>[];
@@ -43,7 +50,7 @@ export default function EventContent({
     search: "",
     fee: 0,
     visibility: "",
-    status: "",
+    categories: "",
   });
   const handleChange = (key: string, value: string) => {
     const updated = { ...form, [key]: value };
@@ -51,6 +58,7 @@ export default function EventContent({
 
     updateFilters(updated);
   };
+  const selectedCategory = searchParams?.get("categories") || "__all__";
 
   const filteredEvents = events.filter((event: any) => {
     const s = search.toLowerCase();
@@ -143,37 +151,45 @@ export default function EventContent({
                     <div className="flex items-center gap-3">
                       <input
                         type="range"
-                        min={1}
+                        min={0}
                         max={2000}
                         onChange={(e) => handleChange('fee', e.target.value)}
-                        value={Number(searchParams?.get("fee")) || 1}
+                        value={Number(searchParams?.get("fee")) || 0}
                         className="w-full accent-blue-500 dark:accent-indigo-600 cursor-pointer"
                       />
                       <span className="ml-2 text-xs font-semibold text-blue-700 dark:text-blue-200 bg-blue-100/70 dark:bg-blue-900/20 px-2 py-0.5 rounded shadow">
-                        ${searchParams?.get("fee") || 1}
+                        ${searchParams?.get("fee") || 0}
                       </span>
                     </div>
                   </div>
 
-                  {/* Status */}
+                  {/* categories */}
                   <div className="col-span-12 sm:col-span-6 lg:col-span-3 flex flex-col">
                     <label className="text-xs font-bold text-blue-800 dark:text-blue-200 tracking-wide uppercase mb-1 ml-1">
-                      Status
+                    categories :
                     </label>
-                    <select
-                      onChange={(e) => handleChange("status", e.target.value)}
-                      value={searchParams?.get("status") || ""}
-                      className="py-2 px-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-gradient-to-l from-blue-100/40 via-transparent to-white/30 dark:from-blue-950/20 text-sm text-blue-900 dark:text-blue-200 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800 outline-none font-medium transition-all"
+                    <Select
+                      value={selectedCategory}
+                      onValueChange={(value) =>
+                        handleChange(
+                          "categories",
+                          value === "__all__" ? "" : value,
+                        )
+                      }
                     >
-                      <option value="">All</option>
-                      {EventArr?.EVENT_Status_ARR.map(
-                        (item: string, i: number) => (
-                          <option key={i} value={item}>
+                      <SelectTrigger className="w-full py-2 px-3 rounded-xl border-blue-200 dark:border-blue-800 bg-linear-to-l from-blue-100/40 via-transparent to-white/30 dark:from-blue-950/20 text-xs sm:text-sm leading-tight text-blue-900 dark:text-blue-200 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800 font-medium">
+                        <SelectValue placeholder="All" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[320px]">
+                        <SelectItem value="__all__">All</SelectItem>
+                        {EventArr?.EVENT_CATEGORY_ARR.map((item: string, i: number) => (
+                          <SelectItem key={i} value={item}>
                             {item}
-                          </option>
-                        ),
-                      )}
-                    </select>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+              
                   </div>
                 </div>
               </div>

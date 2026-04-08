@@ -183,7 +183,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
       name: "fee",
       label: "Price (up to)",
       value: form.fee,
-      min: 1,
+      min: 0,
       max: 2000,
       onChange: (val) => handleChange("fee", Number(val)),
     },
@@ -240,7 +240,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
               priceType: "",
               status: "",
               visibility: "",
-              fee: 1,
+              fee: 0,
               search: "",
               createdAt: "",
             });

@@ -13,11 +13,18 @@ import { Status, StatusIndicator, StatusLabel } from "../../ui/status";
 import { deleteuserown, updateUserProfileAction } from "@/actions/user.actions";
 import ShareProfileButton from "./profileshare";
 import VerifyOtp from "@/components/auth/VerifyEmailOtp";
+import Image from "next/image";
 
-function ProfileModal({ user,notification }: { user: IBaseUser,notification:any }) {
+function ProfileModal({
+  user,
+  notification,
+}: {
+  user: IBaseUser;
+  notification: any;
+}) {
   const router = useRouter();
-  const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user })
-  const [isEmailverify,setisEmailverify]=useState(false)
+  const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user });
+  const [isEmailverify, setisEmailverify] = useState(false);
   const [inputvalue, setinputvalue] = useState<Partial<TUpdateUserInput>>({});
   const [editfield, seteditfield] = useState<
     string | boolean | "bgimage" | "name" | "phone" | "isActive"
@@ -71,11 +78,14 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
         return;
       }
       toast.dismiss(toastid);
-      toast.success(res.result?.message || `"user ${field} update successfully"`, {
-        theme: "dark",
-        position: "bottom-right",
-        autoClose: 2000,
-      });
+      toast.success(
+        res.result?.message || `"user ${field} update successfully"`,
+        {
+          theme: "dark",
+          position: "bottom-right",
+          autoClose: 2000,
+        },
+      );
       setuserinfo((prev) => ({ ...prev, [field]: value }));
     } catch (error: any) {
       toast.error(`someting went wrong please try again`);
@@ -86,18 +96,18 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
     const res = await deleteuserown();
     if (res.error) {
       toast.dismiss(toastid);
-      toast.error( res.message||"user account delete fail");
+      toast.error(res.message || "user account delete fail");
       return;
     }
     toast.dismiss(toastid);
-    toast.success(res.result?.message||"user account delete successfully");
+    toast.success(res.result?.message || "user account delete successfully");
     router.refresh();
     window.location.reload();
   };
   return (
     <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl mx-auto">
       {/* Header */}
-      <div className="flex justify-end">  {notification}</div>
+      <div className="flex justify-end"> {notification}</div>
       <div
         className="flex items-center justify-between border-b p-6 max-w-full bg-cover bg-center"
         style={{
@@ -108,11 +118,20 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
           {editfield !== "image" ? (
             <div className="flex items-center justify-between px-6 py-4">
               <div className="flex gap-1 pr-1">
-                <img
-                  src={useinfo.image || defaultProfile}
-                  alt="profile"
-                  className="w-[100px] h-[100px] object-cover rounded-full shadow-sm border-2"
-                />
+                <div className="flex items-end" style={{ minHeight: 180 }}>
+                  <Image
+                    src={useinfo.image || defaultProfile}
+                    alt="profile"
+                    width={100}
+                    height={100}
+                    className="rounded-full border-2 border-white shadow-lg"
+                    style={{
+                      minHeight: 100,
+                      minWidth: 100,
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
                 <button
                   className="w-[5px] -ml-3 -mt-4"
                   onClick={() => seteditfield("image")}
@@ -218,9 +237,7 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
           <div className="flex items-center justify-between px-6 py-4">
             <Label className="text-gray-600">phone</Label>
             <div className="flex gap-1 pr-1">
-              <p className="text-gray-900">
-                {useinfo?.phone || "017********"}
-              </p>
+              <p className="text-gray-900">{useinfo?.phone || "017********"}</p>
               <button className="w-[5px]" onClick={() => seteditfield("phone")}>
                 <Pencil className="text-green-800 text-[5px]" />
               </button>
@@ -256,30 +273,22 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
             {user.status === "ACTIVE" ? (
               <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
                 Active
-                <span className="ml-2 text-gray-500">
-                  {user.status}
-                </span>
+                <span className="ml-2 text-gray-500">{user.status}</span>
               </span>
             ) : user.status === "BLOCKED" ? (
               <span className="inline-flex items-center px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">
                 Blocked
-                <span className="ml-2 text-gray-500">
-                  {user.status}
-                </span>
+                <span className="ml-2 text-gray-500">{user.status}</span>
               </span>
             ) : user.status === "DELETED" ? (
               <span className="inline-flex items-center px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">
                 Deleted
-                <span className="ml-2 text-gray-500">
-                  {user.status}
-                </span>
+                <span className="ml-2 text-gray-500">{user.status}</span>
               </span>
             ) : (
               <span className="inline-flex items-center px-2 py-1 rounded bg-gray-100 text-gray-800 text-xs font-medium">
                 Unknown
-                <span className="ml-2 text-gray-500">
-                  {user.status}
-                </span>
+                <span className="ml-2 text-gray-500">{user.status}</span>
               </span>
             )}
           </h4>
@@ -363,10 +372,10 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
             </div>
           )}
         </div>
-     <InfoRow
+        <InfoRow
           label="createdAt"
           value={user.createdAt.toLocaleString().slice(0, 10)}
-        /> 
+        />
         <div className="flex items-center justify-between px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-600">Profile</h2>
           <ShareProfileButton userId={user.id} userName={user.name} />
@@ -397,7 +406,7 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
           </div>
         </div>
       ) : (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 py-4 sm:px-6 sm:py-4">
+        <div className="flex flex-wrap items-start sm:items-center justify-between px-4 py-4 sm:px-6 sm:py-4">
           <Label className="text-gray-600 text-sm sm:text-base mb-2 sm:mb-0">
             isEmailverify
           </Label>
@@ -412,7 +421,6 @@ function ProfileModal({ user,notification }: { user: IBaseUser,notification:any 
           </div>
         </div>
       )}
- 
     </div>
   );
 }

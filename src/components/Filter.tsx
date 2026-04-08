@@ -3,6 +3,13 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { TFilterField } from "@/types/filter.types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const FilterPanel = ({
   fields,
@@ -131,6 +138,7 @@ export const FilterPanel = ({
 
           // 🔹 SELECT
           if (field.type === "select") {
+            const selectedValue = field.value ? String(field.value) : "__all__";
             return (
               <div
                 key={field.name}
@@ -139,20 +147,26 @@ export const FilterPanel = ({
                 <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
                   {field.label}
                 </label>
-                <select
-                  value={field.value}
-                  onChange={(e) =>
-                    field.onChange(e.target.value)
+                <Select
+                  value={selectedValue}
+                  onValueChange={(value) =>
+                    field.onChange(value === "__all__" ? "" : value)
                   }
-                  className={`${base} cursor-pointer`}
                 >
-                  <option value="">All</option>
-                  {field.options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className={`${base} cursor-pointer`}>
+                    <SelectValue placeholder="All" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[320px]">
+                    <SelectItem value="__all__">All</SelectItem>
+                    {field.options
+                      .filter((opt) => String(opt.value) !== "")
+                      .map((opt) => (
+                      <SelectItem key={String(opt.value)} value={String(opt.value)}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             );
           }
