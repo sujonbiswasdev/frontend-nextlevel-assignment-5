@@ -15,6 +15,7 @@ export const proxy = async (request: NextRequest) => {
       return NextResponse.next();
     }
     const SessionToken = request.cookies.get("better-auth.session_token")?.value;
+    
     if (!SessionToken) {
       return NextResponse.redirect(new URL("/login?You_are_not_logged_in,_please_log_in_first.", request.url));
     }

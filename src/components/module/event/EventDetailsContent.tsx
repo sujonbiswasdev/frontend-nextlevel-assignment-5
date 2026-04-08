@@ -210,30 +210,34 @@ const EventDetailsPage = ({
               <h2 className="text-xl font-semibold mb-3 text-slate-900">
                 Reviews
               </h2>
-              {eventData.reviews?.length > 0 ? (
-                eventData.reviews.map((review: IgetReviewData) => (
-                  <div
-                    key={review.id}
-                    className="rounded-xl border border-slate-200 bg-white shadow-sm px-4 sm:px-6 py-5"
-                  >
-                    <ReviewItem
-                      user={eventData.organizer}
-                      review={{
-                        ...review,
-                        user: eventData.organizer,
-                        event: eventData,
-                      }}
-                      event={eventData}
-                      activeReplyId={activeReplyId}
-                      setActiveReplyId={setActiveReplyId}
-                    />
+              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-3 sm:p-4 max-h-[70vh] overflow-auto overscroll-contain [scrollbar-width:thin]">
+                {eventData.reviews?.length > 0 ? (
+                  <div className="space-y-3 min-w-max">
+                    {eventData.reviews.map((review: IgetReviewData) => (
+                      <div
+                        key={review.id}
+                        className="rounded-xl border border-slate-200 bg-white px-3 sm:px-5 py-4 min-w-[640px] max-h-[420px] overflow-auto"
+                      >
+                        <ReviewItem
+                          user={eventData.organizer}
+                          review={{
+                            ...review,
+                            user: eventData.organizer,
+                            event: eventData,
+                          }}
+                          event={eventData}
+                          activeReplyId={activeReplyId}
+                          setActiveReplyId={setActiveReplyId}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-600 bg-cyan-50 px-5 py-3 rounded">
-                  No reviews yet. Be the first to review!
-                </p>
-              )}
+                ) : (
+                  <p className="text-sm text-slate-600 bg-cyan-50 px-5 py-3 rounded">
+                    No reviews yet. Be the first to review!
+                  </p>
+                )}
+              </div>
               {/* Add new review */}
               <div className="rounded-xl border border-slate-200 bg-slate-50 shadow-sm px-4 sm:px-5 py-3">
                 <ReviewForm eventId={eventData.id} />

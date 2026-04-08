@@ -95,13 +95,14 @@ const UpcommingEvent = ({events}:{events:(TResponseEvent<{ reviews: IgetReviewDa
               ? Array.from({ length: CARDS_PER_SLIDE }).map((_, i) => (
                   <EventCardSkeleton key={i} />
                 ))
-              : 
-              
-              visibleEvents.map((event) => {
+              : (
+                (events == null || events === undefined || events.length === 0)
+                ?  <div className="col-span-full text-center text-gray-500 py-12 text-lg">
+                No Upcomming events found.
+              </div>
+                : visibleEvents.map((event) => {
                 return <EventCard key={event.id} {...event} />
-              })}
-                
-
+              }))}
             {/* Fill remaining columns with empty divs for even width */}
            {!loading && emptySlots > 0 &&
               Array.from({ length: emptySlots }).map((_, idx) => (

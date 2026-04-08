@@ -66,11 +66,11 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
   }, [slides.length]);
 
   return (
-    <section className="relative w-full h-[70vh] min-h-[420px] max-h-[620px] overflow-hidden">
+    <section className="relative w-full h-[70vh] min-h-[450px] max-h-[620px] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
+          className={`absolute inset-0 mb-4 transition-opacity duration-1000 ${
             index === current ? "opacity-100 z-20" : "opacity-0 z-10"
           }`}
         >
@@ -87,7 +87,7 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
           <div className="absolute inset-0 bg-linear-to-r from-slate-900/80 via-cyan-900/45 to-emerald-900/40"></div>
 
           {/* Content */}
-          <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+          <div className="relative w-full max-w-screen-xl mb-4 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center h-full pb-7" style={{ minHeight: "100%", paddingTop: "5.5rem" }}>
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-200/40 rounded-full px-4 py-1.5 mb-6 animate-fade-in">
                 <Sparkles className="w-4 h-4 text-amber-300" />

@@ -145,7 +145,7 @@ const categoryFilter=categories.filter((item)=>item.title.includes(search) || it
           Our support team is here for you
         </p>
 
-        <button onClick={()=>router.push("https://api.whatsapp.com/send/?phone=01804935939")} className="px-6 py-3 bg-blue-700 text-white rounded-full font-semibold hover:bg-blue-800 focus:ring-2 focus:ring-blue-400 transition">
+        <button onClick={()=>router.push("https://api.whatsapp.com/send/?phone=+8801804935939")} className="px-6 py-3 bg-blue-700 text-white rounded-full font-semibold hover:bg-blue-800 focus:ring-2 focus:ring-blue-400 transition">
           Contact Support
         </button>
       </div>

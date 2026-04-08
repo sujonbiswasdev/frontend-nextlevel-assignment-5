@@ -37,13 +37,8 @@ export default async function Home() {
       ) : (
         <HeroSlider data={isfeatured.data as IBaseEvent[]} />
       )}
-      {/* Fixed: always pass events prop */}
-      <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />
-      {/* Fixed: always pass role prop */}
+     {!events || !eventsRes.success ||!eventsRes.data?<NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴"/>: <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />}
       <CallToAction role={role as string} />
-      {/* Remove erroneous UpcommingEvent and CallToAction calls without required props */}
-      {/* <UpcommingEvent /> */}
-      {/* <CallToAction /> */}
       <ErrorBoundary fallback={<ErrorFallback title="Failed to load events list." />}>
         {!paidAndFreeEvents || !paidAndFreeEvents.data || !paidAndFreeEvents.success ? (
           <ErrorBoundary

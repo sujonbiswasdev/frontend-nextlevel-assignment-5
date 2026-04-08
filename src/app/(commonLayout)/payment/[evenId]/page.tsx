@@ -98,7 +98,6 @@ const PaymentSuccessPage = async ({
         String(item?.paymentStatus || "").toUpperCase() === "PAID",
     );
     const isSuccessView = isServiceSuccess && hasPaymentData && hasPaidRecord;
-    console.log(participant,'participant data')
     return (
       <main className="min-h-screen flex items-center justify-center bg-neutral-100">
         <section className="w-full max-w-xl relative">

@@ -61,17 +61,17 @@ export default function EventCard({
         {/* Organizer profiles */}
         <div className="flex flex-col gap-2">
           <div className="flex -space-x-3 items-center mb-1">
-            {(Array.isArray(profile) ? profile.slice(0, 5) : [profile]).map((imgSrc: string, idx: number) => (
-              <img
-                key={idx}
+             <Link href={`/profile/${organizer.id}`}>
+             <Image
                 height={24}
                 width={24}
-                src={imgSrc}
+                src={organizer.image}
+                loading="lazy"
                 alt="Organizer"
                 className="w-6 h-6 rounded-full object-cover border border-white dark:border-gray-800 shadow"
-                style={idx !== 0 ? { marginLeft: '-0.5rem' } : {}}
+                
               />
-            ))}
+             </Link>
             {Array.isArray(profile) && profile.length > 5 && (
               <span className="ml-2 text-xs text-gray-500 dark:text-gray-300 font-semibold whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">
                 +{profile.length - 5}

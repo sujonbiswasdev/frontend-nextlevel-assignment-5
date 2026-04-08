@@ -20,6 +20,8 @@ import { TResponseReviewData } from "@/types/review.types";
 import { deleteReview } from "@/actions/review.actions";
 import UpdateReviewContent from "./UpdateReviewContent";
 import ModerateUpdateForm from "./ModerateUpdateForm";
+import CopyableId from "@/components/shared/CopyId";
+import ViewReviewData from "./ViewReview";
 
 const STATUS_COLOR_MAP: Record<string, string> = {
   APPROVED: "bg-green-200 text-green-800",
@@ -44,6 +46,8 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
   const [tableReviews, setTableReviews] = useState<TResponseReviewData<any>[]>(reviews);
   const [loading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [viewData, setViewData] = useState<any>(null);
+  const [viewMode, setViewMode] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
   const [editReviewDefaultValues, setEditReviewDefaultValues] = useState<{ rating?: number, comment?: string } | undefined>();
   const [form, setForm] = useState({
@@ -51,10 +55,8 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     search: "",
     status: "",
   });
-
   // Keep a ref to the original reviews to handle local filtering/editing
   const originalReviewsRef = useRef<TResponseReviewData<any>[]>(reviews);
-
   useEffect(() => {
     originalReviewsRef.current = reviews;
     setTableReviews(reviews);
@@ -121,9 +123,9 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     },
     {
       key: "event",
-      label: "Event",
+      label: "EventId",
       render: (r: any) => (
-        <span className="text-violet-700 text-[11px]">{r.event?.title?.slice(0, 12)}</span>
+        <CopyableId id={r.event.id} href={`/events/${r.event.id}`} showShort={r.event?.id}></CopyableId>
       )
     },
     {
@@ -175,7 +177,11 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
     {
       icon: Eye,
       label: "View",
-      onClick: (review: any) => router.push(`/events/${review.eventId}`),
+      onClick: (review: any) =>{
+        setViewData(review);
+        setViewMode(true);
+        setOpen(true);
+      },
       className: ACTION_COLOR_MAP.view + " text-[11px]",
     },
     {
@@ -187,6 +193,8 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
           rating: review.rating,
           comment: review.comment,
         });
+        setViewMode(false);
+
         setOpen(true);
       },
       className: ACTION_COLOR_MAP.edit + " text-[11px]",
@@ -288,8 +296,9 @@ export default function MyReviewsTable({ reviews, pagination, role }: MyReviewsT
         }}
       >
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-lime-50">
+        {viewData && viewMode && <ViewReviewData viewData={viewData} />}
           <DialogHeader />
-          {selectedReviewId ? (
+          {!viewMode && selectedReviewId ? (
             role === "ADMIN" ? (
               <ModerateUpdateForm
                 id={selectedReviewId}

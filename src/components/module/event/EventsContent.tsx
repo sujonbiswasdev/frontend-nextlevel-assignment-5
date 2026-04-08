@@ -24,6 +24,7 @@ export default function EventContent({
   const [search, setsearch] = useState("");
   const router=useRouter()
   if(!events){
+
   return (
     <div className="w-full flex flex-col items-center justify-center min-h-[400px] py-20">
       <div className="text-3xl font-semibold text-gray-500 mb-4">
@@ -35,7 +36,6 @@ export default function EventContent({
     </div>
   );
   }
-  
 
   const { updateFilters, reset, isPending } = useFilter();
 
