@@ -180,8 +180,14 @@ export function SignupForm() {
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-
                       if (file) {
+                        if (file.size > 1 * 1024 * 1024) {
+                          toast.error("Image size must be less than 1MB!");
+                          e.target.value = "";
+                          field.handleChange(null);
+                          setPreview(null);
+                          return;
+                        }
                         field.handleChange(file);
                         setPreview(URL.createObjectURL(file));
                       }

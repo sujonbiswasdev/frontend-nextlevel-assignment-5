@@ -5,6 +5,8 @@ import { TPagination, TResponseEvent } from "@/types/event.types";
 import { IgetReviewData } from "@/types/review.types";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 const EventsPage = async ({
   searchParams,
 }: {

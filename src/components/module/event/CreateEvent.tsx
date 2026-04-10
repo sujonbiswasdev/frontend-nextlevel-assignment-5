@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -73,6 +73,7 @@ export function CreateEvent() {
       }
     },
   });
+  const pricetype = useStore(form.store, (state) => state.values.priceType);
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
@@ -80,7 +81,7 @@ export function CreateEvent() {
       </CardHeader>
       <CardContent>
         <form
-          id="bug-report-form"
+          id="event-form"
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
@@ -241,8 +242,14 @@ export function CreateEvent() {
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-
                       if (file) {
+                        if (file.size > 1 * 1024 * 1024) {
+                          toast.error("Image size must be less than 1MB!");
+                          e.target.value = "";
+                          field.handleChange(null);
+                          setPreview(null);
+                          return;
+                        }
                         field.handleChange(file);
                         setPreview(URL.createObjectURL(file));
                       }
@@ -420,6 +427,7 @@ export function CreateEvent() {
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
+                const isDisabled = pricetype!== "PAID";
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Fee </FieldLabel>
@@ -436,6 +444,7 @@ export function CreateEvent() {
                       aria-invalid={isInvalid}
                       placeholder="Enter event fee if applicable"
                       autoComplete="off"
+                      disabled={isDisabled}
                     />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
@@ -452,7 +461,7 @@ export function CreateEvent() {
           <Button type="button" variant="outline" onClick={() => form.reset()}>
             Reset
           </Button>
-          <Button type="submit" form="bug-report-form">
+          <Button type="submit" form="event-form">
             Submit
           </Button>
         </Field>

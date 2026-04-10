@@ -15,6 +15,7 @@ import ReviewItem from "../reviews/ReviewItem";
 import { useRouter } from "next/navigation";
 import { initiatePayLater } from "@/actions/payment.actions";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const gradientBg =
   "bg-gradient-to-br from-cyan-50 via-emerald-50 to-amber-50";
@@ -26,8 +27,10 @@ const statLabel =
   "bg-linear-to-r from-cyan-700 to-teal-600 text-white px-2 py-1 rounded text-[11px] font-bold uppercase tracking-widest";
 
 const EventDetailsPage = ({
+  user,
   eventData,
 }: {
+  user:IBaseUser,
   eventData: TResponseEvent<{
     reviews: IgetReviewData[];
     organizer: IBaseUser;
@@ -152,6 +155,29 @@ const EventDetailsPage = ({
               </div>
             </div>
             {/* TITLE & DESCRIPTION */}
+            {eventData?.organizer?.image && (
+              <div className="flex items-center gap-3 mb-4">
+                <Link href={`/profile/${eventData.organizer.id}`}>
+                <Image
+                  src={eventData.organizer.image}
+                  alt={eventData.organizer.name || "Organizer Profile"}
+                  width={46}
+                  height={46}
+                  className="rounded-full object-cover border shadow"
+                /></Link>
+                <div>
+                  <span className="font-semibold text-slate-800">
+                    {eventData.organizer.name || "Event Organizer"}
+                  </span>
+                  {eventData.organizer.email && (
+                    <p className="text-xs text-slate-500">
+                      {eventData.organizer.email}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+      
             <div className="mb-6 bg-white rounded-xl px-5 sm:px-7 py-6 sm:py-8 shadow-sm border border-slate-200">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-slate-900">
                 {eventData.title}
@@ -219,10 +245,10 @@ const EventDetailsPage = ({
                         className="rounded-xl border border-slate-200 bg-white px-3 sm:px-5 py-4 min-w-[640px] max-h-[420px] overflow-auto"
                       >
                         <ReviewItem
-                          user={eventData.organizer}
+                          user={user}
                           review={{
                             ...review,
-                            user: eventData.organizer,
+                            user: (review as any).user ?? eventData.organizer,
                             event: eventData,
                           }}
                           event={eventData}

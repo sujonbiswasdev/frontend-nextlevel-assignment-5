@@ -8,6 +8,7 @@ import { IBaseEvent } from "@/types/event.types";
 import { TResponseReviewData } from "@/types/review.types";
 import { IBaseUser } from "@/types/user.types";
 import { deleteReview, updateReview } from "@/actions/review.actions";
+import { toast } from "react-toastify";
 
 interface ReviewItemProps {
   user: IBaseUser;
@@ -43,15 +44,23 @@ export default function ReviewItem({
     }
     setIsUpdating(true);
     try {
+      const toastId=toast.loading("review updating...")
       const result = await updateReview(review.id, {
         comment: editComment,
         rating: editRating,
       });
+      console.log(result,'dsdfds')
       if (result?.success) {
+        toast.dismiss(toastId)
+        toast.success("review updated successfully")
         setIsEditing(false);
         router.refresh?.();
+        return
       } else {
-        alert(result?.message || "Update failed");
+        toast.dismiss(toastId)
+        toast.error("review updated failed")
+        setIsEditing(false);
+        router.refresh?.();
       }
     } catch (err: any) {
       alert(err?.message || "Failed to update review");
@@ -72,12 +81,18 @@ export default function ReviewItem({
     }
    
     try {
+      const toastId=toast.loading("review deleting...")
       const result = await deleteReview(review.id);
       setIsDeleting(true);
       if (result?.success) {
+        toast.dismiss(toastId)
+        toast.success(result.message || "review message delete successfully")        
         router.refresh?.();
+        return
       } else {
-        alert(result?.message || "Failed to delete review");
+        toast.dismiss(toastId)
+        toast.error(result.message || "review delete failed")        
+        router.refresh?.();
       }
     } catch (err: any) {
       alert(err?.message || "Failed to delete review");

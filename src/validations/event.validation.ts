@@ -77,7 +77,8 @@ export const CreateEventSchema = z.object({
     return Number(val);
   }, z
     .number()
-    .min(60, { message: "Fee must be at least 60 taka" })
+    .min(60, { message: "Fee must be at least 60 Taka." })
+    .max(6000, { message: "Fee cannot exceed 6000 Taka." })
     .optional()
   ),
   status: EventStatusEnum.default("UPCOMING"),

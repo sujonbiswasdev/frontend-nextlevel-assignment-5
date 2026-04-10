@@ -5,6 +5,7 @@ import { IBaseEvent, TResponseEvent } from '@/types/event.types';
 import { IgetReviewData } from '@/types/review.types';
 import { IBaseUser } from '@/types/user.types';
 import NotFoundItem from '@/components/NotFoundItem';
+import { getSessionAction } from '@/actions/auth.actions';
 
 // Simple ErrorBoundary component for async server components
 function ErrorBoundary({ error }: { error: Error }) {
@@ -52,12 +53,13 @@ const EventDetailsPageWrapper = async ({
         </div>
       );
     }
+    const userinfo=await getSessionAction()
 
     const singleEventData = eventData.data as TResponseEvent<{reviews:IgetReviewData[],organizer:IBaseUser}>;
 
     return (
       <div>
-        <EventDetailsPage eventData={singleEventData as any} />
+        <EventDetailsPage user={userinfo.data as IBaseUser} eventData={singleEventData as any} />
       </div>
     );
   } catch (error: any) {

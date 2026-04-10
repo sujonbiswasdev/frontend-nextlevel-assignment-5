@@ -123,11 +123,12 @@ export default function UserContentPage({
       name: "emailVerified",
       label: "Email Verified",
       value: String(form.emailVerified),
-      onChange: (val: string) => handleChange("emailVerified", val === "true"),
+      onChange: (val: string) => handleChange("emailVerified", val),
       options: [
         { label: "No", value: "false" },
         { label: "Yes", value: "true" },
       ],
+ 
     },
   ];
 

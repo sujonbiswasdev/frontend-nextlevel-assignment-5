@@ -6,6 +6,9 @@ import { IBaseEvent, TPagination } from '@/types/event.types';
 import { IgetReviewData } from '@/types/review.types';
 import { TResponseUserData } from '@/types/user.types';
 import React from 'react'
+
+export const dynamic = "force-dynamic";
+
 const UsersPage =async ({
   searchParams,
 }: {

@@ -39,7 +39,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
     priceType: "",
     status: "",
     visibility: "",
-    fee: 2000,
+    fee: null,
     search: "",
     createdAt: "",
   });
@@ -54,7 +54,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
   const handleReset = () => {
     const defaultForm = {
       is_featured: false, date: "", categories: "", priceType: "",
-      status: "", visibility: "", fee: 2000, search: "", createdAt: "",
+      status: "", visibility: "", fee: null, search: "", createdAt: "",
     };
     setForm(defaultForm);
     reset();
@@ -95,7 +95,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
     { type: "date", name: "date", value: form.date, label: "Date", onChange: (val) => handleChange("date", val) },
     { type: "select", name: "categories", label: "Categories", value: form.categories, onChange: (val) => handleChange("categories", val), options: EventArr.EVENT_CATEGORY_ARR.map(v => ({ label: v, value: v })) },
     { type: "select", name: "priceType", label: "Price Type", value: form.priceType, onChange: (val) => handleChange("priceType", val), options: [{ label: "Free", value: "FREE" }, { label: "Paid", value: "PAID" }] },
-    { type: "range", name: "fee", label: "Price", value: form.fee, min: 0, max: 2000, onChange: (val) => handleChange("fee", Number(val)) },
+    { type: "range", name: "fee", label: "Price", value: form.fee as any, min: 0, max: 6000, onChange: (val) => handleChange("fee", Number(val)) },
     { type: "select", name: "status", label: "Status", value: form.status, onChange: (val) => handleChange("status", val), options: EventArr.EVENT_Status_ARR.map(v => ({ label: v, value: v })) },
     { type: "select", name: "visibility", label: "Visibility", value: form.visibility, onChange: (val) => handleChange("visibility", val), options: [{ label: "Public", value: "PUBLIC" }, { label: "Private", value: "PRIVATE" }] },
   ];

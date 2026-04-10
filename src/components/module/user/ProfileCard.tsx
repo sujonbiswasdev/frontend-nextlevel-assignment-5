@@ -90,7 +90,7 @@ export default function ProfileCard({ profile }: { profile: IBaseUser }) {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link
-              href="/user/dashboard/settings"
+              href={profile.role=="ADMIN"?"/admin/dashboard/setting":"/user/dashboard/settings"}
               className="flex items-center w-full gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
             >
               <Settings className="w-4 h-4" />
