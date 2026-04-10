@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
-import { registerUserAction } from "@/actions/auth.actions";
+import { registerUserAction, resendVerificationCodeAction } from "@/actions/auth.actions";
 import { UserCreateInput } from "@/types/auth.types";
 import { createUserSchema } from "@/validations/auth.validation";
 import { FormInput } from "@/components/ui/frominput";
@@ -56,6 +56,7 @@ export function SignupForm() {
         }
         toast.dismiss(toastId);
         toast.success(result.message || "User signed up successfully!");
+        await resendVerificationCodeAction({email:value.email})
         router.push(`/verify-email?email=${value.email}`);
       } catch (error: any) {
         toast.dismiss(toastId);
