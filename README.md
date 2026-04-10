@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+### Project name : 
+##### Planora – Event Management Platform 
 
-First, run the development server:
+### Project description : 
+##### Planora is a high-performance, full-stack event management platform designed to bridge the gap between event organizers and attendees. Whether it’s a public concert or a private corporate workshop, Planora provides a seamless workflow for event creation, secure payments, and role-based participant management.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Quick Links
+ - Frontend Repo    : https://github.com/sujonbiswasdev/frontend-nextlevel-assignment-5.git
+- Backend Repo     : https://github.com/sujonbiswasdev/nextlevel-backend-assignment-5.git
+- Frontend Live    : https://project-frontend.vercel.app
+- Backend Live     : https://nextlevel-backend-assignment-5.vercel.app
+
+- Demo Video       : https://frontend-nextlevel-assignment-5.vercel.app
+
+
+### Key feature
+Authentication
+- User registration and login
+- Secure authentication using JWT
+- Protected routes
+
+📅 Event Management
+- Create, update, and delete events
+- View event details
+- Support for public and private events
+
+🛠️ Event Control
+- Approve or reject requests
+- View participants
+- Ban users
+- Edit and delete events
+
+🔍 Search & Filter
+
+👥 Participation
+- Public Free → Join instantly
+- Public Paid → Pay & join
+- Private Free → Request to join
+- Private Paid → Pay & request
+
+💳 Payment
+- Payment required for paid events
+- Secure payment integration
+- Requests stay pending after payment
+
+📨 Invitations
+- Hosts can invite users
+- Accept or decline invitations
+- Pay & accept for paid events
+
+⭐ Reviews
+- Add, edit, and delete reviews
+- Rate events
+
+⚠️ Error Handling
+- Form validation
+- Clear error messages
+- Loading states 
+🎨 UI/UX
+- Responsive design
+- Clean layout
+- Easy to use
+
+### 🛠️ Technology Stack
+Frontend
+- Next.js
+- Tailwind CSS
+- shadcn
+
+Backend
+- Node.js
+- Express.js
+- Prisma ORM
+Database
+- PostgreSQL
+Authentication
+- JWT
+Payment
+ - Stripe
+
+Deployment
+- Vercel (Frontend)
+- vercel(Backend)
+
+## Setup Instructions
+- (frontend) : git clone https://github.com/sujonbiswasdev/frontend-nextlevel-assignment-5.git
+- (backend) : git clone https://github.com/sujonbiswasdev/nextlevel-backend-assignment-5.git
+
+### Backend Setup
+- cd nextlevel-backend-assignment-5
+- pnpm install
+- Create .env file:
+```typescript
+DATABASE_URL='postgresql://username:password@localhost:5432/mydatabase?schema=public'
+
+BETTER_AUTH_SECRET=your_super_secret_key_here
+BETTER_AUTH_URL=http://localhost:5000
+
+FRONTEND_URL=http://localhost:3000
+PORT=5000
+NODE_ENV=development
+
+ACCESS_TOKEN_SECRET=access_token_secret_example
+REFRESH_TOKEN_SECRET=refresh_token_secret_example
+ACCESS_TOKEN_EXPIRES_IN=1d
+REFRESH_TOKEN_EXPIRES_IN=7d
+
+GITHUB_CLIENT_ID=github_client_id_example
+GITHUB_CLIENT_SECRET=github_client_secret_example
+
+CLOUDINARY_CLOUD_NAME=cloud_name_example
+CLOUDINARY_API_KEY=cloudinary_api_key_example
+CLOUDINARY_API_SECRET=cloudinary_api_secret_example
+
+GOOGLE_CLIENT_ID=google_client_id_example
+GOOGLE_CLIENT_SECRET=google_client_secret_example
+GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/callback/google
+
+STRIPE_SECRET_KEY=sk_test_example_key
+STRIPE_WEBHOOK_SECRET=whsec_example_secret
+
+RESEND_API_KEY=resend_api_key_example
+
+EMAIL_SENDER_SMTP_USER=example@gmail.com
+EMAIL_SENDER_SMTP_PASS=app_password_here
+EMAIL_SENDER_SMTP_HOST=smtp.gmail.com
+EMAIL_SENDER_SMTP_PORT=465
+EMAIL_SENDER_SMTP_FROM=example@gmail.com
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run the cmd:
+- pnpm dlx prisma migrate reset
+- pnpm dlx prisma migrate dev
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- pnpm dlx prisma generate
+- pnpm dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Frontend Setup
 
-## Learn More
+- cd frontend-nextlevel-assignment-5
+- pnpm install
+- Create .env file:
 
-To learn more about Next.js, take a look at the following resources:
+```typescript
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:5000
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+ ACCESS_TOKEN_SECRET=accesssecret
+ REFRESH_TOKEN_SECRET=refreshsecret
+ 
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+pnpm dev
