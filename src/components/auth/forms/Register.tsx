@@ -28,6 +28,7 @@ import { createUserSchema } from "@/validations/auth.validation";
 import { FormInput } from "@/components/ui/frominput";
 import Link from "next/link";
 import { useState } from "react";
+import VerifyOtp from "../VerifyEmailOtp";
 
 export function SignupForm() {
   const [preview, setPreview] = useState<string | null>(null);
@@ -47,15 +48,14 @@ export function SignupForm() {
       const toastId = toast.loading("user creating.........");
       try {
         const result = await registerUserAction(value as UserCreateInput);
-        setPreview(null)
+        setPreview(null);
         if (!result.success) {
           toast.dismiss(toastId);
-          toast.error(result.message || "user registration failed");
+          toast.error(result.message || "Something went wrong, hai!");
           return;
         }
         toast.dismiss(toastId);
-        alert(result.message || "user signup successfully");
-        toast.success("user signup successfully ");
+        toast.success(result.message || "User signed up successfully!");
         router.push(`/verify-email?email=${value.email}`);
       } catch (error: any) {
         toast.dismiss(toastId);

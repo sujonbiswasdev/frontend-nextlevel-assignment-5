@@ -64,11 +64,12 @@ const EventDetailsPage = ({
     try {
       const res = await initiatePayLater(eventId);
       toast.dismiss(toastId);
-      if (res.success && res.data?.redirectUrl) {
+      if (res.success) {
         toast.success(res.message || "Redirecting to your payment page.");
-        window.location.href = res.data.redirectUrl;
+        return
       } else {
         toast.error(res.message || "Pay Later could not be initiated.");
+        return
       }
     } catch (err) {
       toast.dismiss(toastId);
